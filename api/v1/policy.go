@@ -150,3 +150,17 @@ func (p *Policy) GetData() []byte {
 	}
 	return data
 }
+
+// ContextMap compiles the context data values into a map, filling the fields
+// with their defaults when needed.
+func (c *Policy) ContextMap() map[string]any {
+	ret := map[string]any{}
+	for label, value := range c.Context {
+		if value.Value != nil {
+			ret[label] = value.Value.AsInterface()
+		} else {
+			ret[label] = value.Default.AsInterface()
+		}
+	}
+	return ret
+}
