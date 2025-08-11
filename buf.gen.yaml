@@ -7,7 +7,14 @@ managed:
   enabled: true
 plugins:
   - protoc_builtin: go
-    out: ./api/v1
+    out: ./api
     opt: 
-      - paths=import
-      - module=github.com/carabiner-dev/policy/api/v1
+      #- paths=import
+      - paths=source_relative
+      #- module=github.com/carabiner-dev/policy/api/v1
+      #- module=github.com
+      # - module=policy/api/v1
+    # include_imports: false
+#inputs:
+#  - git_repo: https://github.com/in-toto/attestation
+#    subdir: protos/
