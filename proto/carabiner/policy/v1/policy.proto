@@ -6,7 +6,7 @@ package carabiner.policy.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
-import "intoto.proto";
+import "in_toto_attestation/v1/resource_descriptor.proto";
 
 option go_package = "github.com/carabiner-dev/policy/api/v1";
 
@@ -31,7 +31,7 @@ message PolicySetMeta {
 message FrameworkRef {
     string id = 1; // String identifier for the framework
     string name = 2; // Security framework name
-    ResourceDescriptor definition = 3; // Link to the framework definition
+    in_toto_attestation.v1.ResourceDescriptor definition = 3; // Link to the framework definition
 }
 
 message PolicySetCommon {
@@ -56,7 +56,7 @@ message PolicyRef {
     string id = 1;
     int64 version = 2;
     Identity identity = 3;
-    ResourceDescriptor location = 4;
+    in_toto_attestation.v1.ResourceDescriptor location = 4;
 }
 
 message ChainLink {
