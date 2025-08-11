@@ -5,11 +5,12 @@
 // versions:
 // 	protoc-gen-go v1.36.7
 // 	protoc        (unknown)
-// source: policy.proto
+// source: v1/policy.proto
 
 package v1
 
 import (
+	v1 "github.com/in-toto/attestation/go/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -38,7 +39,7 @@ type PolicySet struct {
 
 func (x *PolicySet) Reset() {
 	*x = PolicySet{}
-	mi := &file_policy_proto_msgTypes[0]
+	mi := &file_v1_policy_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +51,7 @@ func (x *PolicySet) String() string {
 func (*PolicySet) ProtoMessage() {}
 
 func (x *PolicySet) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[0]
+	mi := &file_v1_policy_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +64,7 @@ func (x *PolicySet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySet.ProtoReflect.Descriptor instead.
 func (*PolicySet) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{0}
+	return file_v1_policy_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PolicySet) GetId() string {
@@ -108,7 +109,7 @@ type PolicySetMeta struct {
 
 func (x *PolicySetMeta) Reset() {
 	*x = PolicySetMeta{}
-	mi := &file_policy_proto_msgTypes[1]
+	mi := &file_v1_policy_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -120,7 +121,7 @@ func (x *PolicySetMeta) String() string {
 func (*PolicySetMeta) ProtoMessage() {}
 
 func (x *PolicySetMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[1]
+	mi := &file_v1_policy_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -133,7 +134,7 @@ func (x *PolicySetMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySetMeta.ProtoReflect.Descriptor instead.
 func (*PolicySetMeta) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{1}
+	return file_v1_policy_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PolicySetMeta) GetRuntime() string {
@@ -184,14 +185,14 @@ type FrameworkRef struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                 // String identifier for the framework
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`             // Security framework name
-	Definition    *ResourceDescriptor    `protobuf:"bytes,3,opt,name=definition,proto3" json:"definition,omitempty"` // Link to the framework definition
+	Definition    *v1.ResourceDescriptor `protobuf:"bytes,3,opt,name=definition,proto3" json:"definition,omitempty"` // Link to the framework definition
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FrameworkRef) Reset() {
 	*x = FrameworkRef{}
-	mi := &file_policy_proto_msgTypes[2]
+	mi := &file_v1_policy_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -203,7 +204,7 @@ func (x *FrameworkRef) String() string {
 func (*FrameworkRef) ProtoMessage() {}
 
 func (x *FrameworkRef) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[2]
+	mi := &file_v1_policy_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +217,7 @@ func (x *FrameworkRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameworkRef.ProtoReflect.Descriptor instead.
 func (*FrameworkRef) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{2}
+	return file_v1_policy_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FrameworkRef) GetId() string {
@@ -233,7 +234,7 @@ func (x *FrameworkRef) GetName() string {
 	return ""
 }
 
-func (x *FrameworkRef) GetDefinition() *ResourceDescriptor {
+func (x *FrameworkRef) GetDefinition() *v1.ResourceDescriptor {
 	if x != nil {
 		return x.Definition
 	}
@@ -251,7 +252,7 @@ type PolicySetCommon struct {
 
 func (x *PolicySetCommon) Reset() {
 	*x = PolicySetCommon{}
-	mi := &file_policy_proto_msgTypes[3]
+	mi := &file_v1_policy_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -263,7 +264,7 @@ func (x *PolicySetCommon) String() string {
 func (*PolicySetCommon) ProtoMessage() {}
 
 func (x *PolicySetCommon) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[3]
+	mi := &file_v1_policy_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -276,7 +277,7 @@ func (x *PolicySetCommon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySetCommon.ProtoReflect.Descriptor instead.
 func (*PolicySetCommon) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{3}
+	return file_v1_policy_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PolicySetCommon) GetIdentities() []*Identity {
@@ -317,7 +318,7 @@ type Policy struct {
 
 func (x *Policy) Reset() {
 	*x = Policy{}
-	mi := &file_policy_proto_msgTypes[4]
+	mi := &file_v1_policy_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -329,7 +330,7 @@ func (x *Policy) String() string {
 func (*Policy) ProtoMessage() {}
 
 func (x *Policy) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[4]
+	mi := &file_v1_policy_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -342,7 +343,7 @@ func (x *Policy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Policy.ProtoReflect.Descriptor instead.
 func (*Policy) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{4}
+	return file_v1_policy_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Policy) GetId() string {
@@ -413,14 +414,14 @@ type PolicyRef struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Version       int64                  `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
 	Identity      *Identity              `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Location      *ResourceDescriptor    `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
+	Location      *v1.ResourceDescriptor `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PolicyRef) Reset() {
 	*x = PolicyRef{}
-	mi := &file_policy_proto_msgTypes[5]
+	mi := &file_v1_policy_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +433,7 @@ func (x *PolicyRef) String() string {
 func (*PolicyRef) ProtoMessage() {}
 
 func (x *PolicyRef) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[5]
+	mi := &file_v1_policy_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +446,7 @@ func (x *PolicyRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyRef.ProtoReflect.Descriptor instead.
 func (*PolicyRef) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{5}
+	return file_v1_policy_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PolicyRef) GetId() string {
@@ -469,7 +470,7 @@ func (x *PolicyRef) GetIdentity() *Identity {
 	return nil
 }
 
-func (x *PolicyRef) GetLocation() *ResourceDescriptor {
+func (x *PolicyRef) GetLocation() *v1.ResourceDescriptor {
 	if x != nil {
 		return x.Location
 	}
@@ -488,7 +489,7 @@ type ChainLink struct {
 
 func (x *ChainLink) Reset() {
 	*x = ChainLink{}
-	mi := &file_policy_proto_msgTypes[6]
+	mi := &file_v1_policy_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +501,7 @@ func (x *ChainLink) String() string {
 func (*ChainLink) ProtoMessage() {}
 
 func (x *ChainLink) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[6]
+	mi := &file_v1_policy_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +514,7 @@ func (x *ChainLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainLink.ProtoReflect.Descriptor instead.
 func (*ChainLink) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{6}
+	return file_v1_policy_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ChainLink) GetSource() isChainLink_Source {
@@ -558,7 +559,7 @@ type Meta struct {
 
 func (x *Meta) Reset() {
 	*x = Meta{}
-	mi := &file_policy_proto_msgTypes[7]
+	mi := &file_v1_policy_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -570,7 +571,7 @@ func (x *Meta) String() string {
 func (*Meta) ProtoMessage() {}
 
 func (x *Meta) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[7]
+	mi := &file_v1_policy_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -583,7 +584,7 @@ func (x *Meta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Meta.ProtoReflect.Descriptor instead.
 func (*Meta) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{7}
+	return file_v1_policy_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Meta) GetRuntime() string {
@@ -647,7 +648,7 @@ type Identity struct {
 
 func (x *Identity) Reset() {
 	*x = Identity{}
-	mi := &file_policy_proto_msgTypes[8]
+	mi := &file_v1_policy_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -659,7 +660,7 @@ func (x *Identity) String() string {
 func (*Identity) ProtoMessage() {}
 
 func (x *Identity) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[8]
+	mi := &file_v1_policy_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -672,7 +673,7 @@ func (x *Identity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Identity.ProtoReflect.Descriptor instead.
 func (*Identity) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{8}
+	return file_v1_policy_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Identity) GetId() string {
@@ -716,7 +717,7 @@ type Control struct {
 
 func (x *Control) Reset() {
 	*x = Control{}
-	mi := &file_policy_proto_msgTypes[9]
+	mi := &file_v1_policy_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -728,7 +729,7 @@ func (x *Control) String() string {
 func (*Control) ProtoMessage() {}
 
 func (x *Control) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[9]
+	mi := &file_v1_policy_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -741,7 +742,7 @@ func (x *Control) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Control.ProtoReflect.Descriptor instead.
 func (*Control) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{9}
+	return file_v1_policy_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Control) GetId() string {
@@ -784,7 +785,7 @@ type IdentitySigstore struct {
 
 func (x *IdentitySigstore) Reset() {
 	*x = IdentitySigstore{}
-	mi := &file_policy_proto_msgTypes[10]
+	mi := &file_v1_policy_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -796,7 +797,7 @@ func (x *IdentitySigstore) String() string {
 func (*IdentitySigstore) ProtoMessage() {}
 
 func (x *IdentitySigstore) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[10]
+	mi := &file_v1_policy_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -809,7 +810,7 @@ func (x *IdentitySigstore) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentitySigstore.ProtoReflect.Descriptor instead.
 func (*IdentitySigstore) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{10}
+	return file_v1_policy_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *IdentitySigstore) GetMode() string {
@@ -845,7 +846,7 @@ type IdentityKey struct {
 
 func (x *IdentityKey) Reset() {
 	*x = IdentityKey{}
-	mi := &file_policy_proto_msgTypes[11]
+	mi := &file_v1_policy_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +858,7 @@ func (x *IdentityKey) String() string {
 func (*IdentityKey) ProtoMessage() {}
 
 func (x *IdentityKey) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[11]
+	mi := &file_v1_policy_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -870,7 +871,7 @@ func (x *IdentityKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentityKey.ProtoReflect.Descriptor instead.
 func (*IdentityKey) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{11}
+	return file_v1_policy_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *IdentityKey) GetId() string {
@@ -904,7 +905,7 @@ type IdentityRef struct {
 
 func (x *IdentityRef) Reset() {
 	*x = IdentityRef{}
-	mi := &file_policy_proto_msgTypes[12]
+	mi := &file_v1_policy_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -916,7 +917,7 @@ func (x *IdentityRef) String() string {
 func (*IdentityRef) ProtoMessage() {}
 
 func (x *IdentityRef) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[12]
+	mi := &file_v1_policy_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -929,7 +930,7 @@ func (x *IdentityRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentityRef.ProtoReflect.Descriptor instead.
 func (*IdentityRef) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{12}
+	return file_v1_policy_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *IdentityRef) GetId() string {
@@ -951,7 +952,7 @@ type ContextVal struct {
 
 func (x *ContextVal) Reset() {
 	*x = ContextVal{}
-	mi := &file_policy_proto_msgTypes[13]
+	mi := &file_v1_policy_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -963,7 +964,7 @@ func (x *ContextVal) String() string {
 func (*ContextVal) ProtoMessage() {}
 
 func (x *ContextVal) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[13]
+	mi := &file_v1_policy_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -976,7 +977,7 @@ func (x *ContextVal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContextVal.ProtoReflect.Descriptor instead.
 func (*ContextVal) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{13}
+	return file_v1_policy_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ContextVal) GetType() string {
@@ -1017,7 +1018,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_policy_proto_msgTypes[14]
+	mi := &file_v1_policy_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1029,7 +1030,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[14]
+	mi := &file_v1_policy_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1042,7 +1043,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{14}
+	return file_v1_policy_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Error) GetMessage() string {
@@ -1069,7 +1070,7 @@ type Transformer struct {
 
 func (x *Transformer) Reset() {
 	*x = Transformer{}
-	mi := &file_policy_proto_msgTypes[15]
+	mi := &file_v1_policy_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1081,7 +1082,7 @@ func (x *Transformer) String() string {
 func (*Transformer) ProtoMessage() {}
 
 func (x *Transformer) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[15]
+	mi := &file_v1_policy_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1094,7 +1095,7 @@ func (x *Transformer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transformer.ProtoReflect.Descriptor instead.
 func (*Transformer) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{15}
+	return file_v1_policy_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Transformer) GetId() string {
@@ -1114,7 +1115,7 @@ type PredicateSpec struct {
 
 func (x *PredicateSpec) Reset() {
 	*x = PredicateSpec{}
-	mi := &file_policy_proto_msgTypes[16]
+	mi := &file_v1_policy_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1126,7 +1127,7 @@ func (x *PredicateSpec) String() string {
 func (*PredicateSpec) ProtoMessage() {}
 
 func (x *PredicateSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[16]
+	mi := &file_v1_policy_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1139,7 +1140,7 @@ func (x *PredicateSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PredicateSpec.ProtoReflect.Descriptor instead.
 func (*PredicateSpec) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{16}
+	return file_v1_policy_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PredicateSpec) GetTypes() []string {
@@ -1173,7 +1174,7 @@ type Tenet struct {
 
 func (x *Tenet) Reset() {
 	*x = Tenet{}
-	mi := &file_policy_proto_msgTypes[17]
+	mi := &file_v1_policy_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1185,7 +1186,7 @@ func (x *Tenet) String() string {
 func (*Tenet) ProtoMessage() {}
 
 func (x *Tenet) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[17]
+	mi := &file_v1_policy_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1198,7 +1199,7 @@ func (x *Tenet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tenet.ProtoReflect.Descriptor instead.
 func (*Tenet) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{17}
+	return file_v1_policy_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *Tenet) GetId() string {
@@ -1267,7 +1268,7 @@ type ChainedOutput struct {
 
 func (x *ChainedOutput) Reset() {
 	*x = ChainedOutput{}
-	mi := &file_policy_proto_msgTypes[18]
+	mi := &file_v1_policy_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1279,7 +1280,7 @@ func (x *ChainedOutput) String() string {
 func (*ChainedOutput) ProtoMessage() {}
 
 func (x *ChainedOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[18]
+	mi := &file_v1_policy_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1292,7 +1293,7 @@ func (x *ChainedOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedOutput.ProtoReflect.Descriptor instead.
 func (*ChainedOutput) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{18}
+	return file_v1_policy_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ChainedOutput) GetPolicy() string {
@@ -1321,7 +1322,7 @@ type ChainedPredicate struct {
 
 func (x *ChainedPredicate) Reset() {
 	*x = ChainedPredicate{}
-	mi := &file_policy_proto_msgTypes[19]
+	mi := &file_v1_policy_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1333,7 +1334,7 @@ func (x *ChainedPredicate) String() string {
 func (*ChainedPredicate) ProtoMessage() {}
 
 func (x *ChainedPredicate) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[19]
+	mi := &file_v1_policy_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1347,7 @@ func (x *ChainedPredicate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedPredicate.ProtoReflect.Descriptor instead.
 func (*ChainedPredicate) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{19}
+	return file_v1_policy_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ChainedPredicate) GetType() string {
@@ -1386,7 +1387,7 @@ type Assessment struct {
 
 func (x *Assessment) Reset() {
 	*x = Assessment{}
-	mi := &file_policy_proto_msgTypes[20]
+	mi := &file_v1_policy_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1398,7 +1399,7 @@ func (x *Assessment) String() string {
 func (*Assessment) ProtoMessage() {}
 
 func (x *Assessment) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[20]
+	mi := &file_v1_policy_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1411,7 +1412,7 @@ func (x *Assessment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Assessment.ProtoReflect.Descriptor instead.
 func (*Assessment) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{20}
+	return file_v1_policy_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *Assessment) GetMessage() string {
@@ -1431,7 +1432,7 @@ type Output struct {
 
 func (x *Output) Reset() {
 	*x = Output{}
-	mi := &file_policy_proto_msgTypes[21]
+	mi := &file_v1_policy_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1443,7 +1444,7 @@ func (x *Output) String() string {
 func (*Output) ProtoMessage() {}
 
 func (x *Output) ProtoReflect() protoreflect.Message {
-	mi := &file_policy_proto_msgTypes[21]
+	mi := &file_v1_policy_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1456,7 +1457,7 @@ func (x *Output) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Output.ProtoReflect.Descriptor instead.
 func (*Output) Descriptor() ([]byte, []int) {
-	return file_policy_proto_rawDescGZIP(), []int{21}
+	return file_v1_policy_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *Output) GetCode() string {
@@ -1473,11 +1474,11 @@ func (x *Output) GetValue() *structpb.Value {
 	return nil
 }
 
-var File_policy_proto protoreflect.FileDescriptor
+var File_v1_policy_proto protoreflect.FileDescriptor
 
-const file_policy_proto_rawDesc = "" +
+const file_v1_policy_proto_rawDesc = "" +
 	"\n" +
-	"\fpolicy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\fintoto.proto\"\xca\x01\n" +
+	"\x0fv1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\"\xca\x01\n" +
 	"\tPolicySet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12<\n" +
@@ -1493,12 +1494,12 @@ const file_policy_proto_rawDesc = "" +
 	"\aenforce\x18\x05 \x01(\tR\aenforce\x12A\n" +
 	"\n" +
 	"frameworks\x18\x06 \x03(\v2!.carabiner.policy.v1.FrameworkRefR\n" +
-	"frameworks\"{\n" +
+	"frameworks\"~\n" +
 	"\fFrameworkRef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12G\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12J\n" +
 	"\n" +
-	"definition\x18\x03 \x01(\v2'.carabiner.policy.v1.ResourceDescriptorR\n" +
+	"definition\x18\x03 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\n" +
 	"definition\"\xba\x02\n" +
 	"\x0fPolicySetCommon\x12=\n" +
 	"\n" +
@@ -1527,12 +1528,12 @@ const file_policy_proto_rawDesc = "" +
 	"\x06tenets\x18\t \x03(\v2\x1a.carabiner.policy.v1.TenetR\x06tenets\x1a[\n" +
 	"\fContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
-	"\x05value\x18\x02 \x01(\v2\x1f.carabiner.policy.v1.ContextValR\x05value:\x028\x01\"\xb5\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\x1f.carabiner.policy.v1.ContextValR\x05value:\x028\x01\"\xb8\x01\n" +
 	"\tPolicyRef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x129\n" +
-	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.policy.v1.IdentityR\bidentity\x12C\n" +
-	"\blocation\x18\x04 \x01(\v2'.carabiner.policy.v1.ResourceDescriptorR\blocation\"\\\n" +
+	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.policy.v1.IdentityR\bidentity\x12F\n" +
+	"\blocation\x18\x04 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\blocation\"\\\n" +
 	"\tChainLink\x12E\n" +
 	"\tpredicate\x18\x01 \x01(\v2%.carabiner.policy.v1.ChainedPredicateH\x00R\tpredicateB\b\n" +
 	"\x06source\"\xa1\x02\n" +
@@ -1625,19 +1626,19 @@ const file_policy_proto_rawDesc = "" +
 	"\x17com.carabiner.policy.v1B\vPolicyProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
-	file_policy_proto_rawDescOnce sync.Once
-	file_policy_proto_rawDescData []byte
+	file_v1_policy_proto_rawDescOnce sync.Once
+	file_v1_policy_proto_rawDescData []byte
 )
 
-func file_policy_proto_rawDescGZIP() []byte {
-	file_policy_proto_rawDescOnce.Do(func() {
-		file_policy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_policy_proto_rawDesc), len(file_policy_proto_rawDesc)))
+func file_v1_policy_proto_rawDescGZIP() []byte {
+	file_v1_policy_proto_rawDescOnce.Do(func() {
+		file_v1_policy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_v1_policy_proto_rawDesc), len(file_v1_policy_proto_rawDesc)))
 	})
-	return file_policy_proto_rawDescData
+	return file_v1_policy_proto_rawDescData
 }
 
-var file_policy_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
-var file_policy_proto_goTypes = []any{
+var file_v1_policy_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_v1_policy_proto_goTypes = []any{
 	(*PolicySet)(nil),             // 0: carabiner.policy.v1.PolicySet
 	(*PolicySetMeta)(nil),         // 1: carabiner.policy.v1.PolicySetMeta
 	(*FrameworkRef)(nil),          // 2: carabiner.policy.v1.FrameworkRef
@@ -1664,16 +1665,16 @@ var file_policy_proto_goTypes = []any{
 	nil,                           // 23: carabiner.policy.v1.Policy.ContextEntry
 	nil,                           // 24: carabiner.policy.v1.Tenet.OutputsEntry
 	(*timestamppb.Timestamp)(nil), // 25: google.protobuf.Timestamp
-	(*ResourceDescriptor)(nil),    // 26: carabiner.policy.v1.ResourceDescriptor
+	(*v1.ResourceDescriptor)(nil), // 26: in_toto_attestation.v1.ResourceDescriptor
 	(*structpb.Value)(nil),        // 27: google.protobuf.Value
 }
-var file_policy_proto_depIdxs = []int32{
+var file_v1_policy_proto_depIdxs = []int32{
 	1,  // 0: carabiner.policy.v1.PolicySet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
 	3,  // 1: carabiner.policy.v1.PolicySet.common:type_name -> carabiner.policy.v1.PolicySetCommon
 	4,  // 2: carabiner.policy.v1.PolicySet.policies:type_name -> carabiner.policy.v1.Policy
 	25, // 3: carabiner.policy.v1.PolicySetMeta.expiration:type_name -> google.protobuf.Timestamp
 	2,  // 4: carabiner.policy.v1.PolicySetMeta.frameworks:type_name -> carabiner.policy.v1.FrameworkRef
-	26, // 5: carabiner.policy.v1.FrameworkRef.definition:type_name -> carabiner.policy.v1.ResourceDescriptor
+	26, // 5: carabiner.policy.v1.FrameworkRef.definition:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	8,  // 6: carabiner.policy.v1.PolicySetCommon.identities:type_name -> carabiner.policy.v1.Identity
 	5,  // 7: carabiner.policy.v1.PolicySetCommon.references:type_name -> carabiner.policy.v1.PolicyRef
 	22, // 8: carabiner.policy.v1.PolicySetCommon.context:type_name -> carabiner.policy.v1.PolicySetCommon.ContextEntry
@@ -1686,7 +1687,7 @@ var file_policy_proto_depIdxs = []int32{
 	15, // 15: carabiner.policy.v1.Policy.transformers:type_name -> carabiner.policy.v1.Transformer
 	17, // 16: carabiner.policy.v1.Policy.tenets:type_name -> carabiner.policy.v1.Tenet
 	8,  // 17: carabiner.policy.v1.PolicyRef.identity:type_name -> carabiner.policy.v1.Identity
-	26, // 18: carabiner.policy.v1.PolicyRef.location:type_name -> carabiner.policy.v1.ResourceDescriptor
+	26, // 18: carabiner.policy.v1.PolicyRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	19, // 19: carabiner.policy.v1.ChainLink.predicate:type_name -> carabiner.policy.v1.ChainedPredicate
 	9,  // 20: carabiner.policy.v1.Meta.controls:type_name -> carabiner.policy.v1.Control
 	25, // 21: carabiner.policy.v1.Meta.expiration:type_name -> google.protobuf.Timestamp
@@ -1711,34 +1712,33 @@ var file_policy_proto_depIdxs = []int32{
 	0,  // [0:36] is the sub-list for field type_name
 }
 
-func init() { file_policy_proto_init() }
-func file_policy_proto_init() {
-	if File_policy_proto != nil {
+func init() { file_v1_policy_proto_init() }
+func file_v1_policy_proto_init() {
+	if File_v1_policy_proto != nil {
 		return
 	}
-	file_intoto_proto_init()
-	file_policy_proto_msgTypes[6].OneofWrappers = []any{
+	file_v1_policy_proto_msgTypes[6].OneofWrappers = []any{
 		(*ChainLink_Predicate)(nil),
 	}
-	file_policy_proto_msgTypes[7].OneofWrappers = []any{}
-	file_policy_proto_msgTypes[8].OneofWrappers = []any{}
-	file_policy_proto_msgTypes[10].OneofWrappers = []any{}
-	file_policy_proto_msgTypes[13].OneofWrappers = []any{}
+	file_v1_policy_proto_msgTypes[7].OneofWrappers = []any{}
+	file_v1_policy_proto_msgTypes[8].OneofWrappers = []any{}
+	file_v1_policy_proto_msgTypes[10].OneofWrappers = []any{}
+	file_v1_policy_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_policy_proto_rawDesc), len(file_policy_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_policy_proto_rawDesc), len(file_v1_policy_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_policy_proto_goTypes,
-		DependencyIndexes: file_policy_proto_depIdxs,
-		MessageInfos:      file_policy_proto_msgTypes,
+		GoTypes:           file_v1_policy_proto_goTypes,
+		DependencyIndexes: file_v1_policy_proto_depIdxs,
+		MessageInfos:      file_v1_policy_proto_msgTypes,
 	}.Build()
-	File_policy_proto = out.File
-	file_policy_proto_goTypes = nil
-	file_policy_proto_depIdxs = nil
+	File_v1_policy_proto = out.File
+	file_v1_policy_proto_goTypes = nil
+	file_v1_policy_proto_depIdxs = nil
 }
