@@ -1,7 +1,5 @@
 module github.com/carabiner-dev/policy
 
-replace github.com/carabiner-dev/ampel => ../ampel
-
 go 1.24.6
 
 require (
@@ -10,6 +8,7 @@ require (
 	github.com/carabiner-dev/vcslocator v0.3.1
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.3
+	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.7
 	sigs.k8s.io/release-utils v0.12.1
 )
@@ -46,6 +45,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
 	github.com/cyberphone/json-canonicalization v0.0.0-20241213102144-19d51d7fe467 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/digitorus/pkcs7 v0.0.0-20230818184609-3a137a874352 // indirect
 	github.com/digitorus/timestamp v0.0.0-20231217203849-220c5c2851b7 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -103,6 +103,7 @@ require (
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/protobom/protobom v0.5.2 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
 	github.com/sassoftware/relic v7.2.1+incompatible // indirect
