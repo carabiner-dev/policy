@@ -6,7 +6,6 @@ package v1
 import (
 	"errors"
 
-	ampel "github.com/carabiner-dev/ampel/pkg/api/v1"
 	"github.com/carabiner-dev/attestation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -36,10 +35,10 @@ func (set *PolicySet) GetType() attestation.PredicateType {
 	return attestation.PredicateType("") // TODO: Predicate type
 }
 
-func (set *PolicySet) SetVerification(*ampel.Verification) {
+func (set *PolicySet) SetVerification(*Verification) {
 }
 
-func (set *PolicySet) GetVerification() *ampel.Verification {
+func (set *PolicySet) GetVerification() *Verification {
 	return nil
 }
 

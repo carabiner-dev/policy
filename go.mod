@@ -2,10 +2,11 @@ module github.com/carabiner-dev/policy
 
 // replace github.com/carabiner-dev/ampel => ../ampel
 
-go 1.24.6
+go 1.24.3
+
+toolchain go1.24.6
 
 require (
-	github.com/carabiner-dev/ampel v0.0.1-pre20
 	github.com/carabiner-dev/attestation v0.1.1
 	github.com/carabiner-dev/vcslocator v0.3.1
 	github.com/in-toto/attestation v1.1.2
