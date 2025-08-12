@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	ampel "github.com/carabiner-dev/ampel/pkg/api/v1"
-	"github.com/carabiner-dev/ampel/pkg/attestation"
+	"github.com/carabiner-dev/attestation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	ampel "github.com/carabiner-dev/ampel/pkg/api/v1"
-	"github.com/carabiner-dev/ampel/pkg/attestation"
+	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/vcslocator"
 	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -131,10 +130,10 @@ func (p *Policy) GetType() attestation.PredicateType {
 	return attestation.PredicateType("")
 }
 
-func (p *Policy) SetVerification(*ampel.Verification) {
+func (p *Policy) SetVerification(attestation.Verification) {
 }
 
-func (p *Policy) GetVerification() *ampel.Verification {
+func (p *Policy) GetVerification() attestation.Verification {
 	return nil
 }
 
