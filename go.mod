@@ -5,7 +5,7 @@ module github.com/carabiner-dev/policy
 go 1.24.6
 
 require (
-	github.com/carabiner-dev/ampel v0.0.1-pre20
+	github.com/carabiner-dev/ampel v0.0.1-pre9
 	github.com/carabiner-dev/attestation v0.1.1
 	github.com/carabiner-dev/vcslocator v0.3.1
 	github.com/in-toto/attestation v1.1.2

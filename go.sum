@@ -11,8 +11,8 @@ github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPd
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
 github.com/avast/retry-go/v4 v4.6.1 h1:VkOLRubHdisGrHnTu89g08aQEWEgRU7LVEop3GbIcMk=
 github.com/avast/retry-go/v4 v4.6.1/go.mod h1:V6oF8njAwxJ5gRo1Q7Cxab24xs5NCWZBeaHHBklR8mA=
-github.com/carabiner-dev/ampel v0.0.1-pre20 h1:2cUjkgrxd4SiTwLgf0pQ6I/XFtA8y4QG8LqvxXiTN0U=
-github.com/carabiner-dev/ampel v0.0.1-pre20/go.mod h1:KK6XYKnorUATlm3RZN75SZBTX8WG0sdiG42SAK5KvFo=
+github.com/carabiner-dev/ampel v0.0.1-pre9 h1:nYLkSU6QfOvYQHDtWDBq5LWknjC1g6UnohLUfdP0l1U=
+github.com/carabiner-dev/ampel v0.0.1-pre9/go.mod h1:ldm45Nhx7kaNLJdis7XNbs6ykfAt8p7Upv1bmqwc8OU=
 github.com/carabiner-dev/attestation v0.1.1 h1:IEVeej9k/N4wKpKWrBAT1TH1CFmlTsfJ5OdSwOariQQ=
 github.com/carabiner-dev/attestation v0.1.1/go.mod h1:dLPe3DPL/0YpKJpNDCQJZdtkZIuWTAH1G0N8V5LJ41c=
 github.com/carabiner-dev/vcslocator v0.3.1 h1:TIC7NfrBjMUkul9F+vvrDVIxxRqhsywjWy4L7WzdaMA=
