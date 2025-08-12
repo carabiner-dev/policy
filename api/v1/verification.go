@@ -9,12 +9,23 @@ import (
 
 // MatchesIdentity returns true if one of the verified signatures matches
 // the identity.
-func (v *Verification) MatchesIdentity(id *Identity) bool {
+func (v *Verification) MatchesIdentity(rawID any) bool {
+	id, ok := rawID.(*Identity)
+	if !ok {
+		return false
+	}
 	if v.GetSignature() == nil {
 		return false
 	}
 
 	return v.GetSignature().MatchesIdentity(id)
+}
+
+func (v *Verification) GetVerified() bool {
+	if v.GetSignature() == nil {
+		return false
+	}
+	return v.GetSignature().GetVerified()
 }
 
 // HasIdentity returns true if one of the verifiers matches the passed identity
