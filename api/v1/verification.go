@@ -5,13 +5,11 @@ package v1
 
 import (
 	"regexp"
-
-	papi "github.com/carabiner-dev/policy/api/v1"
 )
 
 // MatchesIdentity returns true if one of the verified signatures matches
 // the identity.
-func (v *Verification) MatchesIdentity(id *papi.Identity) bool {
+func (v *Verification) MatchesIdentity(id *Identity) bool {
 	if v.GetSignature() == nil {
 		return false
 	}
@@ -20,7 +18,7 @@ func (v *Verification) MatchesIdentity(id *papi.Identity) bool {
 }
 
 // HasIdentity returns true if one of the verifiers matches the passed identity
-func (sv *SignatureVerification) MatchesIdentity(id *papi.Identity) bool {
+func (sv *SignatureVerification) MatchesIdentity(id *Identity) bool {
 	switch {
 	case id.GetSigstore() != nil:
 		return sv.MatchesSigstoreIdentity(id.GetSigstore())
@@ -33,7 +31,7 @@ func (sv *SignatureVerification) MatchesIdentity(id *papi.Identity) bool {
 
 // HasIdentity returns true if one of the verifiers matches the passed sigstore
 // identity.
-func (sv *SignatureVerification) MatchesSigstoreIdentity(id *papi.IdentitySigstore) bool {
+func (sv *SignatureVerification) MatchesSigstoreIdentity(id *IdentitySigstore) bool {
 	// If the identity is missing either the issuer or its ID string, then
 	// we reject it.
 	if id.GetIdentity() == "" || id.GetIssuer() == "" {
@@ -42,7 +40,7 @@ func (sv *SignatureVerification) MatchesSigstoreIdentity(id *papi.IdentitySigsto
 
 	// If this is a regexp matcher, compile them
 	var regIdentity, regIssuer *regexp.Regexp
-	if id.Mode != nil && *id.Mode == papi.SigstoreModeRegexp {
+	if id.Mode != nil && *id.Mode == SigstoreModeRegexp {
 		var err error
 		regIdentity, err = regexp.Compile(id.GetIdentity())
 		if err != nil {
@@ -60,12 +58,12 @@ func (sv *SignatureVerification) MatchesSigstoreIdentity(id *papi.IdentitySigsto
 			continue
 		}
 
-		if id.Mode == nil || *id.Mode == papi.SigstoreModeExact {
+		if id.Mode == nil || *id.Mode == SigstoreModeExact {
 			if signer.GetSigstore().GetIdentity() == id.GetIdentity() &&
 				signer.GetSigstore().GetIssuer() == id.GetIssuer() {
 				return true
 			}
-		} else if *id.Mode == papi.SigstoreModeRegexp {
+		} else if *id.Mode == SigstoreModeRegexp {
 			if regIdentity.MatchString(signer.GetSigstore().GetIdentity()) &&
 				regIssuer.MatchString(signer.GetSigstore().GetIssuer()) {
 				return true
@@ -77,7 +75,7 @@ func (sv *SignatureVerification) MatchesSigstoreIdentity(id *papi.IdentitySigsto
 
 // MatchesKeyIdentity returns true if one of the verified signatures was performed
 // with the specified key.
-func (sv *SignatureVerification) MatchesKeyIdentity(id *papi.IdentityKey) bool {
+func (sv *SignatureVerification) MatchesKeyIdentity(id *IdentityKey) bool {
 	if id.GetId() == "" || id.GetData() == "" || id.GetType() == "" {
 		return false
 	}
