@@ -8,10 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/vcslocator"
 	intoto "github.com/in-toto/attestation/go/v1"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 const (
@@ -114,41 +112,6 @@ func (p *Policy) Validate() error {
 
 // The following functions allow the policy and policset to implement the predicate
 // interface te be able to be wrapped in an intoto statement
-
-func (p *Policy) GetOrigin() attestation.Subject {
-	return nil
-}
-
-func (p *Policy) SetOrigin(attestation.Subject) {
-}
-
-func (p *Policy) SetType(attestation.PredicateType) error {
-	return nil
-}
-
-func (p *Policy) GetType() attestation.PredicateType {
-	return attestation.PredicateType("")
-}
-
-func (p *Policy) SetVerification(attestation.Verification) {
-}
-
-func (p *Policy) GetVerification() attestation.Verification {
-	return nil
-}
-
-func (p *Policy) GetParsed() any {
-	return p
-}
-
-// GetData returns thevsa
-func (p *Policy) GetData() []byte {
-	data, err := protojson.Marshal(p)
-	if err != nil {
-		return nil
-	}
-	return data
-}
 
 // ContextMap compiles the context data values into a map, filling the fields
 // with their defaults when needed.
