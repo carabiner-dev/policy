@@ -20,6 +20,9 @@ func (set *PolicySet) Validate() error {
 	return errors.Join(errs...)
 }
 
+// GetOrigin returns the coordinates where the predicate data originated when
+// the policyset is wrapped in an attestation. At some point this should return
+// the original repo where the set was read from.
 func (set *PolicySet) GetOrigin() attestation.Subject {
 	return nil
 }
@@ -35,18 +38,26 @@ func (set *PolicySet) GetType() attestation.PredicateType {
 	return attestation.PredicateType("") // TODO: Predicate type
 }
 
-func (set *PolicySet) SetVerification(*Verification) {
+// SetVerification gets the signature verification data from the envelope
+// parser before discarding the envelope. This is supposed the be stored
+// for later retrieval.
+// Note: Currently NOOP.
+func (set *PolicySet) SetVerification(attestation.Verification) {
 }
 
-func (set *PolicySet) GetVerification() *Verification {
+// GetVerification returns the signature verification generated from the
+// envelope parser. The verification may contain details about the integrity,
+// identity and signature guarding the PolicySet.
+func (set *PolicySet) GetVerification() attestation.Verification {
 	return nil
 }
 
+// GetParsed returns the PolicySet go struct.
 func (set *PolicySet) GetParsed() any {
 	return set
 }
 
-// GetData returns thevsa
+// GetData returns the policy set data marshaled as json.
 func (set *PolicySet) GetData() []byte {
 	data, err := protojson.Marshal(set)
 	if err != nil {
