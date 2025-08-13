@@ -1,13 +1,9 @@
 module github.com/carabiner-dev/policy
 
-// replace github.com/carabiner-dev/ampel => ../ampel
-
-go 1.24.5
-
-toolchain go1.24.6
+go 1.24.6
 
 require (
-	github.com/carabiner-dev/ampel v0.0.1-pre9
+	github.com/carabiner-dev/ampel v0.0.1-pre9.0.20250813013412-d3e091feb3a1
 	github.com/carabiner-dev/attestation v0.1.1
 	github.com/carabiner-dev/signer v0.0.0-20250806155315-97a6ce352a59
 	github.com/carabiner-dev/vcslocator v0.3.1
@@ -19,7 +15,7 @@ require (
 )
 
 require (
-	cel.dev/expr v0.23.1 // indirect
+	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.121.1 // indirect
 	cloud.google.com/go/auth v0.16.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
@@ -109,7 +105,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/protobom/protobom v0.5.2 // indirect
+	github.com/protobom/protobom v0.5.4 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
 	github.com/sassoftware/relic v7.2.1+incompatible // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.9.0 // indirect
