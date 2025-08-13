@@ -10,6 +10,8 @@ import (
 	v1 "github.com/carabiner-dev/policy/api/v1"
 )
 
+const PolicyPredicateType attestation.PredicateType = "https://carabiner.dev/ampel/policy/v0"
+
 // Policy (or rather predicate.Policy) is a wrapper around the policy proto
 // message that implements the ampel attestation predicate interface.
 type Policy struct {
@@ -35,7 +37,7 @@ func (p *Policy) SetType(attestation.PredicateType) error {
 }
 
 func (p *Policy) GetType() attestation.PredicateType {
-	return attestation.PredicateType("")
+	return PolicyPredicateType
 }
 
 // SetVerification gets the signature verification data from the envelope
