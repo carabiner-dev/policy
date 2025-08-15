@@ -8,8 +8,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/carabiner-dev/ampel/pkg/formats/statement/intoto"
+	"github.com/carabiner-dev/collector/statement/intoto"
 	"github.com/carabiner-dev/signer"
+	soptions "github.com/carabiner-dev/signer/options"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
@@ -57,7 +58,10 @@ func (ps *Signer) SignPolicyData(data []byte, w io.Writer, funcs ...options.Sign
 	}
 
 	// OK, data is valid, sign it.
-	bundle, err := signer.NewSigner().SignBundle(statement.Predicate.GetData())
+	bundle, err := signer.NewSigner().SignStatement(
+		statement.Predicate.GetData(),
+		soptions.WithPayloadType("application/vnd.in-toto+json"),
+	)
 	if err != nil {
 		return fmt.Errorf("signing policy material: %w", err)
 	}
