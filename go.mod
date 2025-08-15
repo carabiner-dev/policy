@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/carabiner-dev/attestation v0.1.1
-	github.com/carabiner-dev/collector v0.1.0
+	github.com/carabiner-dev/collector v0.1.1
 	github.com/carabiner-dev/signer v0.1.2-0.20250815182539-bd60f13ef383
 	github.com/carabiner-dev/vcslocator v0.3.2
 	github.com/in-toto/attestation v1.1.2
@@ -36,7 +36,6 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/avast/retry-go/v4 v4.6.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/carabiner-dev/ampel v0.0.1-pre9.0.20250813013412-d3e091feb3a1 // indirect
 	github.com/carabiner-dev/openeox v0.0.0-20250606202227-fd40810cda47 // indirect
 	github.com/carabiner-dev/osv v0.0.0-20250124012120-b8ce4531cd92 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
