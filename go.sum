@@ -728,8 +728,8 @@ github.com/carabiner-dev/osv v0.0.0-20250124012120-b8ce4531cd92 h1:BJ9+OCNezZGkU
 github.com/carabiner-dev/osv v0.0.0-20250124012120-b8ce4531cd92/go.mod h1:o7jXwi/fFZ9mQlvVlog0kcvyEkwQT3eWmVQmrorBGpE=
 github.com/carabiner-dev/signer v0.0.0-20250806155315-97a6ce352a59 h1:g8mrcDxAlbsRsi6CmKPxMyPQXDOESJwAtsVNmjPKMSA=
 github.com/carabiner-dev/signer v0.0.0-20250806155315-97a6ce352a59/go.mod h1:98v6eCFiCBq/VyWJ6YbmxMH0X2SBJsWmslFh+cayCnQ=
-github.com/carabiner-dev/vcslocator v0.3.1 h1:TIC7NfrBjMUkul9F+vvrDVIxxRqhsywjWy4L7WzdaMA=
-github.com/carabiner-dev/vcslocator v0.3.1/go.mod h1:jvYlXLVyqQqkBuSH/CiE1pbHifoPaAhWtUjLquHaBb0=
+github.com/carabiner-dev/vcslocator v0.3.2 h1:/rfhELG1mvqFq0xi8LQSkfpAVoQDCGlWoL6J5tX9Inw=
+github.com/carabiner-dev/vcslocator v0.3.2/go.mod h1:jvYlXLVyqQqkBuSH/CiE1pbHifoPaAhWtUjLquHaBb0=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=
 github.com/cenkalti/backoff/v4 v4.3.0/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/cenkalti/backoff/v5 v5.0.2 h1:rIfFVxEf1QsI7E1ZHfp/B4DF/6QBAUhmgkxc0H7Zss8=

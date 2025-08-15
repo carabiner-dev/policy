@@ -6,7 +6,7 @@ require (
 	github.com/carabiner-dev/ampel v0.0.1-pre9.0.20250813013412-d3e091feb3a1
 	github.com/carabiner-dev/attestation v0.1.1
 	github.com/carabiner-dev/signer v0.0.0-20250806155315-97a6ce352a59
-	github.com/carabiner-dev/vcslocator v0.3.1
+	github.com/carabiner-dev/vcslocator v0.3.2
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
