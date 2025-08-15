@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/carabiner-dev/ampel/pkg/formats/statement/intoto"
+	"github.com/carabiner-dev/collector/statement/intoto"
 	"github.com/carabiner-dev/signer"
 	"google.golang.org/protobuf/encoding/protojson"
 
