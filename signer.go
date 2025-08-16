@@ -57,10 +57,14 @@ func (ps *Signer) SignPolicyData(data []byte, w io.Writer, funcs ...options.Sign
 		)
 	}
 
+	stmtJson, err := statement.ToJson()
+	if err != nil {
+		return fmt.Errorf("marshaling statement to JSON: %w", err)
+	}
+
 	// OK, data is valid, sign it.
 	bundle, err := signer.NewSigner().SignStatement(
-		statement.Predicate.GetData(),
-		soptions.WithPayloadType("application/vnd.in-toto+json"),
+		stmtJson, soptions.WithPayloadType("application/vnd.in-toto+json"),
 	)
 	if err != nil {
 		return fmt.Errorf("signing policy material: %w", err)

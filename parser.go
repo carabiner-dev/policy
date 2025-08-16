@@ -115,7 +115,7 @@ func (p *Parser) ParsePolicyFile(path string) (*api.Policy, error) {
 // ParseSet parses a policy set.
 func (p *Parser) ParsePolicySet(policySetData []byte) (*api.PolicySet, error) {
 	// Parse the policy set data
-	set, err := p.impl.ParsePolicySet(policySetData)
+	set, _, err := p.impl.ParsePolicySet(policySetData)
 	if err != nil {
 		return nil, fmt.Errorf("parsing policy source: %w", err)
 	}
@@ -124,7 +124,7 @@ func (p *Parser) ParsePolicySet(policySetData []byte) (*api.PolicySet, error) {
 
 // ParsePolicy parses a policy file
 func (p *Parser) ParsePolicy(data []byte) (*api.Policy, error) {
-	pcy, err := p.impl.ParsePolicy(data)
+	pcy, _, err := p.impl.ParsePolicy(data)
 	if err != nil {
 		return nil, fmt.Errorf("parsing policy data: %w", err)
 	}
@@ -140,11 +140,11 @@ func (p *Parser) ParsePolicyOrSet(data []byte) (set *api.PolicySet, pcy *api.Pol
 	var errSet, errPolicy error
 	go func() {
 		defer wg.Done()
-		set, errSet = p.impl.ParsePolicySet(data)
+		set, _, errSet = p.impl.ParsePolicySet(data)
 	}()
 	go func() {
 		defer wg.Done()
-		pcy, errPolicy = p.impl.ParsePolicy(data)
+		pcy, _, errPolicy = p.impl.ParsePolicy(data)
 	}()
 
 	// Wait for both parsers
