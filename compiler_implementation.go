@@ -16,7 +16,8 @@ import (
 
 type compilerImplementation interface {
 	ValidateSet(*CompilerOptions, *api.PolicySet) error
-	ExtractRemoteReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
+	ExtractRemoteSetReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
+	ExtractRemotePolicyReferences(*CompilerOptions, *api.Policy) ([]*api.PolicyRef, error)
 	FetchRemoteResources(*CompilerOptions, StorageBackend, []*api.PolicyRef) error
 	ValidateRemotes(*CompilerOptions, StorageBackend) error
 	AssemblePolicySet(*CompilerOptions, *api.PolicySet, StorageBackend) error
@@ -37,9 +38,9 @@ func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) er
 	return nil
 }
 
-// ExtractRemoteReferences extracts and enriches the remote references from all
+// ExtractRemoteSetReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
-func (dci *defaultCompilerImpl) ExtractRemoteReferences(_ *CompilerOptions, set *api.PolicySet) ([]*api.PolicyRef, error) {
+func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, set *api.PolicySet) ([]*api.PolicyRef, error) {
 	// Add all the references we have, first the set-level refs:
 	refs := []*api.PolicyRef{}
 	if set.GetCommon() != nil && set.GetCommon().GetReferences() != nil {
@@ -50,6 +51,23 @@ func (dci *defaultCompilerImpl) ExtractRemoteReferences(_ *CompilerOptions, set 
 		if p.GetSource() != nil {
 			refs = append(refs, p.GetSource())
 		}
+	}
+
+	ret, err := dci.groupRemoteRefs(refs)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// ExtractRemoteSetReferences extracts and enriches the remote references from all
+// information available in (possibly) repeatead remote references.
+func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions, p *api.Policy) ([]*api.PolicyRef, error) {
+	// Add all the references we have, first the set-level refs:
+	refs := []*api.PolicyRef{}
+	if p.GetSource() != nil {
+		refs = append(refs, p.GetSource())
 	}
 
 	ret, err := dci.groupRemoteRefs(refs)
@@ -171,7 +189,7 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 
 	// .. from any sets
 	for _, s := range remoteSets {
-		remotes, err := dci.ExtractRemoteReferences(opts, s)
+		remotes, err := dci.ExtractRemoteSetReferences(opts, s)
 		if err != nil {
 			return fmt.Errorf("reparsing remote sets at level %d", recurse)
 		}

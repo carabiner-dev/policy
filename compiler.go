@@ -118,7 +118,6 @@ func (compiler *Compiler) Compile(data []byte) (set *api.PolicySet, pcy *api.Pol
 	// TODO(puerco): Here, the policy needs to be assembled. Not
 	// supported yet for single policies.
 	if set == nil && pcy != nil {
-		fmt.Println("Es Policy")
 		return nil, pcy, nil
 	}
 
@@ -140,7 +139,7 @@ func (compiler *Compiler) CompileSet(set *api.PolicySet) (*api.PolicySet, error)
 	// Extract and enrich the remote references. This step is expected to return
 	// only those refs that point to remote resources and to compound the integrity
 	// data (hashes) of the remote resources.
-	remoteRefs, err := compiler.impl.ExtractRemoteReferences(&compiler.Options, set)
+	remoteRefs, err := compiler.impl.ExtractRemoteSetReferences(&compiler.Options, set)
 	if err != nil {
 		return nil, fmt.Errorf("extracting remote refs: %w", err)
 	}
