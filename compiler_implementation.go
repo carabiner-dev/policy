@@ -16,14 +16,22 @@ import (
 
 type compilerImplementation interface {
 	ValidateSet(*CompilerOptions, *api.PolicySet) error
-	ExtractRemoteReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
+	ValidatePolicy(*CompilerOptions, *api.Policy) error
+	ExtractRemoteSetReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
+	ExtractRemotePolicyReferences(*CompilerOptions, *api.Policy) ([]*api.PolicyRef, error)
 	FetchRemoteResources(*CompilerOptions, StorageBackend, []*api.PolicyRef) error
 	ValidateRemotes(*CompilerOptions, StorageBackend) error
 	AssemblePolicySet(*CompilerOptions, *api.PolicySet, StorageBackend) error
-	ValidateAssebledSet(*CompilerOptions, *api.PolicySet) error
+	AssemblePolicy(*CompilerOptions, *api.Policy, StorageBackend) (*api.Policy, error)
+	ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error
+	ValidateAssembledPolicy(*CompilerOptions, *api.Policy) error
 }
 
 type defaultCompilerImpl struct{}
+
+func (dci *defaultCompilerImpl) ValidatePolicy(_ *CompilerOptions, p *api.Policy) error {
+	return p.Validate()
+}
 
 func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) error {
 	// TODO(puerco): Implement with learnings from building this
@@ -37,9 +45,9 @@ func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) er
 	return nil
 }
 
-// ExtractRemoteReferences extracts and enriches the remote references from all
+// ExtractRemoteSetReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
-func (dci *defaultCompilerImpl) ExtractRemoteReferences(_ *CompilerOptions, set *api.PolicySet) ([]*api.PolicyRef, error) {
+func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, set *api.PolicySet) ([]*api.PolicyRef, error) {
 	// Add all the references we have, first the set-level refs:
 	refs := []*api.PolicyRef{}
 	if set.GetCommon() != nil && set.GetCommon().GetReferences() != nil {
@@ -50,6 +58,23 @@ func (dci *defaultCompilerImpl) ExtractRemoteReferences(_ *CompilerOptions, set 
 		if p.GetSource() != nil {
 			refs = append(refs, p.GetSource())
 		}
+	}
+
+	ret, err := dci.groupRemoteRefs(refs)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+// ExtractRemoteSetReferences extracts and enriches the remote references from all
+// information available in (possibly) repeatead remote references.
+func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions, p *api.Policy) ([]*api.PolicyRef, error) {
+	// Add all the references we have, first the set-level refs:
+	refs := []*api.PolicyRef{}
+	if p.GetSource() != nil {
+		refs = append(refs, p.GetSource())
 	}
 
 	ret, err := dci.groupRemoteRefs(refs)
@@ -171,7 +196,7 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 
 	// .. from any sets
 	for _, s := range remoteSets {
-		remotes, err := dci.ExtractRemoteReferences(opts, s)
+		remotes, err := dci.ExtractRemoteSetReferences(opts, s)
 		if err != nil {
 			return fmt.Errorf("reparsing remote sets at level %d", recurse)
 		}
@@ -303,6 +328,20 @@ func (dci *defaultCompilerImpl) AssemblePolicySet(opts *CompilerOptions, set *ap
 	return nil
 }
 
-func (dci *defaultCompilerImpl) ValidateAssebledSet(*CompilerOptions, *api.PolicySet) error {
+// AssemblePolicy takes a policy and fetches all its pieces and returns the
+// assembled version
+func (dci *defaultCompilerImpl) AssemblePolicy(opts *CompilerOptions, p *api.Policy, store StorageBackend) (*api.Policy, error) {
+	assembledPolicy, err := dci.assemblePolicy(opts, 0, p, store)
+	if err != nil {
+		return nil, fmt.Errorf("assembling policy: %w", err)
+	}
+	return assembledPolicy, nil
+}
+
+func (dci *defaultCompilerImpl) ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error {
 	return nil
+}
+
+func (dci *defaultCompilerImpl) ValidateAssembledPolicy(_ *CompilerOptions, p *api.Policy) error {
+	return p.Validate()
 }

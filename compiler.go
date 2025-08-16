@@ -45,13 +45,13 @@ type Compiler struct {
 	impl    compilerImplementation
 }
 
-func NewCompiler() (*Compiler, error) {
+func NewCompiler() *Compiler {
 	opts := defaultCompilerOpts
 	return &Compiler{
 		Options: opts,
 		Store:   newRefStore(),
 		impl:    &defaultCompilerImpl{},
-	}, nil
+	}
 }
 
 // CompileLocation takes a location string and parses a policy or policy set
@@ -115,10 +115,11 @@ func (compiler *Compiler) Compile(data []byte) (set *api.PolicySet, pcy *api.Pol
 		return nil, nil, err
 	}
 
-	// TODO(puerco): Here, the policy needs to be assembled. Not
-	// supported yet for single policies.
 	if set == nil && pcy != nil {
-		fmt.Println("Es Policy")
+		pcy, err := compiler.CompilePolicy(pcy)
+		if err != nil {
+			return nil, nil, fmt.Errorf("compiling policy: %w", err)
+		}
 		return nil, pcy, nil
 	}
 
@@ -140,7 +141,7 @@ func (compiler *Compiler) CompileSet(set *api.PolicySet) (*api.PolicySet, error)
 	// Extract and enrich the remote references. This step is expected to return
 	// only those refs that point to remote resources and to compound the integrity
 	// data (hashes) of the remote resources.
-	remoteRefs, err := compiler.impl.ExtractRemoteReferences(&compiler.Options, set)
+	remoteRefs, err := compiler.impl.ExtractRemoteSetReferences(&compiler.Options, set)
 	if err != nil {
 		return nil, fmt.Errorf("extracting remote refs: %w", err)
 	}
@@ -159,7 +160,7 @@ func (compiler *Compiler) CompileSet(set *api.PolicySet) (*api.PolicySet, error)
 	}
 
 	// Validate (with remote parts)
-	if err := compiler.impl.ValidateAssebledSet(&compiler.Options, set); err != nil {
+	if err := compiler.impl.ValidateAssembledSet(&compiler.Options, set); err != nil {
 		return nil, fmt.Errorf("validating assembled policy: %w", err)
 	}
 
@@ -168,6 +169,39 @@ func (compiler *Compiler) CompileSet(set *api.PolicySet) (*api.PolicySet, error)
 }
 
 // Compile builds a policy set fetching any remote pieces as necessary
-func (compiler *Compiler) CompilePolicy(set *api.Policy) (*api.Policy, error) {
-	return nil, fmt.Errorf("compiling bare policies is not supported yet")
+func (compiler *Compiler) CompilePolicy(p *api.Policy) (*api.Policy, error) {
+	// Validate PolicySet / Policies
+	if err := compiler.impl.ValidatePolicy(&compiler.Options, p); err != nil {
+		return nil, fmt.Errorf("validating policy: %w", err)
+	}
+
+	// Extract and enrich the remote references. This step is expected to return
+	// only those refs that point to remote resources and to compound the integrity
+	// data (hashes) of the remote resources.
+	remoteRefs, err := compiler.impl.ExtractRemotePolicyReferences(&compiler.Options, p)
+	if err != nil {
+		return nil, fmt.Errorf("extracting remote refs: %w", err)
+	}
+
+	// Fetch remote resources. This retrieves the remote data but also validates
+	// the signatures and/or hashes
+	if err := compiler.impl.FetchRemoteResources(
+		&compiler.Options, compiler.Store, remoteRefs,
+	); err != nil {
+		return nil, fmt.Errorf("fetching remote resources: %w", err)
+	}
+
+	// Assemble the local policy
+	p, err = compiler.impl.AssemblePolicy(&compiler.Options, p, compiler.Store)
+	if err != nil {
+		return nil, fmt.Errorf("error assembling policy set: %w", err)
+	}
+
+	// Validate (with remote parts)
+	if err := compiler.impl.ValidateAssembledPolicy(&compiler.Options, p); err != nil {
+		return nil, fmt.Errorf("validating assembled policy: %w", err)
+	}
+
+	// Return
+	return p, nil
 }
