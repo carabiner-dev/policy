@@ -16,15 +16,22 @@ import (
 
 type compilerImplementation interface {
 	ValidateSet(*CompilerOptions, *api.PolicySet) error
+	ValidatePolicy(*CompilerOptions, *api.Policy) error
 	ExtractRemoteSetReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
 	ExtractRemotePolicyReferences(*CompilerOptions, *api.Policy) ([]*api.PolicyRef, error)
 	FetchRemoteResources(*CompilerOptions, StorageBackend, []*api.PolicyRef) error
 	ValidateRemotes(*CompilerOptions, StorageBackend) error
 	AssemblePolicySet(*CompilerOptions, *api.PolicySet, StorageBackend) error
-	ValidateAssebledSet(*CompilerOptions, *api.PolicySet) error
+	AssemblePolicy(*CompilerOptions, *api.Policy, StorageBackend) (*api.Policy, error)
+	ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error
+	ValidateAssembledPolicy(*CompilerOptions, *api.Policy) error
 }
 
 type defaultCompilerImpl struct{}
+
+func (dci *defaultCompilerImpl) ValidatePolicy(_ *CompilerOptions, p *api.Policy) error {
+	return p.Validate()
+}
 
 func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) error {
 	// TODO(puerco): Implement with learnings from building this
@@ -321,6 +328,20 @@ func (dci *defaultCompilerImpl) AssemblePolicySet(opts *CompilerOptions, set *ap
 	return nil
 }
 
-func (dci *defaultCompilerImpl) ValidateAssebledSet(*CompilerOptions, *api.PolicySet) error {
+// AssemblePolicy takes a policy and fetches all its pieces and returns the
+// assembled version
+func (dci *defaultCompilerImpl) AssemblePolicy(opts *CompilerOptions, p *api.Policy, store StorageBackend) (*api.Policy, error) {
+	assembledPolicy, err := dci.assemblePolicy(opts, 0, p, store)
+	if err != nil {
+		return nil, fmt.Errorf("assembling policy: %w", err)
+	}
+	return assembledPolicy, nil
+}
+
+func (dci *defaultCompilerImpl) ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error {
 	return nil
+}
+
+func (dci *defaultCompilerImpl) ValidateAssembledPolicy(_ *CompilerOptions, p *api.Policy) error {
+	return p.Validate()
 }

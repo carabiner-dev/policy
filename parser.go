@@ -45,11 +45,6 @@ type Parser struct {
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
 func (p *Parser) Open(location string) (set *api.PolicySet, pcy *api.Policy, err error) {
-	compiler, err := NewCompiler()
-	if err != nil {
-		return nil, nil, fmt.Errorf("creating policy compiler: %w", err)
-	}
-
 	// Open de PolicySet/Policy data from files or remote locations
 	var data []byte
 	switch {
@@ -75,20 +70,7 @@ func (p *Parser) Open(location string) (set *api.PolicySet, pcy *api.Policy, err
 		return nil, nil, fmt.Errorf("parsing policy data: %w", err)
 	}
 
-	// Compile the PolicySet/Policy
-	if set != nil {
-		set, err = compiler.CompileSet(set)
-		if err != nil {
-			return nil, nil, fmt.Errorf("compiling policy set: %w", err)
-		}
-		return set, nil, nil
-	} else {
-		pcy, err = compiler.CompilePolicy(pcy)
-		if err != nil {
-			return nil, nil, fmt.Errorf("compiling policy: %w", err)
-		}
-		return nil, pcy, nil
-	}
+	return set, pcy, nil
 }
 
 // ParseFile parses a policySet from a file
