@@ -4,28 +4,41 @@
 package policy
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/carabiner-dev/attestation"
+	"github.com/carabiner-dev/collector/envelope/bundle"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
 )
 
 type parserImplementation interface {
-	ParsePolicySet([]byte) (*v1.PolicySet, error)
-	ParsePolicy([]byte) (*v1.Policy, error)
+	ParsePolicySet([]byte) (*v1.PolicySet, attestation.Verification, error)
+	ParsePolicy([]byte) (*v1.Policy, attestation.Verification, error)
 }
 
 type defaultParserImplementationV1 struct{}
 
-func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (*v1.PolicySet, error) {
+// ParsePolicySet parses a policy set from a byte slice.
+func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
+	var verification attestation.Verification
+	var err error
+
+	// Extract the policy predicate, if any
+	policySetData, verification, err = parseEnvelope(policySetData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
+	}
+
 	set := &v1.PolicySet{}
-	err := protojson.UnmarshalOptions{
+	err = protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
 	}.Unmarshal(policySetData, set)
 	if err != nil {
-		return nil, fmt.Errorf("parsing policy set source: %w", err)
+		return nil, verification, fmt.Errorf("parsing policy set source: %w", err)
 	}
 
 	if set.GetMeta() == nil {
@@ -49,17 +62,24 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (
 			p.GetMeta().Enforce = EnforceOn
 		}
 	}
-	return set, nil
+	return set, verification, nil
 }
 
-func (dpi *defaultParserImplementationV1) ParsePolicy(policySetData []byte) (*v1.Policy, error) {
-	p := &v1.Policy{}
-	err := protojson.UnmarshalOptions{
-		AllowPartial:   false,
-		DiscardUnknown: false,
-	}.Unmarshal(policySetData, p)
+// ParsePolicy parses a policy from a byte slice.
+func (dpi *defaultParserImplementationV1) ParsePolicy(policyData []byte) (*v1.Policy, attestation.Verification, error) {
+	var verification attestation.Verification
+	var err error
+
+	// Extract the policy predicate, if any
+	policyData, verification, err = parseEnvelope(policyData)
 	if err != nil {
-		return nil, fmt.Errorf("parsing policy source: %w", err)
+		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
+	}
+
+	p := &v1.Policy{}
+	err = protojson.UnmarshalOptions{}.Unmarshal(policyData, p)
+	if err != nil {
+		return nil, verification, fmt.Errorf("parsing policy source: %w", err)
 	}
 
 	if p.GetMeta() == nil {
@@ -74,5 +94,18 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(policySetData []byte) (*v1
 		p.GetMeta().AssertMode = AssertModeAND
 	}
 
-	return p, nil
+	return p, verification, nil
+}
+
+func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) {
+	p := bundle.Parser{}
+	envelopes, err := p.Parse(bundleData)
+	if err != nil {
+		if errors.Is(err, attestation.ErrNotCorrectFormat) {
+			return bundleData, nil, nil
+		}
+		return nil, nil, fmt.Errorf("parsing bundle: %w", err)
+	}
+
+	return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
 }

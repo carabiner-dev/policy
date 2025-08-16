@@ -4,6 +4,8 @@
 package predicate
 
 import (
+	"encoding/json"
+
 	"github.com/carabiner-dev/attestation"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -77,4 +79,16 @@ func (set *PolicySet) GetData() []byte {
 	}
 	set.Data = data
 	return data
+}
+
+// MarshalJSON implements the JSON marshaler interface. It reuses any pre
+// parsed data already stored in the predicate.
+func (set *PolicySet) MarshalJSON() ([]byte, error) {
+	// If the predicate was already marshalled, reuse the output
+	if set.Data != nil {
+		return set.Data, nil
+	}
+
+	// Otherwise, marshal the value
+	return json.Marshal(set.Parsed) //nolint:musttag // This has a custom marshaller
 }
