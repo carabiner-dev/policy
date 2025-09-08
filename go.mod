@@ -3,14 +3,14 @@ module github.com/carabiner-dev/policy
 go 1.24.6
 
 require (
-	github.com/carabiner-dev/attestation v0.1.1
+	github.com/carabiner-dev/attestation v0.1.2
 	github.com/carabiner-dev/collector v0.1.2-0.20250816040159-9d460e4ef183
 	github.com/carabiner-dev/signer v0.1.2-0.20250815182539-bd60f13ef383
 	github.com/carabiner-dev/vcslocator v0.3.2
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/protobuf v1.36.7
+	google.golang.org/protobuf v1.36.8
 	sigs.k8s.io/release-utils v0.12.1
 )
 
