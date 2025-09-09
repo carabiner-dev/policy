@@ -3,7 +3,7 @@ module github.com/carabiner-dev/policy
 go 1.24.6
 
 require (
-	github.com/carabiner-dev/attestation v0.1.2
+	github.com/carabiner-dev/attestation v0.2.0
 	github.com/carabiner-dev/collector v0.1.2
 	github.com/carabiner-dev/signer v0.1.2
 	github.com/carabiner-dev/vcslocator v0.3.2
