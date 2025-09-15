@@ -10,7 +10,7 @@ require (
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/protobuf v1.36.8
+	google.golang.org/protobuf v1.36.9
 	sigs.k8s.io/release-utils v0.12.1
 )
 
