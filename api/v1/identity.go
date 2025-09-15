@@ -74,12 +74,10 @@ func (i *Identity) Slug() string {
 // Validate checks the integrity of the identity and returns an error if
 // fields are missing or invalid
 func (i *Identity) Validate() error {
-	if i.GetKey() == nil && i.GetSigstore() == nil {
-		return fmt.Errorf("identity has no sigstore or key data")
-	}
-
 	errs := []error{}
+	typesDefined := []string{}
 	if i.GetSigstore() != nil {
+		typesDefined = append(typesDefined, "sigstore")
 		if i.GetSigstore().GetIssuer() == "" {
 			errs = append(errs, fmt.Errorf("sigstore identity has no issuer defined"))
 		}
@@ -90,12 +88,25 @@ func (i *Identity) Validate() error {
 	}
 
 	if i.GetKey() != nil {
+		typesDefined = append(typesDefined, "key")
 		if i.GetKey().GetId() == "" {
 			errs = append(errs, errors.New("key identity has no key ID defined"))
 		}
 		if i.GetKey().GetData() == "" {
 			errs = append(errs, errors.New("key identity has no key data set"))
 		}
+	}
+
+	if i.GetRef() != nil {
+		typesDefined = append(typesDefined, "ref")
+	}
+
+	if len(typesDefined) == 0 {
+		errs = append(errs, errors.New("at least one type of identity must be set (sigstore, key or ref)"))
+	}
+
+	if len(typesDefined) > 1 {
+		errs = append(errs, fmt.Errorf("only one type of identity can be set at a time (got %v)", typesDefined))
 	}
 	return errors.Join(errs...)
 }
