@@ -105,11 +105,12 @@ func (compiler *Compiler) CompileFile(path string) (set *api.PolicySet, pcy *api
 	return compiler.Compile(data)
 }
 
-// Compile is main method to assemble policies.
+// Compile is the main method to assemble policies.
 //
 // Compiling means fetching all the policy references and assembling a
-// policy in memory with the fetched data.
+// policy in memory from the fetched data.
 func (compiler *Compiler) Compile(data []byte) (set *api.PolicySet, pcy *api.Policy, err error) {
+	// Parse the data to see if it's a policy or PolicySet
 	set, pcy, err = NewParser().ParsePolicyOrSet(data)
 	if err != nil {
 		return nil, nil, err

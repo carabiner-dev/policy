@@ -77,6 +77,10 @@ message Meta {
     optional google.protobuf.Timestamp expiration = 7;
 }
 
+// Identity captures a signer identity. An identity can one of:
+//   a) A sigstore identity
+//   b) A key
+//   c) A reference to an identity defined outside the policy
 message Identity {
     string id = 1;
     optional IdentitySigstore sigstore = 2;
@@ -92,25 +96,30 @@ message Control {
     string title = 4;
 }
 
-// IdentitySigstore represents the identity of a fulcio cert.
+// IdentitySigstore represents the identity data in a Fulcio cert.
 message IdentitySigstore {
     optional string mode = 1; // exact | regexp
-    string issuer = 2; // https://accounts.google.com
-    string identity = 3; //  "identity": "puerco@gmail.com"
+    string issuer = 2;        // https://accounts.google.com
+    string identity = 3;      //  "identity": "puerco@gmail.com"
 }
 
-// IdentityKey registers the data of s key used to sign the attestations
+// IdentityKey registers the data of a key used to sign attestations.
 message IdentityKey {
     string id = 1;   // Key ID
     string type = 2; // Identity type
     string data = 3; // Public key data
 }
 
-// IdentityRef represents an external identity
+// IdentityRef represents an identity defined outside of the policy. Most commonly
+// these identities will be defined at the policy set level to have a common
+// definition that can be reused by all policies in a set. 
 message IdentityRef {
     string id = 1;
 }
 
+// ContextVal defines a contextual value needed by a policy. Context values
+// are defined from external sources at runtime and if required will cause the
+// policy to fail if unset. 
 message ContextVal {
     string type = 1;
     optional bool required = 2;
@@ -118,8 +127,13 @@ message ContextVal {
     optional google.protobuf.Value default = 4;
 }
 
+// The error structure is returned when a policy is evaluated successfully but 
+// the evaluation fails.
 message Error {
+    // Message contains the condition that failed to be met, causing the policy to fail.
     string message = 1;
+    // Guidance is an optional text record that is surfaced to the user with 
+    // suggestions to make the policy evaluation pass.
     string guidance = 2;
 }
 
