@@ -89,11 +89,8 @@ func (i *Identity) Validate() error {
 
 	if i.GetKey() != nil {
 		typesDefined = append(typesDefined, "key")
-		if i.GetKey().GetId() == "" {
-			errs = append(errs, errors.New("key identity has no key ID defined"))
-		}
-		if i.GetKey().GetData() == "" {
-			errs = append(errs, errors.New("key identity has no key data set"))
+		if i.GetKey().GetId() == "" && i.GetKey().GetData() == "" {
+			errs = append(errs, errors.New("key identity has to have either id or data set"))
 		}
 	}
 
