@@ -4,11 +4,12 @@
 package policy
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 
 	"github.com/carabiner-dev/attestation"
-	"github.com/carabiner-dev/collector/envelope/bundle"
+	"github.com/carabiner-dev/collector/envelope"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
@@ -98,8 +99,8 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(policyData []byte) (*v1.Po
 }
 
 func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) {
-	p := bundle.Parser{}
-	envelopes, err := p.Parse(bundleData)
+	p := envelope.Parsers
+	envelopes, err := p.Parse(bytes.NewBuffer(bundleData))
 	if err != nil {
 		if errors.Is(err, attestation.ErrNotCorrectFormat) {
 			return bundleData, nil, nil
