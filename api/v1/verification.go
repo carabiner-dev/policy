@@ -5,6 +5,7 @@ package v1
 
 import (
 	"regexp"
+	"strings"
 )
 
 // MatchesIdentity returns true if one of the verified signatures matches
@@ -86,21 +87,33 @@ func (sv *SignatureVerification) MatchesSigstoreIdentity(id *IdentitySigstore) b
 
 // MatchesKeyIdentity returns true if one of the verified signatures was performed
 // with the specified key.
-func (sv *SignatureVerification) MatchesKeyIdentity(id *IdentityKey) bool {
-	if id.GetId() == "" || id.GetData() == "" || id.GetType() == "" {
+func (sv *SignatureVerification) MatchesKeyIdentity(keyIdentity *IdentityKey) bool {
+	// Normalize the data
+	id := strings.TrimSpace(keyIdentity.GetId())
+	data := strings.TrimSpace(keyIdentity.GetData())
+
+	// We need the ID or the key data to match.
+	if id == "" && data == "" {
 		return false
 	}
 
 	// Check each identity in the verification until one matches.
 	for _, signer := range sv.Identities {
-		keydata := signer.GetKey()
-		if keydata == nil {
+		signerKeyData := signer.GetKey()
+		if signerKeyData == nil {
 			continue
 		}
 
-		if id.GetId() == keydata.GetId() && id.GetData() == keydata.GetData() && id.GetType() == keydata.GetType() {
-			return true
+		if id != "" && strings.TrimSpace(signerKeyData.GetId()) != id {
+			continue
 		}
+
+		if data != "" && strings.TrimSpace(signerKeyData.GetData()) != data {
+			continue
+		}
+
+		// Match
+		return true
 	}
 	return false
 }
