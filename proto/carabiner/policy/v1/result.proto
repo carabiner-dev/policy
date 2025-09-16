@@ -12,50 +12,98 @@ import "in_toto_attestation/v1/resource_descriptor.proto";
 
 option go_package = "github.com/carabiner-dev/policy/api/v1";
 
+// Result cpatures the results of a policy evaluation. This structure is
+// computed after evaluating all the policy's tenets.
 message Result {
+    // status holds the PASS/FAIL/SOFTFAIL status label of the Policy evaluation
     string status = 1;
+    // Time when the policy evaluation started
     google.protobuf.Timestamp date_start = 2;
+    // Time when the policy evaluation concluded
     google.protobuf.Timestamp date_end = 3;
+    // Reference to the policy code
     PolicyRef policy = 4;
+    // eval_results holds each of the tenet's evaluation results
     repeated EvalResult eval_results = 5;
+    // meta from the original policy
     Meta meta = 6;
+    // context data loaded into the policy runtime
     google.protobuf.Struct context = 7;
+    // chain holds the custody chain configuration when a policy uses chained subjects
     repeated ChainedSubject chain = 8;
+    // original subject under scrutiny. This may not be the effective subject if
+    // the policy uses chained subjects.
     in_toto_attestation.v1.ResourceDescriptor subject = 9;
 }
 
+// ChainedSubject is a resource descitor synthesized by analyzing the source
+// descriptor's evidence (an attestation) and computing a new descriptor from
+// its predicate data.
 message ChainedSubject {
+    // source resource descriptor. The source provides evidence (attestations)
+    // to compute a new resource descriptor (the destination) which becomes the
+    // effective subject of the policy.
     in_toto_attestation.v1.ResourceDescriptor source = 1;
+    // destination resource descriptor, computed from one of the source's attestations
     in_toto_attestation.v1.ResourceDescriptor destination = 2;
+    // The link records how the source and destination are connected by keeping
+    // track of the ingested attestation.
     ChainedSubjectLink link = 3;
 }
 
+// ChainedSubjectLink links two subject with a signed attestation. A chained
+// subject sits in the middle of two resource descriptors. The source descriptor
+// matches the link's attestation subjects. The destination descriptor is computed
+// by extracting data from the attestation predicate.
 message ChainedSubjectLink {
+    // Predicate type of the linker attestation
     string type = 1;
+    // attestation coordinates
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
 }
 
+// EvalResult captures the results of a tenet evaluation. A policy `Result` contains
+// a list of EvalResults, one for each of its tenets.
 message EvalResult {
+    // id transferred from the tenet identifier
     string id = 1;
+    // status is holds the PASS/FAIL/SOFTFAIL status of the eval
     string status = 2;
+    // date when the evaluation was done
     google.protobuf.Timestamp date = 3;
+    // output holds the data structure of the evaluated outputs
     google.protobuf.Struct output = 4;
+    // statements imported as evidence to evaluate the tenet
     repeated StatementRef statements = 5;
+    // error struct when evaluation failed
     Error error = 6;
+    // assessment outcome when evaluation passed
     Assessment assessment = 7;
 }
 
+// StatementRef records the data of an ingested attestation
 message StatementRef {
+    // type holds the predicate type of the referenced attestation
     string type = 1;
+    // attestation is a resource descriptor that records the attestation coordinates
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
 }
 
+// ResultSet reflects the evaluation of a PolicySet. It contains a `Result` entry
+// for each policy in the set, its overall result status and the original set metadata.
 message ResultSet {
+    // id of the PolicySet
     string id = 1; 
+    // meta block transferred from the PolicySet
     PolicySetMeta meta = 2;
+    // status holds the PASS/FAIL/SOFTFAIL status label of the whole PolicySet evaluation
     string status = 3;
+    // date_start time when the evaluation started
     google.protobuf.Timestamp date_start = 4;
+    // date_end time when the evaluation finished
     google.protobuf.Timestamp date_end = 5;
+    // subject under evaluation
     in_toto_attestation.v1.ResourceDescriptor subject = 6;
+    // results from each of the policies in the set
     repeated Result results = 7;
 }
