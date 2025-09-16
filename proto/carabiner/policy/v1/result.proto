@@ -60,6 +60,8 @@ message ChainedSubjectLink {
     string type = 1;
     // attestation coordinates
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
+    // identities used to verify the attestation at ingestion time (if any)
+    repeated Identity identities = 3;
 }
 
 // EvalResult captures the results of a tenet evaluation. A policy `Result` contains
@@ -87,6 +89,9 @@ message StatementRef {
     string type = 1;
     // attestation is a resource descriptor that records the attestation coordinates
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
+    // identities captures the identities matched when verifying
+    // the statement.
+    repeated Identity identities = 3;
 }
 
 // ResultSet reflects the evaluation of a PolicySet. It contains a `Result` entry
