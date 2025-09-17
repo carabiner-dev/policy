@@ -45,7 +45,7 @@ type Parser struct {
 // Open opens a Policy or policySet. This function supports remote locations
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
-func (p *Parser) Open(location string, funcs ...options.ParseOptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+func (p *Parser) Open(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
 	// Open de PolicySet/Policy data from files or remote locations
 	var data []byte
 	switch {
@@ -75,7 +75,7 @@ func (p *Parser) Open(location string, funcs ...options.ParseOptFn) (set *api.Po
 }
 
 // ParseFile parses a policySet from a file
-func (p *Parser) ParsePolicySetFile(path string, funcs ...options.ParseOptFn) (*api.PolicySet, error) {
+func (p *Parser) ParsePolicySetFile(path string, funcs ...options.OptFn) (*api.PolicySet, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading policy file: %w", err)
@@ -85,7 +85,7 @@ func (p *Parser) ParsePolicySetFile(path string, funcs ...options.ParseOptFn) (*
 }
 
 // ParsePolicyFile parses a policy from a file
-func (p *Parser) ParsePolicyFile(path string, funcs ...options.ParseOptFn) (*api.Policy, error) {
+func (p *Parser) ParsePolicyFile(path string, funcs ...options.OptFn) (*api.Policy, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading polciy file: %w", err)
@@ -95,7 +95,7 @@ func (p *Parser) ParsePolicyFile(path string, funcs ...options.ParseOptFn) (*api
 }
 
 // ParseSet parses a policy set.
-func (p *Parser) ParsePolicySet(policySetData []byte, funcs ...options.ParseOptFn) (*api.PolicySet, error) {
+func (p *Parser) ParsePolicySet(policySetData []byte, funcs ...options.OptFn) (*api.PolicySet, error) {
 	opts := options.DefaultParseOptions
 	for _, f := range funcs {
 		if err := f(&opts); err != nil {
@@ -111,7 +111,7 @@ func (p *Parser) ParsePolicySet(policySetData []byte, funcs ...options.ParseOptF
 }
 
 // ParsePolicy parses a policy from its JSON representation or an envelope
-func (p *Parser) ParsePolicy(data []byte, funcs ...options.ParseOptFn) (*api.Policy, error) {
+func (p *Parser) ParsePolicy(data []byte, funcs ...options.OptFn) (*api.Policy, error) {
 	opts := options.DefaultParseOptions
 	for _, f := range funcs {
 		if err := f(&opts); err != nil {
@@ -127,7 +127,7 @@ func (p *Parser) ParsePolicy(data []byte, funcs ...options.ParseOptFn) (*api.Pol
 
 // ParsePolicyOrSet takes json data and tries to parse a policy or a policy set
 // out of it. Returns an error if the JSON data is none.
-func (p *Parser) ParsePolicyOrSet(data []byte, funcs ...options.ParseOptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+func (p *Parser) ParsePolicyOrSet(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
 	opts := options.DefaultParseOptions
 	for _, f := range funcs {
 		if err := f(&opts); err != nil {

@@ -14,4 +14,18 @@ type VerificationOptions struct {
 
 var DefaultVerificationOptions = VerificationOptions{}
 
-type VerificationOptFn func(*VerificationOptions)
+func WithPublicKey(keys ...key.PublicKeyProvider) OptFn {
+	return func(opts Options) error {
+		switch o := opts.(type) {
+		case *ParseOptions:
+			o.PublicKeys = append(o.PublicKeys, keys...)
+		case *CompileOptions:
+			o.PublicKeys = append(o.PublicKeys, keys...)
+		case *VerificationOptions:
+			o.PublicKeys = append(o.PublicKeys, keys...)
+		default:
+			return ErrUnsupportedOptionsType
+		}
+		return nil
+	}
+}
