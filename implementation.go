@@ -13,17 +13,18 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
+	"github.com/carabiner-dev/policy/options"
 )
 
 type parserImplementation interface {
-	ParsePolicySet([]byte) (*v1.PolicySet, attestation.Verification, error)
-	ParsePolicy([]byte) (*v1.Policy, attestation.Verification, error)
+	ParsePolicySet(*options.ParseOptions, []byte) (*v1.PolicySet, attestation.Verification, error)
+	ParsePolicy(*options.ParseOptions, []byte) (*v1.Policy, attestation.Verification, error)
 }
 
 type defaultParserImplementationV1 struct{}
 
 // ParsePolicySet parses a policy set from a byte slice.
-func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
+func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOptions, policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
 	var verification attestation.Verification
 	var err error
 
@@ -67,7 +68,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (
 }
 
 // ParsePolicy parses a policy from a byte slice.
-func (dpi *defaultParserImplementationV1) ParsePolicy(policyData []byte) (*v1.Policy, attestation.Verification, error) {
+func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions, policyData []byte) (*v1.Policy, attestation.Verification, error) {
 	var verification attestation.Verification
 	var err error
 
