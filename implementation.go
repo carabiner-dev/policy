@@ -13,22 +13,23 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
+	"github.com/carabiner-dev/policy/options"
 )
 
 type parserImplementation interface {
-	ParsePolicySet([]byte) (*v1.PolicySet, attestation.Verification, error)
-	ParsePolicy([]byte) (*v1.Policy, attestation.Verification, error)
+	ParsePolicySet(*options.ParseOptions, []byte) (*v1.PolicySet, attestation.Verification, error)
+	ParsePolicy(*options.ParseOptions, []byte) (*v1.Policy, attestation.Verification, error)
 }
 
 type defaultParserImplementationV1 struct{}
 
 // ParsePolicySet parses a policy set from a byte slice.
-func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
+func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOptions, policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
 	var verification attestation.Verification
 	var err error
 
 	// Extract the policy predicate, if any
-	policySetData, verification, err = parseEnvelope(policySetData)
+	policySetData, verification, err = parseEnvelope(opts, policySetData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -67,12 +68,12 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(policySetData []byte) (
 }
 
 // ParsePolicy parses a policy from a byte slice.
-func (dpi *defaultParserImplementationV1) ParsePolicy(policyData []byte) (*v1.Policy, attestation.Verification, error) {
+func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions, policyData []byte) (*v1.Policy, attestation.Verification, error) {
 	var verification attestation.Verification
 	var err error
 
-	// Extract the policy predicate, if any
-	policyData, verification, err = parseEnvelope(policyData)
+	// Extract the policy when used as a envelope's predicate
+	policyData, verification, err = parseEnvelope(opts, policyData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -98,7 +99,8 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(policyData []byte) (*v1.Po
 	return p, verification, nil
 }
 
-func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) {
+// parseEnvelope parses a policy when wrapped in a cryptographic envelope.
+func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attestation.Verification, error) {
 	p := envelope.Parsers
 	envelopes, err := p.Parse(bytes.NewBuffer(bundleData))
 	if err != nil {
@@ -108,5 +110,48 @@ func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) 
 		return nil, nil, fmt.Errorf("parsing bundle: %w", err)
 	}
 
-	return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
+	if len(envelopes) == 0 {
+		return nil, nil, errors.New("no envelopes found in data")
+	}
+
+	// Verify the envelope, passing any keys defined in the options
+	if opts.VerifySignatures {
+		if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
+			return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
+		}
+	}
+
+	verification := envelopes[0].GetPredicate().GetVerification()
+	v, ok := verification.(*v1.Verification)
+	if !ok {
+		return nil, nil, fmt.Errorf("unsupported verification result type")
+	}
+
+	validIds := []*v1.Identity{}
+	for _, idstring := range opts.IdentityStrings {
+		id, err := v1.NewIdentityFromSlug(idstring)
+		if err != nil {
+			return nil, nil, fmt.Errorf("parsing id string %q: %w", idstring, err)
+		}
+		validIds = append(validIds, id)
+	}
+
+	// If there were valid identities speficied, then we mutate the
+	// verification results, white listing here
+	if len(validIds) > 0 {
+		acceptedIds := []*v1.Identity{}
+		for _, id := range validIds {
+			if v.MatchesIdentity(id) {
+				acceptedIds = append(acceptedIds, id)
+			}
+		}
+		v.GetSignature().Identities = acceptedIds
+
+		if len(acceptedIds) == 0 {
+			v.GetSignature().Verified = false
+		}
+		verification = v
+	}
+
+	return envelopes[0].GetPredicate().GetData(), verification, nil
 }
