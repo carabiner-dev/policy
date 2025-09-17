@@ -115,8 +115,10 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 	}
 
 	// Verify the envelope, passing any keys defined in the options
-	if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
-		return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
+	if opts.VerifySignatures {
+		if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
+			return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
+		}
 	}
 
 	return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
