@@ -29,7 +29,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 	var err error
 
 	// Extract the policy predicate, if any
-	policySetData, verification, err = parseEnvelope(policySetData)
+	policySetData, verification, err = parseEnvelope(opts, policySetData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -72,8 +72,8 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 	var verification attestation.Verification
 	var err error
 
-	// Extract the policy predicate, if any
-	policyData, verification, err = parseEnvelope(policyData)
+	// Extract the policy when used as a envelope's predicate
+	policyData, verification, err = parseEnvelope(opts, policyData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -99,7 +99,8 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 	return p, verification, nil
 }
 
-func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) {
+// parseEnvelope parses a policy when wrapped in a cryptographic envelope.
+func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attestation.Verification, error) {
 	p := envelope.Parsers
 	envelopes, err := p.Parse(bytes.NewBuffer(bundleData))
 	if err != nil {
@@ -107,6 +108,15 @@ func parseEnvelope(bundleData []byte) ([]byte, attestation.Verification, error) 
 			return bundleData, nil, nil
 		}
 		return nil, nil, fmt.Errorf("parsing bundle: %w", err)
+	}
+
+	if len(envelopes) == 0 {
+		return nil, nil, errors.New("no envelopes found in data")
+	}
+
+	// Verify the envelope, passing any keys defined in the options
+	if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
+		return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
 	}
 
 	return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
