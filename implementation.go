@@ -121,5 +121,37 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		}
 	}
 
-	return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
+	verification := envelopes[0].GetPredicate().GetVerification()
+	v, ok := verification.(*v1.Verification)
+	if !ok {
+		return nil, nil, fmt.Errorf("unsupported verification result type")
+	}
+
+	validIds := []*v1.Identity{}
+	for _, idstring := range opts.IdentityStrings {
+		id, err := v1.NewIdentityFromSlug(idstring)
+		if err != nil {
+			return nil, nil, fmt.Errorf("parsing id string %q: %w", idstring, err)
+		}
+		validIds = append(validIds, id)
+	}
+
+	// If there were valid identities speficied, then we mutate the
+	// verification results, white listing here
+	if len(validIds) > 0 {
+		acceptedIds := []*v1.Identity{}
+		for _, id := range validIds {
+			if v.MatchesIdentity(id) {
+				acceptedIds = append(acceptedIds, id)
+			}
+		}
+		v.GetSignature().Identities = acceptedIds
+
+		if len(acceptedIds) == 0 {
+			v.GetSignature().Verified = false
+		}
+		verification = v
+	}
+
+	return envelopes[0].GetPredicate().GetData(), verification, nil
 }

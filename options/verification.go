@@ -29,3 +29,19 @@ func WithPublicKey(keys ...key.PublicKeyProvider) OptFn {
 		return nil
 	}
 }
+
+func WithIdentityString(istrings ...string) OptFn {
+	return func(opts Options) error {
+		switch o := opts.(type) {
+		case *ParseOptions:
+			o.IdentityStrings = append(o.IdentityStrings, istrings...)
+		case *CompileOptions:
+			o.IdentityStrings = append(o.IdentityStrings, istrings...)
+		case *VerificationOptions:
+			o.IdentityStrings = append(o.IdentityStrings, istrings...)
+		default:
+			return ErrUnsupportedOptionsType
+		}
+		return nil
+	}
+}
