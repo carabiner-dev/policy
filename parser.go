@@ -172,7 +172,20 @@ func (p *Parser) ParseVerifyPolicyOrSet(data []byte, funcs ...options.OptFn) (se
 	wg.Wait()
 
 	if (set == nil && pcy == nil) || (errSet != nil && errPolicy != nil) {
-		return nil, nil, v, errors.New("unable to parse a policy or policySet from data")
+		// A we are unmarshaling both types, one of the errors will always be
+		// an unmarshal error because of the wrong format. Try to find the other
+		// as returning it informs the user better of what went wrong.
+		switch {
+		case strings.Contains(errSet.Error(), "unknown field") &&
+			strings.Contains(errPolicy.Error(), "unknown field"):
+			return nil, nil, nil, errors.New("unable to parse a policy or policySet from data")
+		case strings.Contains(errSet.Error(), "unknown field"):
+			return nil, nil, nil, errPolicy
+		case strings.Contains(errPolicy.Error(), "unknown field"):
+			return nil, nil, nil, errSet
+		default:
+			return nil, nil, nil, errors.New("unable to parse a policy or policySet from data")
+		}
 	}
 	return set, pcy, v, nil
 }

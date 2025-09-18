@@ -118,15 +118,15 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
 	}
 
-	// If envelope is not signed, we can end here
+	// If the envelope is not signed (verification is nil), then we can end here
 	verification := envelopes[0].GetPredicate().GetVerification()
 	if verification == nil {
-		return envelopes[0].GetPredicate().GetData(), verification, nil
+		return envelopes[0].GetPredicate().GetData(), nil, nil
 	}
 
 	v, ok := verification.(*v1.Verification)
 	if !ok {
-		return nil, nil, fmt.Errorf("unsupported verification result type")
+		return nil, nil, fmt.Errorf("unsupported verification result type: %T", verification)
 	}
 
 	validIds := []*v1.Identity{}
@@ -138,8 +138,8 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		validIds = append(validIds, id)
 	}
 
-	// If there were valid identities speficied, then we mutate the
-	// verification results, white listing here
+	// If there were valid identities specified, we mutate the verification
+	// results, in other words, white listing here and fail it if needed.
 	if len(validIds) > 0 {
 		acceptedIds := []*v1.Identity{}
 		for _, id := range validIds {
