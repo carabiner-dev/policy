@@ -114,14 +114,16 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		return nil, nil, errors.New("no envelopes found in data")
 	}
 
-	// Verify the envelope, passing any keys defined in the options
-	if opts.VerifySignatures {
-		if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
-			return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
-		}
+	verification := envelopes[0].GetPredicate().GetVerification()
+
+	if !opts.VerifySignatures || verification == nil {
+		return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
 	}
 
-	verification := envelopes[0].GetPredicate().GetVerification()
+	if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
+		return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
+	}
+
 	v, ok := verification.(*v1.Verification)
 	if !ok {
 		return nil, nil, fmt.Errorf("unsupported verification result type")
