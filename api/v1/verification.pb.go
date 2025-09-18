@@ -79,7 +79,12 @@ type SignatureVerification struct {
 	Verified bool `protobuf:"varint,2,opt,name=verified,proto3" json:"verified,omitempty"`
 	// Identities has a list of the identities (sigstore signers or keys)
 	// that signed the object.
-	Identities    []*Identity `protobuf:"bytes,3,rep,name=Identities,proto3" json:"Identities,omitempty"`
+	Identities []*Identity `protobuf:"bytes,3,rep,name=Identities,proto3" json:"Identities,omitempty"`
+	// Message is an optional message that can be populated when a verification
+	// was performed successfully.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// Error is a message explaining why verification failed.
+	Error         string `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -135,19 +140,35 @@ func (x *SignatureVerification) GetIdentities() []*Identity {
 	return nil
 }
 
+func (x *SignatureVerification) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *SignatureVerification) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_v1_verification_proto protoreflect.FileDescriptor
 
 const file_v1_verification_proto_rawDesc = "" +
 	"\n" +
 	"\x15v1/verification.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x0fv1/policy.proto\"X\n" +
 	"\fVerification\x12H\n" +
-	"\tsignature\x18\x01 \x01(\v2*.carabiner.policy.v1.SignatureVerificationR\tsignature\"\xa2\x01\n" +
+	"\tsignature\x18\x01 \x01(\v2*.carabiner.policy.v1.SignatureVerificationR\tsignature\"\xd2\x01\n" +
 	"\x15SignatureVerification\x12.\n" +
 	"\x04date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04date\x12\x1a\n" +
 	"\bverified\x18\x02 \x01(\bR\bverified\x12=\n" +
 	"\n" +
 	"Identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
-	"IdentitiesB\xc2\x01\n" +
+	"Identities\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x05 \x01(\tR\x05errorB\xc2\x01\n" +
 	"\x17com.carabiner.policy.v1B\x11VerificationProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
