@@ -25,11 +25,8 @@ type defaultParserImplementationV1 struct{}
 
 // ParsePolicySet parses a policy set from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOptions, policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
-	var verification attestation.Verification
-	var err error
-
 	// Extract the policy predicate, if any
-	policySetData, verification, err = parseEnvelope(opts, policySetData)
+	policySetData, verification, err := parseEnvelope(opts, policySetData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -69,11 +66,8 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 
 // ParsePolicy parses a policy from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions, policyData []byte) (*v1.Policy, attestation.Verification, error) {
-	var verification attestation.Verification
-	var err error
-
 	// Extract the policy when used as a envelope's predicate
-	policyData, verification, err = parseEnvelope(opts, policyData)
+	policyData, verification, err := parseEnvelope(opts, policyData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
 	}
@@ -114,17 +108,25 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		return nil, nil, errors.New("no envelopes found in data")
 	}
 
-	// Verify the envelope, passing any keys defined in the options
-	if opts.VerifySignatures {
-		if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
-			return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
-		}
+	// If no signature verification was requested, we can end here.
+	if !opts.VerifySignatures {
+		return envelopes[0].GetPredicate().GetData(), envelopes[0].GetPredicate().GetVerification(), nil
 	}
 
+	// Verify the signatures
+	if err := envelopes[0].Verify(opts.PublicKeys); err != nil {
+		return nil, nil, fmt.Errorf("verifying policy envelope: %w", err)
+	}
+
+	// If the envelope is not signed (verification is nil), then we can end here
 	verification := envelopes[0].GetPredicate().GetVerification()
+	if verification == nil {
+		return envelopes[0].GetPredicate().GetData(), nil, nil
+	}
+
 	v, ok := verification.(*v1.Verification)
 	if !ok {
-		return nil, nil, fmt.Errorf("unsupported verification result type")
+		return nil, nil, fmt.Errorf("unsupported verification result type: %T", verification)
 	}
 
 	validIds := []*v1.Identity{}
@@ -136,8 +138,8 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		validIds = append(validIds, id)
 	}
 
-	// If there were valid identities speficied, then we mutate the
-	// verification results, white listing here
+	// If there were valid identities specified, we mutate the verification
+	// results, in other words, white listing here and fail it if needed.
 	if len(validIds) > 0 {
 		acceptedIds := []*v1.Identity{}
 		for _, id := range validIds {
