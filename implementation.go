@@ -151,6 +151,7 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 
 		if len(acceptedIds) == 0 {
 			v.GetSignature().Verified = false
+			v.GetSignature().Error = fmt.Sprintf("unable to match signer with %d allowed identities", len(validIds))
 		}
 		verification = v
 	}
