@@ -8,6 +8,14 @@ import (
 	"strings"
 )
 
+// Error implements the Go error interface when verification fails
+func (v *Verification) Error() string {
+	if !v.GetVerified() && v.GetSignature() != nil {
+		return v.GetSignature().GetError()
+	}
+	return ""
+}
+
 // MatchesIdentity returns true if one of the verified signatures matches
 // the identity.
 func (v *Verification) MatchesIdentity(rawID any) bool {
