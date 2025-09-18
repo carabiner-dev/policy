@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/vcslocator"
 	"sigs.k8s.io/release-utils/http"
 
@@ -56,33 +57,47 @@ func NewCompiler() *Compiler {
 	}
 }
 
-// CompileLocation takes a location string and parses a policy or policy set
-// as read from it. The location will be tested, if it is a URL or VCS locator,
-// it will be retrieved remotely. If its a local file, it will be read from
-// disk. Anything else throws an error.
-func (compiler *Compiler) CompileLocation(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+func (compiler *Compiler) CompileLocation(location string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, error) {
+	set, pcy, _, err := compiler.CompileVerifyLocation(location, funcs...)
+	return set, pcy, err
+}
+
+// CompileLocaCompileVerifyLocationtion takes a location string and parses a
+// policy or PolicySet as read from it. The location will be tested, if it is
+// a URL or VCS locator,  it will be retrieved remotely. If its a local file,
+// it will be read from disk. Anything else throws an error.
+//
+// This function variant returns the signature verification.
+func (compiler *Compiler) CompileVerifyLocation(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, ver attestation.Verification, err error) {
 	// First, if it looks like a URI, fetch it.
 	//
 	// TODO(puerco): Figure out a way to not hardcode supported schemes
 	if strings.HasPrefix(location, "git+https://") ||
 		strings.HasPrefix(location, "git+ssh://") ||
 		strings.HasPrefix(location, "https://") {
-		return compiler.CompileRemote(location, funcs...)
+		return compiler.CompileVerifyRemote(location, funcs...)
 	}
 
 	// Try it as a file:
-	set, pcy, err = compiler.CompileFile(location, funcs...)
+	set, pcy, ver, err = compiler.CompileVerifyFile(location, funcs...)
 	if err == nil {
-		return set, pcy, nil
+		return set, pcy, ver, nil
 	} else if !errors.Is(err, os.ErrNotExist) {
-		return nil, nil, fmt.Errorf("reading policy file: %w", err)
+		return nil, nil, nil, fmt.Errorf("reading policy file: %w", err)
 	}
-	return nil, nil, errors.New("unsupported policy location (URI type or file not found)")
+	return nil, nil, nil, errors.New("unsupported policy location (URI type or file not found)")
 }
 
 // CompileRemote reads a policy or policy set from a remote location. The location
 // URI can be a git VCS locator using HTTPS or SSH as transport or an HTTPS URL.
-func (compiler *Compiler) CompileRemote(uri string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+func (compiler *Compiler) CompileRemote(uri string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, error) {
+	set, pcy, _, err := compiler.CompileVerifyRemote(uri, funcs...)
+	return set, pcy, err
+}
+
+// CompileRemote reads a policy or policy set from a remote location. The location
+// URI can be a git VCS locator using HTTPS or SSH as transport or an HTTPS URL.
+func (compiler *Compiler) CompileVerifyRemote(uri string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, ver attestation.Verification, err error) {
 	var b bytes.Buffer
 	switch {
 	case strings.HasPrefix(uri, "git+https://") || strings.HasPrefix(uri, "git+ssh://"):
@@ -90,51 +105,63 @@ func (compiler *Compiler) CompileRemote(uri string, funcs ...options.OptFn) (set
 	case strings.HasPrefix(uri, "https://"):
 		err = http.NewAgent().GetToWriter(&b, uri)
 	default:
-		return nil, nil, fmt.Errorf("unsupported policy location")
+		return nil, nil, nil, fmt.Errorf("unsupported policy location")
 	}
 	if err != nil {
-		return nil, nil, fmt.Errorf("reading policy from remote location: %w", err)
+		return nil, nil, nil, fmt.Errorf("reading policy from remote location: %w", err)
 	}
-	return compiler.Compile(b.Bytes(), funcs...)
+	return compiler.CompileVerify(b.Bytes(), funcs...)
 }
 
-// CompileFile reads data from a local file and returns either a policy set or policy
-func (compiler *Compiler) CompileFile(path string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+// CompileFile reads data from a local file and returns either a policy set or policy.
+func (compiler *Compiler) CompileFile(path string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, error) {
+	set, pcy, _, err := compiler.CompileVerifyFile(path, funcs...)
+	return set, pcy, err
+}
+
+// CompileFile reads data from a local file and returns either a policy set or policy.
+func (compiler *Compiler) CompileVerifyFile(path string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, attestation.Verification, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, nil, fmt.Errorf("reading policy file: %w", err)
+		return nil, nil, nil, fmt.Errorf("reading policy file: %w", err)
 	}
-	return compiler.Compile(data, funcs...)
+	return compiler.CompileVerify(data, funcs...)
 }
 
-// Compile is the main method to assemble policies.
+// CompileVerify compiles a policy, while verifying its signature
+func (compiler *Compiler) Compile(data []byte, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, error) {
+	set, pcy, _, err := compiler.CompileVerify(data, funcs...)
+	return set, pcy, err
+}
+
+// CompileVerify is the main method to assemble policies.
 //
 // Compiling means fetching all the policy references and assembling a
 // policy in memory from the fetched data.
-func (compiler *Compiler) Compile(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, err error) {
+func (compiler *Compiler) CompileVerify(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, ver attestation.Verification, err error) {
 	opts := options.DefaultCompileOptions
 	for _, f := range funcs {
 		if err := f(&opts); err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 	}
 
 	// Parse the data to see if it's a policy or PolicySet
-	set, pcy, err = NewParser().ParsePolicyOrSet(data, options.WithParseOptions(&opts.ParseOptions))
+	set, pcy, ver, err = NewParser().ParseVerifyPolicyOrSet(data, options.WithParseOptions(&opts.ParseOptions))
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	if set == nil && pcy != nil {
 		pcy, err := compiler.CompilePolicy(pcy, funcs...)
 		if err != nil {
-			return nil, nil, fmt.Errorf("compiling policy: %w", err)
+			return nil, nil, nil, fmt.Errorf("compiling policy: %w", err)
 		}
-		return nil, pcy, nil
+		return nil, pcy, ver, nil
 	}
 
 	set, err = compiler.CompileSet(set, funcs...)
-	return set, nil, err
+	return set, nil, ver, err
 }
 
 // Compile builds a policy set fetching any remote pieces as necessary
