@@ -25,4 +25,11 @@ message SignatureVerification {
 	// Identities has a list of the identities (sigstore signers or keys)
 	// that signed the object.
 	repeated Identity Identities = 3;
+
+	// Message is an optional message that can be populated when a verification
+	// was performed successfully.
+	string message = 4;
+
+	// Error is a message explaining why verification failed. 
+	string error = 5;
 }
