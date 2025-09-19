@@ -28,11 +28,19 @@ const (
 )
 
 type PolicySet struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Meta          *PolicySetMeta         `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
-	Common        *PolicySetCommon       `protobuf:"bytes,3,opt,name=common,proto3" json:"common,omitempty"`
-	Policies      []*Policy              `protobuf:"bytes,4,rep,name=policies,proto3" json:"policies,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// ID is the policySet identifier
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Meta holds the PolicySet metadata informartion
+	Meta *PolicySetMeta `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
+	// Common groups the common data elements to be share by all the
+	// policies in the set.
+	Common *PolicySetCommon `protobuf:"bytes,3,opt,name=common,proto3" json:"common,omitempty"`
+	// Policies is the list of policies grouped in the PolicySet
+	Policies []*Policy `protobuf:"bytes,4,rep,name=policies,proto3" json:"policies,omitempty"`
+	// Chain is the evidence chain to compute a set of subjects to which
+	// al the policies will apply.
+	Chain         []*ChainLink `protobuf:"bytes,5,rep,name=chain,proto3" json:"chain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -91,6 +99,13 @@ func (x *PolicySet) GetCommon() *PolicySetCommon {
 func (x *PolicySet) GetPolicies() []*Policy {
 	if x != nil {
 		return x.Policies
+	}
+	return nil
+}
+
+func (x *PolicySet) GetChain() []*ChainLink {
+	if x != nil {
+		return x.Chain
 	}
 	return nil
 }
@@ -1325,6 +1340,13 @@ func (x *ChainedOutput) GetTenet() string {
 	return ""
 }
 
+// ChainedPredicate links a subject to another by extracting data from
+// attestations of the first. The spec requires a `selector` to be executed
+// by the specified `runtime` on an attestation of type `type`.
+//
+// The selector exec is expected to return either a hash string or a struct that
+// looks like an in-toto resource descriptor which becomes the new effective
+// subject during the evaluation.
 type ChainedPredicate struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
@@ -1493,12 +1515,13 @@ var File_v1_policy_proto protoreflect.FileDescriptor
 
 const file_v1_policy_proto_rawDesc = "" +
 	"\n" +
-	"\x0fv1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\"\xca\x01\n" +
+	"\x0fv1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\"\x80\x02\n" +
 	"\tPolicySet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12<\n" +
 	"\x06common\x18\x03 \x01(\v2$.carabiner.policy.v1.PolicySetCommonR\x06common\x127\n" +
-	"\bpolicies\x18\x04 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\"\xfe\x01\n" +
+	"\bpolicies\x18\x04 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\x124\n" +
+	"\x05chain\x18\x05 \x03(\v2\x1e.carabiner.policy.v1.ChainLinkR\x05chain\"\xfe\x01\n" +
 	"\rPolicySetMeta\x12\x18\n" +
 	"\aruntime\x18\x01 \x01(\tR\aruntime\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -1687,44 +1710,45 @@ var file_v1_policy_proto_depIdxs = []int32{
 	1,  // 0: carabiner.policy.v1.PolicySet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
 	3,  // 1: carabiner.policy.v1.PolicySet.common:type_name -> carabiner.policy.v1.PolicySetCommon
 	4,  // 2: carabiner.policy.v1.PolicySet.policies:type_name -> carabiner.policy.v1.Policy
-	25, // 3: carabiner.policy.v1.PolicySetMeta.expiration:type_name -> google.protobuf.Timestamp
-	2,  // 4: carabiner.policy.v1.PolicySetMeta.frameworks:type_name -> carabiner.policy.v1.FrameworkRef
-	26, // 5: carabiner.policy.v1.FrameworkRef.definition:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	8,  // 6: carabiner.policy.v1.PolicySetCommon.identities:type_name -> carabiner.policy.v1.Identity
-	5,  // 7: carabiner.policy.v1.PolicySetCommon.references:type_name -> carabiner.policy.v1.PolicyRef
-	22, // 8: carabiner.policy.v1.PolicySetCommon.context:type_name -> carabiner.policy.v1.PolicySetCommon.ContextEntry
-	5,  // 9: carabiner.policy.v1.Policy.source:type_name -> carabiner.policy.v1.PolicyRef
-	7,  // 10: carabiner.policy.v1.Policy.meta:type_name -> carabiner.policy.v1.Meta
-	23, // 11: carabiner.policy.v1.Policy.context:type_name -> carabiner.policy.v1.Policy.ContextEntry
-	6,  // 12: carabiner.policy.v1.Policy.chain:type_name -> carabiner.policy.v1.ChainLink
-	8,  // 13: carabiner.policy.v1.Policy.identities:type_name -> carabiner.policy.v1.Identity
-	16, // 14: carabiner.policy.v1.Policy.predicates:type_name -> carabiner.policy.v1.PredicateSpec
-	15, // 15: carabiner.policy.v1.Policy.transformers:type_name -> carabiner.policy.v1.Transformer
-	17, // 16: carabiner.policy.v1.Policy.tenets:type_name -> carabiner.policy.v1.Tenet
-	8,  // 17: carabiner.policy.v1.PolicyRef.identity:type_name -> carabiner.policy.v1.Identity
-	26, // 18: carabiner.policy.v1.PolicyRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	19, // 19: carabiner.policy.v1.ChainLink.predicate:type_name -> carabiner.policy.v1.ChainedPredicate
-	9,  // 20: carabiner.policy.v1.Meta.controls:type_name -> carabiner.policy.v1.Control
-	25, // 21: carabiner.policy.v1.Meta.expiration:type_name -> google.protobuf.Timestamp
-	10, // 22: carabiner.policy.v1.Identity.sigstore:type_name -> carabiner.policy.v1.IdentitySigstore
-	11, // 23: carabiner.policy.v1.Identity.key:type_name -> carabiner.policy.v1.IdentityKey
-	12, // 24: carabiner.policy.v1.Identity.ref:type_name -> carabiner.policy.v1.IdentityRef
-	27, // 25: carabiner.policy.v1.ContextVal.value:type_name -> google.protobuf.Value
-	27, // 26: carabiner.policy.v1.ContextVal.default:type_name -> google.protobuf.Value
-	16, // 27: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
-	24, // 28: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
-	14, // 29: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
-	20, // 30: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
-	8,  // 31: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.policy.v1.Identity
-	27, // 32: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
-	13, // 33: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	13, // 34: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	21, // 35: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
-	36, // [36:36] is the sub-list for method output_type
-	36, // [36:36] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	6,  // 3: carabiner.policy.v1.PolicySet.chain:type_name -> carabiner.policy.v1.ChainLink
+	25, // 4: carabiner.policy.v1.PolicySetMeta.expiration:type_name -> google.protobuf.Timestamp
+	2,  // 5: carabiner.policy.v1.PolicySetMeta.frameworks:type_name -> carabiner.policy.v1.FrameworkRef
+	26, // 6: carabiner.policy.v1.FrameworkRef.definition:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	8,  // 7: carabiner.policy.v1.PolicySetCommon.identities:type_name -> carabiner.policy.v1.Identity
+	5,  // 8: carabiner.policy.v1.PolicySetCommon.references:type_name -> carabiner.policy.v1.PolicyRef
+	22, // 9: carabiner.policy.v1.PolicySetCommon.context:type_name -> carabiner.policy.v1.PolicySetCommon.ContextEntry
+	5,  // 10: carabiner.policy.v1.Policy.source:type_name -> carabiner.policy.v1.PolicyRef
+	7,  // 11: carabiner.policy.v1.Policy.meta:type_name -> carabiner.policy.v1.Meta
+	23, // 12: carabiner.policy.v1.Policy.context:type_name -> carabiner.policy.v1.Policy.ContextEntry
+	6,  // 13: carabiner.policy.v1.Policy.chain:type_name -> carabiner.policy.v1.ChainLink
+	8,  // 14: carabiner.policy.v1.Policy.identities:type_name -> carabiner.policy.v1.Identity
+	16, // 15: carabiner.policy.v1.Policy.predicates:type_name -> carabiner.policy.v1.PredicateSpec
+	15, // 16: carabiner.policy.v1.Policy.transformers:type_name -> carabiner.policy.v1.Transformer
+	17, // 17: carabiner.policy.v1.Policy.tenets:type_name -> carabiner.policy.v1.Tenet
+	8,  // 18: carabiner.policy.v1.PolicyRef.identity:type_name -> carabiner.policy.v1.Identity
+	26, // 19: carabiner.policy.v1.PolicyRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	19, // 20: carabiner.policy.v1.ChainLink.predicate:type_name -> carabiner.policy.v1.ChainedPredicate
+	9,  // 21: carabiner.policy.v1.Meta.controls:type_name -> carabiner.policy.v1.Control
+	25, // 22: carabiner.policy.v1.Meta.expiration:type_name -> google.protobuf.Timestamp
+	10, // 23: carabiner.policy.v1.Identity.sigstore:type_name -> carabiner.policy.v1.IdentitySigstore
+	11, // 24: carabiner.policy.v1.Identity.key:type_name -> carabiner.policy.v1.IdentityKey
+	12, // 25: carabiner.policy.v1.Identity.ref:type_name -> carabiner.policy.v1.IdentityRef
+	27, // 26: carabiner.policy.v1.ContextVal.value:type_name -> google.protobuf.Value
+	27, // 27: carabiner.policy.v1.ContextVal.default:type_name -> google.protobuf.Value
+	16, // 28: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
+	24, // 29: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
+	14, // 30: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
+	20, // 31: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
+	8,  // 32: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.policy.v1.Identity
+	27, // 33: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
+	13, // 34: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	13, // 35: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	21, // 36: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
+	37, // [37:37] is the sub-list for method output_type
+	37, // [37:37] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_v1_policy_proto_init() }
