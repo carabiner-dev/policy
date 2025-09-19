@@ -111,4 +111,6 @@ message ResultSet {
     in_toto_attestation.v1.ResourceDescriptor subject = 6;
     // results from each of the policies in the set
     repeated Result results = 7;
+    //  error captures an error that failed the evaluation at the PolicySet level
+    Error error = 8;
 }
