@@ -453,8 +453,8 @@ func (x *StatementRef) GetIdentities() []*Identity {
 // for each policy in the set, its overall result status and the original set metadata.
 type ResultSet struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// id of the PolicySet
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Reference to the PolicySet that produced the ResultSet
+	PolicySet *PolicyRef `protobuf:"bytes,1,opt,name=policy_set,json=policySet,proto3" json:"policy_set,omitempty"`
 	// meta block transferred from the PolicySet
 	Meta *PolicySetMeta `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
 	// status holds the PASS/FAIL/SOFTFAIL status label of the whole PolicySet evaluation
@@ -503,11 +503,11 @@ func (*ResultSet) Descriptor() ([]byte, []int) {
 	return file_v1_result_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ResultSet) GetId() string {
+func (x *ResultSet) GetPolicySet() *PolicyRef {
 	if x != nil {
-		return x.Id
+		return x.PolicySet
 	}
-	return ""
+	return nil
 }
 
 func (x *ResultSet) GetMeta() *PolicySetMeta {
@@ -603,9 +603,10 @@ const file_v1_result_proto_rawDesc = "" +
 	"\vattestation\x18\x02 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\vattestation\x12=\n" +
 	"\n" +
 	"identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
-	"identities\"\x8c\x03\n" +
-	"\tResultSet\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
+	"identities\"\xbb\x03\n" +
+	"\tResultSet\x12=\n" +
+	"\n" +
+	"policy_set\x18\x01 \x01(\v2\x1e.carabiner.policy.v1.PolicyRefR\tpolicySet\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\tR\x06status\x129\n" +
 	"\n" +
@@ -667,17 +668,18 @@ var file_v1_result_proto_depIdxs = []int32{
 	13, // 17: carabiner.policy.v1.EvalResult.assessment:type_name -> carabiner.policy.v1.Assessment
 	10, // 18: carabiner.policy.v1.StatementRef.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	11, // 19: carabiner.policy.v1.StatementRef.identities:type_name -> carabiner.policy.v1.Identity
-	14, // 20: carabiner.policy.v1.ResultSet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
-	6,  // 21: carabiner.policy.v1.ResultSet.date_start:type_name -> google.protobuf.Timestamp
-	6,  // 22: carabiner.policy.v1.ResultSet.date_end:type_name -> google.protobuf.Timestamp
-	10, // 23: carabiner.policy.v1.ResultSet.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	0,  // 24: carabiner.policy.v1.ResultSet.results:type_name -> carabiner.policy.v1.Result
-	12, // 25: carabiner.policy.v1.ResultSet.error:type_name -> carabiner.policy.v1.Error
-	26, // [26:26] is the sub-list for method output_type
-	26, // [26:26] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	7,  // 20: carabiner.policy.v1.ResultSet.policy_set:type_name -> carabiner.policy.v1.PolicyRef
+	14, // 21: carabiner.policy.v1.ResultSet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
+	6,  // 22: carabiner.policy.v1.ResultSet.date_start:type_name -> google.protobuf.Timestamp
+	6,  // 23: carabiner.policy.v1.ResultSet.date_end:type_name -> google.protobuf.Timestamp
+	10, // 24: carabiner.policy.v1.ResultSet.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	0,  // 25: carabiner.policy.v1.ResultSet.results:type_name -> carabiner.policy.v1.Result
+	12, // 26: carabiner.policy.v1.ResultSet.error:type_name -> carabiner.policy.v1.Error
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_v1_result_proto_init() }
