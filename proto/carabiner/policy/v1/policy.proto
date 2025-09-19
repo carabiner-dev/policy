@@ -11,10 +11,22 @@ import "in_toto_attestation/v1/resource_descriptor.proto";
 option go_package = "github.com/carabiner-dev/policy/api/v1";
 
 message PolicySet {
+    // ID is the policySet identifier
     string id = 1;
+
+    // Meta holds the PolicySet metadata informartion
     PolicySetMeta meta = 2;
+
+    // Common groups the common data elements to be share by all the
+    // policies in the set.
     PolicySetCommon common = 3;
+
+    // Policies is the list of policies grouped in the PolicySet
     repeated Policy policies = 4;
+
+    // Chain is the evidence chain to compute a set of subjects to which
+    // al the policies will apply.
+    repeated ChainLink chain = 5;
 }
 
 message PolicySetMeta {
@@ -164,6 +176,13 @@ message ChainedOutput {
     string tenet = 2; 
 }
 
+// ChainedPredicate links a subject to another by extracting data from
+// attestations of the first. The spec requires a `selector` to be executed
+// by the specified `runtime` on an attestation of type `type`.
+//
+// The selector exec is expected to return either a hash string or a struct that
+// looks like an in-toto resource descriptor which becomes the new effective
+// subject during the evaluation.
 message ChainedPredicate {
     string type = 1;
     string selector = 2;
