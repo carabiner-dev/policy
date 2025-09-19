@@ -466,7 +466,9 @@ type ResultSet struct {
 	// subject under evaluation
 	Subject *v1.ResourceDescriptor `protobuf:"bytes,6,opt,name=subject,proto3" json:"subject,omitempty"`
 	// results from each of the policies in the set
-	Results       []*Result `protobuf:"bytes,7,rep,name=results,proto3" json:"results,omitempty"`
+	Results []*Result `protobuf:"bytes,7,rep,name=results,proto3" json:"results,omitempty"`
+	// error captures an error that failed the evaluation at the PolicySet level
+	Error         *Error `protobuf:"bytes,8,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -550,6 +552,13 @@ func (x *ResultSet) GetResults() []*Result {
 	return nil
 }
 
+func (x *ResultSet) GetError() *Error {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 var File_v1_result_proto protoreflect.FileDescriptor
 
 const file_v1_result_proto_rawDesc = "" +
@@ -594,7 +603,7 @@ const file_v1_result_proto_rawDesc = "" +
 	"\vattestation\x18\x02 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\vattestation\x12=\n" +
 	"\n" +
 	"identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
-	"identities\"\xda\x02\n" +
+	"identities\"\x8c\x03\n" +
 	"\tResultSet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12\x16\n" +
@@ -603,7 +612,8 @@ const file_v1_result_proto_rawDesc = "" +
 	"date_start\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tdateStart\x125\n" +
 	"\bdate_end\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\adateEnd\x12D\n" +
 	"\asubject\x18\x06 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\asubject\x125\n" +
-	"\aresults\x18\a \x03(\v2\x1b.carabiner.policy.v1.ResultR\aresultsB\xbc\x01\n" +
+	"\aresults\x18\a \x03(\v2\x1b.carabiner.policy.v1.ResultR\aresults\x120\n" +
+	"\x05error\x18\b \x01(\v2\x1a.carabiner.policy.v1.ErrorR\x05errorB\xbc\x01\n" +
 	"\x17com.carabiner.policy.v1B\vResultProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
@@ -662,11 +672,12 @@ var file_v1_result_proto_depIdxs = []int32{
 	6,  // 22: carabiner.policy.v1.ResultSet.date_end:type_name -> google.protobuf.Timestamp
 	10, // 23: carabiner.policy.v1.ResultSet.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	0,  // 24: carabiner.policy.v1.ResultSet.results:type_name -> carabiner.policy.v1.Result
-	25, // [25:25] is the sub-list for method output_type
-	25, // [25:25] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	12, // 25: carabiner.policy.v1.ResultSet.error:type_name -> carabiner.policy.v1.Error
+	26, // [26:26] is the sub-list for method output_type
+	26, // [26:26] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_v1_result_proto_init() }
