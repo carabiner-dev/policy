@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/carabiner-dev/signer/key"
 )
 
 // NewIdentityFromSlug returns a new identity by parsing a slug string.
@@ -106,4 +108,17 @@ func (i *Identity) Validate() error {
 		errs = append(errs, fmt.Errorf("only one type of identity can be set at a time (got %v)", typesDefined))
 	}
 	return errors.Join(errs...)
+}
+
+// PublicKey returns the identity public if by parsing the data if set.
+func (i *Identity) PublicKey() (key.PublicKeyProvider, error) {
+	var data string
+	if data = i.GetKey().GetData(); data == "" {
+		return nil, nil
+	}
+	k, err := key.NewParser().ParsePublicKey([]byte(data))
+	if err != nil {
+		return nil, fmt.Errorf("parsing key: %w", err)
+	}
+	return k, nil
 }
