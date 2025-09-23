@@ -5,8 +5,10 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/carabiner-dev/attestation"
+	"github.com/carabiner-dev/signer/key"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -78,4 +80,19 @@ func (s *PolicySet) ContextMap() map[string]any {
 		}
 	}
 	return ret
+}
+
+// PublicKeys returns any public keys defined in the policy identities
+func (s *PolicySet) PublicKeys() ([]key.PublicKeyProvider, error) {
+	keys := []key.PublicKeyProvider{}
+	for _, id := range s.GetCommon().GetIdentities() {
+		k, err := id.PublicKey()
+		if err != nil {
+			return nil, fmt.Errorf("parsing key: %w", err)
+		}
+		if k != nil {
+			keys = append(keys, k)
+		}
+	}
+	return keys, nil
 }

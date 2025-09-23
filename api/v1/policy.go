@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/carabiner-dev/signer/key"
 	"github.com/carabiner-dev/vcslocator"
 	intoto "github.com/in-toto/attestation/go/v1"
 )
@@ -115,9 +116,9 @@ func (p *Policy) Validate() error {
 
 // ContextMap compiles the context data values into a map, filling the fields
 // with their defaults when needed.
-func (c *Policy) ContextMap() map[string]any {
+func (p *Policy) ContextMap() map[string]any {
 	ret := map[string]any{}
-	for label, value := range c.Context {
+	for label, value := range p.Context {
 		if value.Value != nil {
 			ret[label] = value.Value.AsInterface()
 		} else {
@@ -125,4 +126,19 @@ func (c *Policy) ContextMap() map[string]any {
 		}
 	}
 	return ret
+}
+
+// PublicKeys returns any public keys defined in the policy identities
+func (p *Policy) PublicKeys() ([]key.PublicKeyProvider, error) {
+	keys := []key.PublicKeyProvider{}
+	for _, id := range p.GetIdentities() {
+		k, err := id.PublicKey()
+		if err != nil {
+			return nil, fmt.Errorf("parsing key: %w", err)
+		}
+		if k != nil {
+			keys = append(keys, k)
+		}
+	}
+	return keys, nil
 }
