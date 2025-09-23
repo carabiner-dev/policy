@@ -136,7 +136,9 @@ func (p *Policy) PublicKeys() ([]key.PublicKeyProvider, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parsing key: %w", err)
 		}
-		keys = append(keys, k)
+		if k != nil {
+			keys = append(keys, k)
+		}
 	}
 	return keys, nil
 }
