@@ -137,6 +137,7 @@ message ContextVal {
     optional bool required = 2;
     optional google.protobuf.Value value = 3;
     optional google.protobuf.Value default = 4;
+    optional string description = 5;
 }
 
 // The error structure is returned when a policy is evaluated successfully but 
