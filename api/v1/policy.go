@@ -142,3 +142,24 @@ func (p *Policy) PublicKeys() ([]key.PublicKeyProvider, error) {
 	}
 	return keys, nil
 }
+
+// Label returns the unified label for the control
+func (ctl *Control) Label() string {
+	// This requires an id in the control.
+	if ctl.Id == "" {
+		return ""
+	}
+
+	// The most basic label is the control ID
+	label := ctl.Id
+
+	// We support both classed and classless controls
+	if ctl.Class != "" {
+		label = ctl.Class + "-" + label
+	}
+	if ctl.Framework != "" {
+		label = ctl.GetFramework() + "-" + label
+	}
+
+	return label
+}
