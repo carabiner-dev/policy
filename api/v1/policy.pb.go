@@ -971,6 +971,7 @@ type ContextVal struct {
 	Required      *bool                  `protobuf:"varint,2,opt,name=required,proto3,oneof" json:"required,omitempty"`
 	Value         *structpb.Value        `protobuf:"bytes,3,opt,name=value,proto3,oneof" json:"value,omitempty"`
 	Default       *structpb.Value        `protobuf:"bytes,4,opt,name=default,proto3,oneof" json:"default,omitempty"`
+	Description   *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1031,6 +1032,13 @@ func (x *ContextVal) GetDefault() *structpb.Value {
 		return x.Default
 	}
 	return nil
+}
+
+func (x *ContextVal) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
 }
 
 // The error structure is returned when a policy is evaluated successfully but
@@ -1610,17 +1618,19 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x12\n" +
 	"\x04data\x18\x03 \x01(\tR\x04data\"\x1d\n" +
 	"\vIdentityRef\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xce\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x85\x02\n" +
 	"\n" +
 	"ContextVal\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1f\n" +
 	"\brequired\x18\x02 \x01(\bH\x00R\brequired\x88\x01\x01\x121\n" +
 	"\x05value\x18\x03 \x01(\v2\x16.google.protobuf.ValueH\x01R\x05value\x88\x01\x01\x125\n" +
-	"\adefault\x18\x04 \x01(\v2\x16.google.protobuf.ValueH\x02R\adefault\x88\x01\x01B\v\n" +
+	"\adefault\x18\x04 \x01(\v2\x16.google.protobuf.ValueH\x02R\adefault\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x03R\vdescription\x88\x01\x01B\v\n" +
 	"\t_requiredB\b\n" +
 	"\x06_valueB\n" +
 	"\n" +
-	"\b_default\"=\n" +
+	"\b_defaultB\x0e\n" +
+	"\f_description\"=\n" +
 	"\x05Error\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1a\n" +
 	"\bguidance\x18\x02 \x01(\tR\bguidance\"\x1d\n" +
