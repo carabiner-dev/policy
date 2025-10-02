@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/carabiner-dev/attestation"
@@ -125,7 +126,16 @@ func (compiler *Compiler) CompileVerifyFile(path string, funcs ...options.OptFn)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("reading policy file: %w", err)
 	}
-	return compiler.CompileVerify(data, funcs...)
+
+	// Record the original file
+	set, pcy, vfy, err := compiler.CompileVerify(data, funcs...)
+	if set != nil {
+		set.GetMeta().GetOrigin().Name = filepath.Base(path)
+	}
+	if pcy != nil {
+		pcy.GetMeta().GetOrigin().Name = filepath.Base(path)
+	}
+	return set, pcy, vfy, err
 }
 
 // CompileVerify compiles a policy, while verifying its signature
