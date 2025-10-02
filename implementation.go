@@ -58,6 +58,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 	}
 
 	set.GetMeta().GetOrigin().Digest = hset.ToResourceDescriptors()[0].Digest
+	set.GetMeta().GetOrigin().Name = set.GetId()
 
 	if set.GetMeta().GetEnforce() == "" {
 		set.GetMeta().Enforce = EnforceOn
@@ -114,6 +115,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 	}
 
 	p.GetMeta().GetOrigin().Digest = hset.ToResourceDescriptors()[0].Digest
+	p.GetMeta().GetOrigin().Name = p.GetId()
 
 	if p.GetMeta().GetEnforce() == "" {
 		p.GetMeta().Enforce = EnforceOn
