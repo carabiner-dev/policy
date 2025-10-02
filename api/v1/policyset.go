@@ -9,7 +9,9 @@ import (
 
 	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/signer/key"
+	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func (set *PolicySet) Validate() error {
@@ -20,16 +22,6 @@ func (set *PolicySet) Validate() error {
 		}
 	}
 	return errors.Join(errs...)
-}
-
-// GetOrigin returns the coordinates where the predicate data originated when
-// the policyset is wrapped in an attestation. At some point this should return
-// the original repo where the set was read from.
-func (set *PolicySet) GetOrigin() attestation.Subject {
-	return nil
-}
-
-func (set *PolicySet) SetOrigin(attestation.Subject) {
 }
 
 func (set *PolicySet) SetType(attestation.PredicateType) error {
@@ -95,4 +87,37 @@ func (s *PolicySet) PublicKeys() ([]key.PublicKeyProvider, error) {
 		}
 	}
 	return keys, nil
+}
+
+// GetOrigin returns the coordinates where the predicate data originated from.
+func (s *PolicySet) GetOrigin() attestation.Subject {
+	if s.GetMeta() == nil {
+		return nil
+	}
+	return s.GetMeta().GetOrigin()
+}
+
+// SetOrigin sets the origin of the policy. It is designed to match the signature
+// of the attestation.Predicate method, but if the argument is a resource descriptor,
+// then we will clone it and use its value.
+func (s *PolicySet) SetOrigin(origin attestation.Subject) {
+	if s.GetMeta() == nil {
+		s.Meta = &PolicySetMeta{}
+	}
+
+	rd, ok := origin.(*intoto.ResourceDescriptor)
+	if ok {
+		msg := proto.Clone(rd)
+		nrd, ok := msg.(*intoto.ResourceDescriptor)
+		if ok {
+			s.Meta.Origin = nrd
+			return
+		}
+	}
+
+	s.Meta.Origin = &intoto.ResourceDescriptor{
+		Name:   origin.GetName(),
+		Uri:    origin.GetUri(),
+		Digest: origin.GetDigest(),
+	}
 }

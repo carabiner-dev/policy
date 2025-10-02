@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/signer/key"
 	"github.com/carabiner-dev/vcslocator"
 	intoto "github.com/in-toto/attestation/go/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -109,6 +111,39 @@ func (p *Policy) Validate() error {
 	}
 
 	return errors.Join(errs...)
+}
+
+// GetOrigin returns the coordinates where the predicate data originated from.
+func (p *Policy) GetOrigin() attestation.Subject {
+	if p.GetMeta() == nil {
+		return nil
+	}
+	return p.GetMeta().GetOrigin()
+}
+
+// SetOrigin sets the origin of the policy. It is designed to match the signature
+// of the attestation.Predicate method, but if the argument is a resource descriptor,
+// then we will clone it and use its value.
+func (p *Policy) SetOrigin(origin attestation.Subject) {
+	if p.GetMeta() == nil {
+		p.Meta = &Meta{}
+	}
+
+	rd, ok := origin.(*intoto.ResourceDescriptor)
+	if ok {
+		msg := proto.Clone(rd)
+		nrd, ok := msg.(*intoto.ResourceDescriptor)
+		if ok {
+			p.Meta.Origin = nrd
+			return
+		}
+	}
+
+	p.Meta.Origin = &intoto.ResourceDescriptor{
+		Name:   origin.GetName(),
+		Uri:    origin.GetUri(),
+		Digest: origin.GetDigest(),
+	}
 }
 
 // The following functions allow the policy and policset to implement the predicate
