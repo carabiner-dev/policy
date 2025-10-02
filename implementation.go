@@ -49,6 +49,12 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 	}
 
 	for _, p := range set.Policies {
+		// Don't apply defaults to policies with remote sources
+		// They will get their defaults from the remote policy during assembly
+		if p.GetSource() != nil {
+			continue
+		}
+
 		if p.GetMeta() == nil {
 			p.Meta = &v1.Meta{}
 		}

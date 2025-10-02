@@ -305,7 +305,57 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 	tenets = append(tenets, appenders...)
 
 	// Merge the policy overlay onto the remote policy
-	proto.Merge(assembledPolicy, p)
+	// Only merge non-empty Meta fields to avoid overwriting with defaults
+	if p.Meta != nil {
+		if assembledPolicy.Meta == nil {
+			assembledPolicy.Meta = &api.Meta{}
+		}
+		if p.Meta.Runtime != "" {
+			assembledPolicy.Meta.Runtime = p.Meta.Runtime
+		}
+		if p.Meta.Description != "" {
+			assembledPolicy.Meta.Description = p.Meta.Description
+		}
+		if p.Meta.AssertMode != "" {
+			assembledPolicy.Meta.AssertMode = p.Meta.AssertMode
+		}
+		if p.Meta.Version != 0 {
+			assembledPolicy.Meta.Version = p.Meta.Version
+		}
+		if p.Meta.Enforce != "" {
+			assembledPolicy.Meta.Enforce = p.Meta.Enforce
+		}
+		if p.Meta.Expiration != nil {
+			assembledPolicy.Meta.Expiration = p.Meta.Expiration
+		}
+		if len(p.Meta.Controls) > 0 {
+			assembledPolicy.Meta.Controls = p.Meta.Controls
+		}
+	}
+	// Merge other fields (excluding Meta and Tenets which are handled separately)
+	if p.Id != "" {
+		assembledPolicy.Id = p.Id
+	}
+	if len(p.Context) > 0 {
+		if assembledPolicy.Context == nil {
+			assembledPolicy.Context = make(map[string]*api.ContextVal)
+		}
+		for k, v := range p.Context {
+			assembledPolicy.Context[k] = v
+		}
+	}
+	if len(p.Chain) > 0 {
+		assembledPolicy.Chain = p.Chain
+	}
+	if len(p.Identities) > 0 {
+		assembledPolicy.Identities = p.Identities
+	}
+	if p.Predicates != nil {
+		assembledPolicy.Predicates = p.Predicates
+	}
+	if len(p.Transformers) > 0 {
+		assembledPolicy.Transformers = p.Transformers
+	}
 	assembledPolicy.Tenets = tenets
 	assembledPolicy.Source = nil
 	return assembledPolicy, nil
