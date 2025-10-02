@@ -7,9 +7,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/collector/envelope"
+	"github.com/carabiner-dev/hasher"
+	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
@@ -40,9 +43,21 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 		return nil, verification, fmt.Errorf("parsing policy set source: %w", err)
 	}
 
+	// hash the data to record it in the policy origin
+	hset, err := hasher.New().HashReaders([]io.Reader{bytes.NewReader(policySetData)})
+	if err != nil {
+		return nil, nil, fmt.Errorf("hashing policy data: %w", err)
+	}
+
 	if set.GetMeta() == nil {
 		set.Meta = &v1.PolicySetMeta{}
 	}
+
+	if set.GetMeta().GetOrigin() == nil {
+		set.GetMeta().Origin = &intoto.ResourceDescriptor{}
+	}
+
+	set.GetMeta().GetOrigin().Digest = hset.ToResourceDescriptors()[0].Digest
 
 	if set.GetMeta().GetEnforce() == "" {
 		set.GetMeta().Enforce = EnforceOn
@@ -84,9 +99,21 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 		return nil, verification, fmt.Errorf("parsing policy source: %w", err)
 	}
 
+	// hash the data to record it in the policy origin
+	hset, err := hasher.New().HashReaders([]io.Reader{bytes.NewReader(policyData)})
+	if err != nil {
+		return nil, nil, fmt.Errorf("hashing policy data: %w", err)
+	}
+
 	if p.GetMeta() == nil {
 		p.Meta = &v1.Meta{}
 	}
+
+	if p.GetMeta().GetOrigin() == nil {
+		p.GetMeta().Origin = &intoto.ResourceDescriptor{}
+	}
+
+	p.GetMeta().GetOrigin().Digest = hset.ToResourceDescriptors()[0].Digest
 
 	if p.GetMeta().GetEnforce() == "" {
 		p.GetMeta().Enforce = EnforceOn
