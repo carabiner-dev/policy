@@ -36,6 +36,7 @@ message PolicySetMeta {
     int64 version = 4;
     string enforce = 5;
     repeated FrameworkRef frameworks = 6;
+    optional in_toto_attestation.v1.ResourceDescriptor origin = 7;
 }
 
 // FrameworkRef is a reference to a security framework. The reference binds
@@ -87,6 +88,7 @@ message Meta {
     int64 version = 5;
     string enforce = 6;
     optional google.protobuf.Timestamp expiration = 7;
+    optional in_toto_attestation.v1.ResourceDescriptor origin = 8;
 }
 
 // Identity captures a signer identity. An identity can one of:
