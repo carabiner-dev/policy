@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 
 	"github.com/carabiner-dev/attestation"
+	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
@@ -19,19 +20,26 @@ const PolicySetPredicateType attestation.PredicateType = "https://carabiner.dev/
 type PolicySet struct {
 	Parsed       *v1.PolicySet
 	Data         []byte
-	origin       attestation.Subject
 	verification attestation.Verification
 }
 
-// GetOrigin returns the coordinates where the predicate data originated when
-// the policyset is wrapped in an attestation. At some point this should return
-// the original repo where the policy was read from.
+// GetOrigin returns the coordinates where the predicate data originated from.
 func (set *PolicySet) GetOrigin() attestation.Subject {
-	return set.origin
+	if set.Parsed.GetMeta() == nil {
+		return nil
+	}
+	return set.Parsed.GetMeta().GetOrigin()
 }
 
 func (set *PolicySet) SetOrigin(origin attestation.Subject) {
-	set.origin = origin
+	if set.Parsed.GetMeta() == nil {
+		set.Parsed.Meta = &v1.PolicySetMeta{}
+	}
+	set.Parsed.Meta.Origin = &intoto.ResourceDescriptor{
+		Name:   origin.GetName(),
+		Uri:    origin.GetUri(),
+		Digest: origin.GetDigest(),
+	}
 }
 
 func (set *PolicySet) SetType(attestation.PredicateType) error {
