@@ -19,19 +19,24 @@ const PolicySetPredicateType attestation.PredicateType = "https://carabiner.dev/
 type PolicySet struct {
 	Parsed       *v1.PolicySet
 	Data         []byte
-	origin       attestation.Subject
 	verification attestation.Verification
 }
 
-// GetOrigin returns the coordinates where the predicate data originated when
-// the policyset is wrapped in an attestation. At some point this should return
-// the original repo where the policy was read from.
+// GetOrigin calls the underlying method of the same name
 func (set *PolicySet) GetOrigin() attestation.Subject {
-	return set.origin
+	if set.Parsed == nil {
+		return nil
+	}
+
+	return set.Parsed.GetOrigin()
 }
 
+// SetOrigin calls the underlting method of the same name
 func (set *PolicySet) SetOrigin(origin attestation.Subject) {
-	set.origin = origin
+	if set.Parsed == nil {
+		return
+	}
+	set.Parsed.SetOrigin(origin)
 }
 
 func (set *PolicySet) SetType(attestation.PredicateType) error {
