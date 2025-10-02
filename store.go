@@ -95,14 +95,30 @@ func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet
 
 	// Parse the data and assign whatever comes out of it
 	set, pcy, err := NewParser().ParsePolicyOrSet(ref.Location.GetContent())
+
+	// Here, we record the policy source url in the origin. It's not great
+	// to be doing it here but otherwise the cached data will not have it.
+	sourceURI := ref.GetLocation().GetDownloadLocation()
+	if sourceURI == "" {
+		sourceURI = ref.GetLocation().GetUri()
+	}
+
 	switch {
 	case set != nil:
 		if err := rs.registerPolicySet(contentHash, set); err != nil {
 			return nil, nil, fmt.Errorf("indexing policy set: %w", err)
 		}
+		set.GetMeta().GetOrigin().DownloadLocation = sourceURI
+		if set.GetMeta().GetOrigin().Uri == "" {
+			set.GetMeta().GetOrigin().Uri = sourceURI
+		}
 	case pcy != nil:
 		if err := rs.registerPolicy(contentHash, pcy); err != nil {
 			return nil, nil, fmt.Errorf("indexing policy: %w", err)
+		}
+		pcy.GetMeta().GetOrigin().DownloadLocation = sourceURI
+		if pcy.GetMeta().GetOrigin().Uri == "" {
+			pcy.GetMeta().GetOrigin().Uri = sourceURI
 		}
 	case err != nil:
 		return nil, nil, err
