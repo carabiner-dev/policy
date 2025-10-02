@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 
 	"github.com/carabiner-dev/attestation"
-	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/carabiner-dev/policy/api/v1"
@@ -23,23 +22,21 @@ type PolicySet struct {
 	verification attestation.Verification
 }
 
-// GetOrigin returns the coordinates where the predicate data originated from.
+// GetOrigin calls the underlying method of the same name
 func (set *PolicySet) GetOrigin() attestation.Subject {
-	if set.Parsed.GetMeta() == nil {
+	if set.Parsed == nil {
 		return nil
 	}
-	return set.Parsed.GetMeta().GetOrigin()
+
+	return set.Parsed.GetOrigin()
 }
 
+// SetOrigin calls the underlting method of the same name
 func (set *PolicySet) SetOrigin(origin attestation.Subject) {
-	if set.Parsed.GetMeta() == nil {
-		set.Parsed.Meta = &v1.PolicySetMeta{}
+	if set.Parsed == nil {
+		return
 	}
-	set.Parsed.Meta.Origin = &intoto.ResourceDescriptor{
-		Name:   origin.GetName(),
-		Uri:    origin.GetUri(),
-		Digest: origin.GetDigest(),
-	}
+	set.Parsed.SetOrigin(origin)
 }
 
 func (set *PolicySet) SetType(attestation.PredicateType) error {
