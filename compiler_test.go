@@ -3,6 +3,79 @@
 
 package policy
 
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+// TestCompilerPreservesRemoteAssertMode verifies that when compiling a policyset
+// with a remote policy reference, the assertMode from the remote policy is preserved
+// and not overwritten by default values during parsing.
+func TestCompilerPreservesRemoteAssertMode(t *testing.T) {
+	t.Parallel()
+
+	// Create a remote policy with assertMode "OR"
+	remotePolicyJSON := []byte(`{
+		"id": "remote-policy",
+		"meta": {
+			"description": "Remote policy with OR mode",
+			"assertMode": "OR"
+		},
+		"tenets": [{
+			"id": "tenet1",
+			"code": "true"
+		}]
+	}`)
+
+	// Create a policyset JSON that references the remote policy
+	policySetJSON := []byte(`{
+		"id": "test-set",
+		"meta": {
+			"description": "Test policyset"
+		},
+		"policies": [{
+			"source": {
+				"location": {
+					"uri": "https://example.com/remote-policy.json"
+				}
+			}
+		}]
+	}`)
+
+	// Parse the policyset (this is where defaults get applied)
+	parser := NewParser()
+	policySet, _, err := parser.ParseVerifyPolicySet(policySetJSON)
+	require.NoError(t, err)
+	require.NotNil(t, policySet)
+
+	// Create a mock storage backend that returns our remote policy
+	store := newRefStore()
+	ref := policySet.Policies[0].Source
+	ref.Location.Content = remotePolicyJSON
+	_, _, err = store.StoreReferenceWithReturn(ref)
+	require.NoError(t, err)
+
+	// Compile the policyset
+	compiler := &Compiler{
+		Options: defaultCompilerOpts,
+		Store:   store,
+		impl:    &defaultCompilerImpl{},
+	}
+
+	compiledSet, err := compiler.CompileSet(policySet)
+	require.NoError(t, err)
+	require.NotNil(t, compiledSet)
+	require.Len(t, compiledSet.Policies, 1)
+
+	// Verify that the assertMode "OR" from the remote policy was preserved
+	compiledPolicy := compiledSet.Policies[0]
+	require.NotNil(t, compiledPolicy.Meta)
+	require.Equal(t, "OR", compiledPolicy.Meta.AssertMode, "assertMode should be preserved from remote policy")
+	require.Equal(t, "remote-policy", compiledPolicy.Id)
+	require.Nil(t, compiledPolicy.Source, "source should be cleared after assembly")
+}
+
 /*
 
 test case:
