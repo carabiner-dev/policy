@@ -4,7 +4,8 @@ go 1.24.6
 
 require (
 	github.com/carabiner-dev/attestation v0.2.0
-	github.com/carabiner-dev/collector v0.2.2
+	github.com/carabiner-dev/collector v0.2.3
+	github.com/carabiner-dev/hasher v0.2.2
 	github.com/carabiner-dev/signer v0.2.1
 	github.com/carabiner-dev/vcslocator v0.3.2
 	github.com/in-toto/attestation v1.1.2
@@ -37,7 +38,6 @@ require (
 	github.com/avast/retry-go/v4 v4.6.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
-	github.com/carabiner-dev/hasher v0.2.2 // indirect
 	github.com/carabiner-dev/jsonl v0.2.1 // indirect
 	github.com/carabiner-dev/openeox v0.0.0-20250606202227-fd40810cda47 // indirect
 	github.com/carabiner-dev/osv v0.0.0-20250124012120-b8ce4531cd92 // indirect
