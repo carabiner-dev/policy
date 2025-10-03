@@ -5,6 +5,7 @@ package policy
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/collector/envelope"
 	"github.com/carabiner-dev/hasher"
+	"github.com/hjson/hjson-go/v4"
 	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -26,8 +28,41 @@ type parserImplementation interface {
 
 type defaultParserImplementationV1 struct{}
 
+// normalizeToJSON attempts to parse data as JSON first. If that fails,
+// it tries to parse as HJSON and converts it to JSON. This allows transparent
+// support for both JSON and HJSON policy formats.
+func normalizeToJSON(data []byte) ([]byte, error) {
+	// First, try to parse as strict JSON to validate it's well-formed
+	var jsonTest interface{}
+	if err := json.Unmarshal(data, &jsonTest); err == nil {
+		// Data is valid JSON, return as-is
+		return data, nil
+	}
+
+	// If JSON parsing failed, try HJSON
+	var hjsonData interface{}
+	if err := hjson.Unmarshal(data, &hjsonData); err != nil {
+		// Neither JSON nor HJSON worked, return original error context
+		return nil, fmt.Errorf("failed to parse as JSON or HJSON: %w", err)
+	}
+
+	// Convert HJSON-parsed data back to standard JSON
+	jsonData, err := json.Marshal(hjsonData)
+	if err != nil {
+		return nil, fmt.Errorf("converting HJSON to JSON: %w", err)
+	}
+
+	return jsonData, nil
+}
+
 // ParsePolicySet parses a policy set from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOptions, policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
+	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
+	policySetData, err := normalizeToJSON(policySetData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("normalizing policy data: %w", err)
+	}
+
 	// Extract the policy predicate, if any
 	policySetData, verification, err := parseEnvelope(opts, policySetData)
 	if err != nil {
@@ -88,6 +123,12 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 
 // ParsePolicy parses a policy from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions, policyData []byte) (*v1.Policy, attestation.Verification, error) {
+	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
+	policyData, err := normalizeToJSON(policyData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("normalizing policy data: %w", err)
+	}
+
 	// Extract the policy when used as a envelope's predicate
 	policyData, verification, err := parseEnvelope(opts, policyData)
 	if err != nil {
