@@ -722,8 +722,8 @@ github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oM
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0/go.mod h1:bm7JXdkRd4BHJk9HpwqAI8BoAY1lps46Enkdqw6aRX0=
 github.com/carabiner-dev/attestation v0.2.0 h1:vEqAIapcHjIoEQad9GrKtEx2czeu7t4cun+1bCEtN1o=
 github.com/carabiner-dev/attestation v0.2.0/go.mod h1:dLPe3DPL/0YpKJpNDCQJZdtkZIuWTAH1G0N8V5LJ41c=
-github.com/carabiner-dev/collector v0.2.2 h1:nsrFu2YNCMDYyyioW+qfslDpSr3BefEw5C+lp1XWGTc=
-github.com/carabiner-dev/collector v0.2.2/go.mod h1:RZIZVqNuShBQOpFyzN3TwsXKrnpxpzEV81PBsBgLnQs=
+github.com/carabiner-dev/collector v0.2.3 h1:zGvpwyMJqZcQzHWg1h89UH0g5ZVS27woOQmNeKwyxYk=
+github.com/carabiner-dev/collector v0.2.3/go.mod h1:Vak4XeQDdOyCNptivCvPg7lHZy4dbpurmwN11Sev3OM=
 github.com/carabiner-dev/hasher v0.2.2 h1:wYzqB/BeiK7/D+Ho1VofcjrzvnlAalre0AeFOB3KmxM=
 github.com/carabiner-dev/hasher v0.2.2/go.mod h1:bM7reKZ5gGEY4Bbcd3Lr2KhrtqNkEhJOmQ4ptGasnFY=
 github.com/carabiner-dev/jsonl v0.2.1 h1:2cBv4mGoqWfVkeQO1krIGds9WUm9Jet89QdqWLodlfo=
