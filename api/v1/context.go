@@ -3,6 +3,11 @@
 
 package v1
 
+import (
+	"fmt"
+	"slices"
+)
+
 var ContextTypes = []string{
 	ContextTypeBool,
 	ContextTypeString,
@@ -14,6 +19,14 @@ const (
 	ContextTypeString = "string"
 	ContextTypeInt    = "int"
 )
+
+// Validate checks if the context is valid
+func (cv *ContextVal) Validate() error {
+	if cv.GetType() != "" && !slices.Contains(ContextTypes, cv.GetType()) {
+		return fmt.Errorf("invalid context type: %q", cv.GetType())
+	}
+	return nil
+}
 
 // Merge merges the values set in cv2 into cv. If values are not set nothing
 // is replaced

@@ -101,8 +101,16 @@ func (ref *PolicyRef) Validate() error {
 	return errors.Join(errs...)
 }
 
+// Validate validates the policy structure to ensure fields and structural values
+// are correct. Still needs work.
 func (p *Policy) Validate() error {
 	errs := []error{}
+
+	for key, def := range p.GetContext() {
+		if err := def.Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("invalid context definition for %q: %w", key, err))
+		}
+	}
 
 	for _, i := range p.GetIdentities() {
 		if err := i.Validate(); err != nil {
