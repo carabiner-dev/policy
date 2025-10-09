@@ -98,19 +98,36 @@ message StatementRef {
 // for each policy in the set, its overall result status and the original set metadata.
 message ResultSet {
     // Reference to the PolicySet that produced the ResultSet
-    PolicyRef policy_set = 1; 
+    PolicyRef policy_set = 1;
+
     // meta block transferred from the PolicySet
     PolicySetMeta meta = 2;
+
     // status holds the PASS/FAIL/SOFTFAIL status label of the whole PolicySet evaluation
     string status = 3;
+
     // date_start time when the evaluation started
     google.protobuf.Timestamp date_start = 4;
+
     // date_end time when the evaluation finished
     google.protobuf.Timestamp date_end = 5;
+
     // subject under evaluation
     in_toto_attestation.v1.ResourceDescriptor subject = 6;
+
     // results from each of the policies in the set
     repeated Result results = 7;
-    //  error captures an error that failed the evaluation at the PolicySet level
+
+    // error captures an error that failed the evaluation at the PolicySet level
     Error error = 8;
+
+    // The ResultSet common struct varies from its policySet siblingas here,
+    // the contextual information has the computed values, not the definitions.
+    ResultSetCommon common = 9;    
+}
+
+// ResultSetCommon
+message ResultSetCommon {
+    // Context contains the computed common context values
+    google.protobuf.Struct context = 9;
 }

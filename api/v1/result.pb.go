@@ -468,7 +468,10 @@ type ResultSet struct {
 	// results from each of the policies in the set
 	Results []*Result `protobuf:"bytes,7,rep,name=results,proto3" json:"results,omitempty"`
 	// error captures an error that failed the evaluation at the PolicySet level
-	Error         *Error `protobuf:"bytes,8,opt,name=error,proto3" json:"error,omitempty"`
+	Error *Error `protobuf:"bytes,8,opt,name=error,proto3" json:"error,omitempty"`
+	// The ResultSet common struct varies from its policySet siblingas here,
+	// the contextual information has the computed values, not the definitions.
+	Common        *ResultSetCommon `protobuf:"bytes,9,opt,name=common,proto3" json:"common,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -559,6 +562,59 @@ func (x *ResultSet) GetError() *Error {
 	return nil
 }
 
+func (x *ResultSet) GetCommon() *ResultSetCommon {
+	if x != nil {
+		return x.Common
+	}
+	return nil
+}
+
+// ResultSetCommon
+type ResultSetCommon struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Context contains the computed common context values
+	Context       *structpb.Struct `protobuf:"bytes,9,opt,name=context,proto3" json:"context,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResultSetCommon) Reset() {
+	*x = ResultSetCommon{}
+	mi := &file_v1_result_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResultSetCommon) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResultSetCommon) ProtoMessage() {}
+
+func (x *ResultSetCommon) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_result_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResultSetCommon.ProtoReflect.Descriptor instead.
+func (*ResultSetCommon) Descriptor() ([]byte, []int) {
+	return file_v1_result_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ResultSetCommon) GetContext() *structpb.Struct {
+	if x != nil {
+		return x.Context
+	}
+	return nil
+}
+
 var File_v1_result_proto protoreflect.FileDescriptor
 
 const file_v1_result_proto_rawDesc = "" +
@@ -603,7 +659,7 @@ const file_v1_result_proto_rawDesc = "" +
 	"\vattestation\x18\x02 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\vattestation\x12=\n" +
 	"\n" +
 	"identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
-	"identities\"\xbb\x03\n" +
+	"identities\"\xf9\x03\n" +
 	"\tResultSet\x12=\n" +
 	"\n" +
 	"policy_set\x18\x01 \x01(\v2\x1e.carabiner.policy.v1.PolicyRefR\tpolicySet\x126\n" +
@@ -614,7 +670,10 @@ const file_v1_result_proto_rawDesc = "" +
 	"\bdate_end\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\adateEnd\x12D\n" +
 	"\asubject\x18\x06 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\asubject\x125\n" +
 	"\aresults\x18\a \x03(\v2\x1b.carabiner.policy.v1.ResultR\aresults\x120\n" +
-	"\x05error\x18\b \x01(\v2\x1a.carabiner.policy.v1.ErrorR\x05errorB\xbc\x01\n" +
+	"\x05error\x18\b \x01(\v2\x1a.carabiner.policy.v1.ErrorR\x05error\x12<\n" +
+	"\x06common\x18\t \x01(\v2$.carabiner.policy.v1.ResultSetCommonR\x06common\"D\n" +
+	"\x0fResultSetCommon\x121\n" +
+	"\acontext\x18\t \x01(\v2\x17.google.protobuf.StructR\acontextB\xbc\x01\n" +
 	"\x17com.carabiner.policy.v1B\vResultProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
@@ -629,7 +688,7 @@ func file_v1_result_proto_rawDescGZIP() []byte {
 	return file_v1_result_proto_rawDescData
 }
 
-var file_v1_result_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_v1_result_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_v1_result_proto_goTypes = []any{
 	(*Result)(nil),                // 0: carabiner.policy.v1.Result
 	(*ChainedSubject)(nil),        // 1: carabiner.policy.v1.ChainedSubject
@@ -637,49 +696,52 @@ var file_v1_result_proto_goTypes = []any{
 	(*EvalResult)(nil),            // 3: carabiner.policy.v1.EvalResult
 	(*StatementRef)(nil),          // 4: carabiner.policy.v1.StatementRef
 	(*ResultSet)(nil),             // 5: carabiner.policy.v1.ResultSet
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
-	(*PolicyRef)(nil),             // 7: carabiner.policy.v1.PolicyRef
-	(*Meta)(nil),                  // 8: carabiner.policy.v1.Meta
-	(*structpb.Struct)(nil),       // 9: google.protobuf.Struct
-	(*v1.ResourceDescriptor)(nil), // 10: in_toto_attestation.v1.ResourceDescriptor
-	(*Identity)(nil),              // 11: carabiner.policy.v1.Identity
-	(*Error)(nil),                 // 12: carabiner.policy.v1.Error
-	(*Assessment)(nil),            // 13: carabiner.policy.v1.Assessment
-	(*PolicySetMeta)(nil),         // 14: carabiner.policy.v1.PolicySetMeta
+	(*ResultSetCommon)(nil),       // 6: carabiner.policy.v1.ResultSetCommon
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*PolicyRef)(nil),             // 8: carabiner.policy.v1.PolicyRef
+	(*Meta)(nil),                  // 9: carabiner.policy.v1.Meta
+	(*structpb.Struct)(nil),       // 10: google.protobuf.Struct
+	(*v1.ResourceDescriptor)(nil), // 11: in_toto_attestation.v1.ResourceDescriptor
+	(*Identity)(nil),              // 12: carabiner.policy.v1.Identity
+	(*Error)(nil),                 // 13: carabiner.policy.v1.Error
+	(*Assessment)(nil),            // 14: carabiner.policy.v1.Assessment
+	(*PolicySetMeta)(nil),         // 15: carabiner.policy.v1.PolicySetMeta
 }
 var file_v1_result_proto_depIdxs = []int32{
-	6,  // 0: carabiner.policy.v1.Result.date_start:type_name -> google.protobuf.Timestamp
-	6,  // 1: carabiner.policy.v1.Result.date_end:type_name -> google.protobuf.Timestamp
-	7,  // 2: carabiner.policy.v1.Result.policy:type_name -> carabiner.policy.v1.PolicyRef
+	7,  // 0: carabiner.policy.v1.Result.date_start:type_name -> google.protobuf.Timestamp
+	7,  // 1: carabiner.policy.v1.Result.date_end:type_name -> google.protobuf.Timestamp
+	8,  // 2: carabiner.policy.v1.Result.policy:type_name -> carabiner.policy.v1.PolicyRef
 	3,  // 3: carabiner.policy.v1.Result.eval_results:type_name -> carabiner.policy.v1.EvalResult
-	8,  // 4: carabiner.policy.v1.Result.meta:type_name -> carabiner.policy.v1.Meta
-	9,  // 5: carabiner.policy.v1.Result.context:type_name -> google.protobuf.Struct
+	9,  // 4: carabiner.policy.v1.Result.meta:type_name -> carabiner.policy.v1.Meta
+	10, // 5: carabiner.policy.v1.Result.context:type_name -> google.protobuf.Struct
 	1,  // 6: carabiner.policy.v1.Result.chain:type_name -> carabiner.policy.v1.ChainedSubject
-	10, // 7: carabiner.policy.v1.Result.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	10, // 8: carabiner.policy.v1.ChainedSubject.source:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	10, // 9: carabiner.policy.v1.ChainedSubject.destination:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	11, // 7: carabiner.policy.v1.Result.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	11, // 8: carabiner.policy.v1.ChainedSubject.source:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	11, // 9: carabiner.policy.v1.ChainedSubject.destination:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	2,  // 10: carabiner.policy.v1.ChainedSubject.link:type_name -> carabiner.policy.v1.ChainedSubjectLink
-	10, // 11: carabiner.policy.v1.ChainedSubjectLink.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	11, // 12: carabiner.policy.v1.ChainedSubjectLink.identities:type_name -> carabiner.policy.v1.Identity
-	6,  // 13: carabiner.policy.v1.EvalResult.date:type_name -> google.protobuf.Timestamp
-	9,  // 14: carabiner.policy.v1.EvalResult.output:type_name -> google.protobuf.Struct
+	11, // 11: carabiner.policy.v1.ChainedSubjectLink.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	12, // 12: carabiner.policy.v1.ChainedSubjectLink.identities:type_name -> carabiner.policy.v1.Identity
+	7,  // 13: carabiner.policy.v1.EvalResult.date:type_name -> google.protobuf.Timestamp
+	10, // 14: carabiner.policy.v1.EvalResult.output:type_name -> google.protobuf.Struct
 	4,  // 15: carabiner.policy.v1.EvalResult.statements:type_name -> carabiner.policy.v1.StatementRef
-	12, // 16: carabiner.policy.v1.EvalResult.error:type_name -> carabiner.policy.v1.Error
-	13, // 17: carabiner.policy.v1.EvalResult.assessment:type_name -> carabiner.policy.v1.Assessment
-	10, // 18: carabiner.policy.v1.StatementRef.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	11, // 19: carabiner.policy.v1.StatementRef.identities:type_name -> carabiner.policy.v1.Identity
-	7,  // 20: carabiner.policy.v1.ResultSet.policy_set:type_name -> carabiner.policy.v1.PolicyRef
-	14, // 21: carabiner.policy.v1.ResultSet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
-	6,  // 22: carabiner.policy.v1.ResultSet.date_start:type_name -> google.protobuf.Timestamp
-	6,  // 23: carabiner.policy.v1.ResultSet.date_end:type_name -> google.protobuf.Timestamp
-	10, // 24: carabiner.policy.v1.ResultSet.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	13, // 16: carabiner.policy.v1.EvalResult.error:type_name -> carabiner.policy.v1.Error
+	14, // 17: carabiner.policy.v1.EvalResult.assessment:type_name -> carabiner.policy.v1.Assessment
+	11, // 18: carabiner.policy.v1.StatementRef.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	12, // 19: carabiner.policy.v1.StatementRef.identities:type_name -> carabiner.policy.v1.Identity
+	8,  // 20: carabiner.policy.v1.ResultSet.policy_set:type_name -> carabiner.policy.v1.PolicyRef
+	15, // 21: carabiner.policy.v1.ResultSet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
+	7,  // 22: carabiner.policy.v1.ResultSet.date_start:type_name -> google.protobuf.Timestamp
+	7,  // 23: carabiner.policy.v1.ResultSet.date_end:type_name -> google.protobuf.Timestamp
+	11, // 24: carabiner.policy.v1.ResultSet.subject:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	0,  // 25: carabiner.policy.v1.ResultSet.results:type_name -> carabiner.policy.v1.Result
-	12, // 26: carabiner.policy.v1.ResultSet.error:type_name -> carabiner.policy.v1.Error
-	27, // [27:27] is the sub-list for method output_type
-	27, // [27:27] is the sub-list for method input_type
-	27, // [27:27] is the sub-list for extension type_name
-	27, // [27:27] is the sub-list for extension extendee
-	0,  // [0:27] is the sub-list for field type_name
+	13, // 26: carabiner.policy.v1.ResultSet.error:type_name -> carabiner.policy.v1.Error
+	6,  // 27: carabiner.policy.v1.ResultSet.common:type_name -> carabiner.policy.v1.ResultSetCommon
+	10, // 28: carabiner.policy.v1.ResultSetCommon.context:type_name -> google.protobuf.Struct
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_v1_result_proto_init() }
@@ -694,7 +756,7 @@ func file_v1_result_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_result_proto_rawDesc), len(file_v1_result_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
