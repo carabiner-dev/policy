@@ -27,6 +27,33 @@ message PolicySet {
     // Chain is the evidence chain to compute a set of subjects to which
     // al the policies will apply.
     repeated ChainLink chain = 5;
+
+    // PolicyBlocks
+}
+
+// PolicyBlock groups policies in the PolicySet to apply properties to more 
+// than one policy at once.
+message PolicyBlock {
+    // BlockMeta contains the metadata describing the 
+    BlockMeta meta = 1;
+
+    // Policies is the list of policies grouped in the block
+    repeated Policy policies = 2;
+}
+
+// BlockMeta 
+message BlockMeta {
+    // Description of the policy block
+    string description = 1;
+
+    // Assert mode to consider the policy block passing (OR or AND)
+    string assert_mode = 2;
+
+    // Enforce the block (ON or OFF)
+    string enforce = 3;
+
+    // Framework controls fronted by the block
+    repeated Control controls = 4;
 }
 
 message PolicySetMeta {
