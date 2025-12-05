@@ -46,14 +46,14 @@ type Parser struct {
 // Open opens a Policy or policySet. This function supports remote locations
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
-func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, v attestation.Verification, err error) {
+func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, grp *api.PolicyGroup, v attestation.Verification, err error) {
 	// Open de PolicySet/Policy data from files or remote locations
 	var data []byte
 	switch {
 	case strings.HasPrefix(location, "git+https://"), strings.HasPrefix(location, "git+ssh://"):
 		var b bytes.Buffer
 		if err := vcslocator.CopyFile(location, &b); err != nil {
-			return nil, nil, nil, fmt.Errorf("copying data from repository: %w", err)
+			return nil, nil, nil, nil, fmt.Errorf("copying data from repository: %w", err)
 		}
 		data = b.Bytes()
 	case strings.HasPrefix(location, "https://"):
@@ -63,24 +63,24 @@ func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.P
 	}
 
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("opening policy data: %w", err)
+		return nil, nil, nil, nil, fmt.Errorf("opening policy data: %w", err)
 	}
 
 	// Parse the read data
-	set, pcy, v, err = p.ParseVerifyPolicyOrSet(data, funcs...)
+	set, pcy, grp, v, err = p.ParseVerifyPolicyOrSetOrGroup(data, funcs...)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("parsing policy data: %w", err)
+		return nil, nil, nil, nil, fmt.Errorf("parsing policy data: %w", err)
 	}
 
-	return set, pcy, v, nil
+	return set, pcy, grp, v, nil
 }
 
 // Open opens a Policy or policySet. This function supports remote locations
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
-func (p *Parser) Open(location string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, error) {
-	set, pcy, _, err := p.OpenVerify(location, funcs...)
-	return set, pcy, err
+func (p *Parser) Open(location string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, *api.PolicyGroup, error) {
+	set, pcy, grp, _, err := p.OpenVerify(location, funcs...)
+	return set, pcy, grp, err
 }
 
 // ParseFile parses a policySet from a file
@@ -101,6 +101,16 @@ func (p *Parser) ParsePolicyFile(path string, funcs ...options.OptFn) (*api.Poli
 	}
 
 	return p.ParsePolicy(data, funcs...)
+}
+
+// ParsePolicyFile parses a policy from a file
+func (p *Parser) ParsePolicyGroupFile(path string, funcs ...options.OptFn) (*api.PolicyGroup, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading polciy file: %w", err)
+	}
+
+	return p.ParsePolicyGroup(data, funcs...)
 }
 
 // ParseSet parses a policy set.
