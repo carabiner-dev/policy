@@ -24,6 +24,7 @@ import (
 type parserImplementation interface {
 	ParsePolicySet(*options.ParseOptions, []byte) (*v1.PolicySet, attestation.Verification, error)
 	ParsePolicy(*options.ParseOptions, []byte) (*v1.Policy, attestation.Verification, error)
+	ParsePolicyGroup(*options.ParseOptions, []byte) (*v1.PolicyGroup, attestation.Verification, error)
 }
 
 type defaultParserImplementationV1 struct{}
@@ -167,6 +168,50 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 	}
 
 	return p, verification, nil
+}
+
+// ParsePolicyGroup parses a PolicyGroup from a byte slice.
+func (dpi *defaultParserImplementationV1) ParsePolicyGroup(opts *options.ParseOptions, policyData []byte) (*v1.PolicyGroup, attestation.Verification, error) {
+	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
+	policyData, err := normalizeToJSON(policyData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("normalizing policygroup data: %w", err)
+	}
+
+	// Extract the policy when used as a envelope's predicate
+	policyGroupData, verification, err := parseEnvelope(opts, policyData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("testing for signature envelope: %w", err)
+	}
+
+	g := &v1.PolicyGroup{}
+	err = protojson.UnmarshalOptions{}.Unmarshal(policyGroupData, g)
+	if err != nil {
+		return nil, verification, fmt.Errorf("parsing group source: %w", err)
+	}
+
+	// hash the data to record it in the policy origin
+	hset, err := hasher.New().HashReaders([]io.Reader{bytes.NewReader(policyData)})
+	if err != nil {
+		return nil, nil, fmt.Errorf("hashing policy data: %w", err)
+	}
+
+	if g.GetMeta() == nil {
+		g.Meta = &v1.GroupMeta{}
+	}
+
+	if g.GetMeta().GetOrigin() == nil {
+		g.GetMeta().Origin = &intoto.ResourceDescriptor{}
+	}
+
+	g.GetMeta().GetOrigin().Digest = hset.ToResourceDescriptors()[0].Digest
+	g.GetMeta().GetOrigin().Name = g.GetId()
+
+	if g.GetMeta().GetEnforce() == "" {
+		g.GetMeta().Enforce = EnforceOn
+	}
+
+	return g, verification, nil
 }
 
 // parseEnvelope parses a policy when wrapped in a cryptographic envelope.
