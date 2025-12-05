@@ -125,6 +125,28 @@ func (p *Parser) ParsePolicySet(policySetData []byte, funcs ...options.OptFn) (*
 	return set, err
 }
 
+// ParseSet parses a policy set.
+func (p *Parser) ParseVerifyPolicyGroup(policyGroupData []byte, funcs ...options.OptFn) (*api.PolicyGroup, attestation.Verification, error) {
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, nil, err
+		}
+	}
+	// Parse the PolicyGroup data
+	grp, v, err := p.impl.ParsePolicyGroup(&opts, policyGroupData)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing policy source: %w", err)
+	}
+	return grp, v, nil
+}
+
+// ParseSet parses a policy set.
+func (p *Parser) ParsePolicyGroup(policyGroupData []byte, funcs ...options.OptFn) (*api.PolicyGroup, error) {
+	set, _, err := p.ParseVerifyPolicyGroup(policyGroupData, funcs...)
+	return set, err
+}
+
 // ParsePolicy parses a policy from its JSON representation or an envelope
 func (p *Parser) ParseVerifyPolicy(data []byte, funcs ...options.OptFn) (*api.Policy, attestation.Verification, error) {
 	opts := options.DefaultParseOptions
@@ -146,19 +168,28 @@ func (p *Parser) ParsePolicy(data []byte, funcs ...options.OptFn) (*api.Policy, 
 	return pcy, err
 }
 
+// deprecated
+func (p *Parser) ParseVerifyPolicyOrSet(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, v attestation.Verification, err error) {
+	s, pc, g, v, err := p.ParseVerifyPolicyOrSetOrGroup(data, funcs...)
+	if g != nil {
+		return nil, nil, nil, fmt.Errorf("data is a policy group")
+	}
+	return s, pc, v, err
+}
+
 // ParseVerifyPolicyOrSet parses a policy and verifies the signatures. It returns
 // a PolicySet or Policy and the signature verification results object.
-func (p *Parser) ParseVerifyPolicyOrSet(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, v attestation.Verification, err error) {
+func (p *Parser) ParseVerifyPolicyOrSetOrGroup(data []byte, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, grp *api.PolicyGroup, v attestation.Verification, err error) {
 	opts := options.DefaultParseOptions
 	for _, f := range funcs {
 		if err := f(&opts); err != nil {
-			return nil, nil, nil, err
+			return nil, nil, nil, nil, err
 		}
 	}
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 
-	var errSet, errPolicy error
+	var errSet, errPolicy, errGroup error
 	go func() {
 		defer wg.Done()
 		set, v, errSet = p.impl.ParsePolicySet(&opts, data)
@@ -167,27 +198,34 @@ func (p *Parser) ParseVerifyPolicyOrSet(data []byte, funcs ...options.OptFn) (se
 		defer wg.Done()
 		pcy, v, errPolicy = p.impl.ParsePolicy(&opts, data)
 	}()
+	go func() {
+		defer wg.Done()
+		grp, v, errGroup = p.impl.ParsePolicyGroup(&opts, data)
+	}()
 
 	// Wait for both parsers
 	wg.Wait()
 
-	if (set == nil && pcy == nil) || (errSet != nil && errPolicy != nil) {
+	if (set == nil && pcy == nil && grp == nil) || (errSet != nil && errPolicy != nil && errGroup != nil) {
 		// A we are unmarshaling both types, one of the errors will always be
 		// an unmarshal error because of the wrong format. Try to find the other
 		// as returning it informs the user better of what went wrong.
 		switch {
 		case strings.Contains(errSet.Error(), "unknown field") &&
-			strings.Contains(errPolicy.Error(), "unknown field"):
-			return nil, nil, nil, errors.New("unable to parse a policy or policySet from data")
-		case strings.Contains(errSet.Error(), "unknown field"):
-			return nil, nil, nil, errPolicy
-		case strings.Contains(errPolicy.Error(), "unknown field"):
-			return nil, nil, nil, errSet
+			strings.Contains(errPolicy.Error(), "unknown field") &&
+			strings.Contains(errGroup.Error(), "unknown field"):
+			return nil, nil, nil, nil, errors.New("unable to parse a policy, group or policySet from data")
+		case !strings.Contains(errSet.Error(), "unknown field"):
+			return nil, nil, nil, nil, errPolicy
+		case !strings.Contains(errPolicy.Error(), "unknown field"):
+			return nil, nil, nil, nil, errSet
+		case !strings.Contains(errGroup.Error(), "unknown field"):
+			return nil, nil, nil, nil, errGroup
 		default:
-			return nil, nil, nil, errors.New("unable to parse a policy or policySet from data")
+			return nil, nil, nil, nil, errors.New("unable to parse a policy, group or policySet from data")
 		}
 	}
-	return set, pcy, v, nil
+	return set, pcy, grp, v, nil
 }
 
 // ParsePolicyOrSet takes json data and tries to parse a policy or a policy set
