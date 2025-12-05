@@ -15,6 +15,7 @@ import (
 )
 
 func (set *PolicySet) Validate() error {
+	// TODO: Check all IDS are unique (including policy set, policies and groups)
 	errs := []error{}
 	for _, p := range set.GetPolicies() {
 		if err := p.Validate(); err != nil {

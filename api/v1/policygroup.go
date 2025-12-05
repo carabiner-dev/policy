@@ -15,3 +15,8 @@ func (ref *PolicyGroupRef) GetSourceURL() string {
 	}
 	return ref.GetLocation().GetUri()
 }
+
+// Validate checks the consistency of the policy group
+func (grp *PolicyGroup) Validate() error {
+	return nil
+}

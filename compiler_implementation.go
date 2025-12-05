@@ -25,6 +25,12 @@ type compilerImplementation interface {
 	AssemblePolicy(*CompilerOptions, *api.Policy, StorageBackend) (*api.Policy, error)
 	ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error
 	ValidateAssembledPolicy(*CompilerOptions, *api.Policy) error
+
+	ValidateGroup(*CompilerOptions, *api.PolicyGroup) error
+	ExtractRemotePolicyGroupReferences(*CompilerOptions, *api.PolicyGroup) ([]*api.PolicyGroupRef, error)
+	FetchRemoteGroupResources(*CompilerOptions, StorageBackend, []*api.PolicyGroupRef) error
+	AssemblePolicyGroup(*CompilerOptions, *api.PolicyGroup, StorageBackend) (*api.PolicyGroup, error)
+	ValidateAssembledPolicyGroup(*CompilerOptions, *api.PolicyGroup) error
 }
 
 type defaultCompilerImpl struct{}
@@ -43,6 +49,11 @@ func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) er
 	//   Remote ID is not the reference id
 	//
 	return nil
+}
+
+// ValidateAssembledPolicyGroup checks the integrity of a policy group
+func (dci *defaultCompilerImpl) ValidateAssembledPolicyGroup(_ *CompilerOptions, grp *api.PolicyGroup) error {
+	return grp.Validate()
 }
 
 // ExtractRemoteSetReferences extracts and enriches the remote references from all
@@ -359,6 +370,66 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 	assembledPolicy.Tenets = tenets
 	assembledPolicy.Source = nil
 	return assembledPolicy, nil
+}
+
+// assemblePolicyGroup
+func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *api.PolicyGroup, store StorageBackend) (*api.PolicyGroup, error) {
+	assembledGroup, ok := proto.Clone(grp).(*api.PolicyGroup)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast reassembled group: %w")
+	}
+
+	// First, if remote fetch the data
+	remotePolicyGroup, err := store.GetReferencedGroup(grp.Source)
+	if err != nil {
+		return nil, fmt.Errorf("getting referenced PolicyGroup: %w", err)
+	}
+
+	if remotePolicyGroup == nil {
+		return nil, fmt.Errorf("unable to complete PolicyGroup, reference %v not resolved", grp.Source)
+	}
+
+	// Agument the assembled group with the remote blocks. This adds both
+	assembledGroup.Blocks = append(assembledGroup.Blocks, remotePolicyGroup.Blocks...)
+	if assembledGroup.GetMeta() == nil {
+		assembledGroup.Meta = &api.PolicyGroupMeta{}
+	}
+
+	// Merge the meta fields
+	if assembledGroup.GetMeta().GetDescription() == "" {
+		assembledGroup.GetMeta().Description = remotePolicyGroup.GetMeta().GetDescription()
+	}
+
+	// int64 version = 2; <<< Version is not inherited
+	// repeated Control controls = 3; TODO: Merge controls
+	if assembledGroup.GetMeta().GetEnforce() == "" {
+		assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
+	}
+	// optional google.protobuf.Timestamp expiration = 5; <<< Expiration is not inherited
+	// optional in_toto_attestation.v1.ResourceDescriptor origin = 6; <<< From pulled data
+
+	// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
+
+	// TODO(puerco): Check meta ?
+	for i := range assembledGroup.GetBlocks() {
+		for j := range assembledGroup.GetBlocks()[i].GetPolicies() {
+			p, err := dci.assemblePolicy(opts, 0, assembledGroup.GetBlocks()[i].GetPolicies()[j], store)
+			if err != nil {
+				return nil, fmt.Errorf("assembling policy #%d of block #%d: %w", j, i, err)
+			}
+			assembledGroup.Blocks[i].Policies[j] = p
+		}
+	}
+	return assembledGroup, nil
+}
+
+// AssemblePolicyGroup
+func (dci *defaultCompilerImpl) AssemblePolicyGroup(opts *CompilerOptions, grp *api.PolicyGroup, store StorageBackend) (*api.PolicyGroup, error) {
+	assembledGroup, err := dci.assemblePolicyGroup(opts, grp, store)
+	if err != nil {
+		return nil, fmt.Errorf("assembling policy group: %w", err)
+	}
+	return assembledGroup, nil
 }
 
 func (dci *defaultCompilerImpl) AssemblePolicySet(opts *CompilerOptions, set *api.PolicySet, store StorageBackend) error {

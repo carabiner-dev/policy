@@ -197,7 +197,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicyGroup(opts *options.ParseOp
 	}
 
 	if g.GetMeta() == nil {
-		g.Meta = &v1.GroupMeta{}
+		g.Meta = &v1.PolicyGroupMeta{}
 	}
 
 	if g.GetMeta().GetOrigin() == nil {
