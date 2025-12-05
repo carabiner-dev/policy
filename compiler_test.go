@@ -53,7 +53,7 @@ func TestCompilerPreservesRemoteAssertMode(t *testing.T) {
 	store := newRefStore()
 	ref := policySet.Policies[0].Source
 	ref.Location.Content = remotePolicyJSON
-	_, _, err = store.StoreReferenceWithReturn(ref)
+	_, _, _, err = store.StoreReferenceWithReturn(ref)
 	require.NoError(t, err)
 
 	// Compile the policyset

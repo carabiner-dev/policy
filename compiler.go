@@ -275,7 +275,7 @@ func (compiler *Compiler) CompilePolicy(p *api.Policy, funcs ...options.OptFn) (
 // Compile builds a policy set fetching any remote pieces as necessary
 func (compiler *Compiler) CompileGroup(grp *api.PolicyGroup, funcs ...options.OptFn) (*api.PolicyGroup, error) {
 	// Validate PolicyGroup
-	if err := compiler.impl.ValidateGroup(&compiler.Options, grp); err != nil {
+	if err := compiler.impl.ValidatePolicyGroup(&compiler.Options, grp); err != nil {
 		return nil, fmt.Errorf("validating PolicyGroup: %w", err)
 	}
 
@@ -289,14 +289,14 @@ func (compiler *Compiler) CompileGroup(grp *api.PolicyGroup, funcs ...options.Op
 
 	// Fetch remote resources. This retrieves the remote data but also validates
 	// the signatures and/or hashes
-	if err := compiler.impl.FetchRemoteGroupResources(
+	if err := compiler.impl.FetchRemoteResources(
 		&compiler.Options, compiler.Store, remoteRefs,
 	); err != nil {
 		return nil, fmt.Errorf("fetching remote resources: %w", err)
 	}
 
 	// Assemble the local policy
-	err = compiler.impl.AssemblePolicyGroup(&compiler.Options, grp, compiler.Store)
+	grp, err = compiler.impl.AssemblePolicyGroup(&compiler.Options, grp, compiler.Store)
 	if err != nil {
 		return nil, fmt.Errorf("error assembling policy set: %w", err)
 	}
