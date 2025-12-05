@@ -18,7 +18,7 @@ import (
 // Storage backend is an interface that fronts systems that store and index policies
 type StorageBackend interface {
 	StoreReference(*api.PolicyRef) error
-	StoreGroupReference(*api.PolicyRef) error
+	StoreGroupReference(*api.PolicyGroupRef) error
 	StoreReferenceWithReturn(*api.PolicyRef) (*api.PolicySet, *api.Policy, error)
 	GetReferencedPolicy(*api.PolicyRef) (*api.Policy, error)
 	GetReferencedGroup(*api.PolicyGroupRef) (*api.PolicyGroup, error)
@@ -282,6 +282,15 @@ func (rs *refStore) GetPolicyByURL(url string) *api.Policy {
 	return rs.GetPolicyBySHA256(sha)
 }
 
+// This retrieves a policy from the sets by its source URL
+func (rs *refStore) GetPolicyGroupByURL(url string) *api.PolicyGroup {
+	sha, ok := rs.urls[url]
+	if !ok {
+		return nil
+	}
+	return rs.GetPolicyGroupBySHA256(sha)
+}
+
 // This retrieves a policy from the sets by its ID
 func (rs *refStore) GetPolicyByID(id string) *api.Policy {
 	sha, ok := rs.ids[id]
@@ -400,7 +409,7 @@ func (rs *refStore) GetReferencedPolicy(ref *api.PolicyRef) (*api.Policy, error)
 }
 
 // GetReferencedPolicy
-func (rs *refStore) GetReferencedPolicyGroup(ref *api.PolicyGroupRef) (*api.PolicyGroup, error) {
+func (rs *refStore) GetReferencedGroup(ref *api.PolicyGroupRef) (*api.PolicyGroup, error) {
 	// Try finding the policy by indexed ID
 	if p := rs.GetPolicyGroupByID(ref.GetId()); p != nil {
 		return p, nil
