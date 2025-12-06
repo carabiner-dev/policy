@@ -1,12 +1,14 @@
 module github.com/carabiner-dev/policy
 
-go 1.24.6
+go 1.24.11
 
 require (
 	github.com/carabiner-dev/attestation v0.2.0
 	github.com/carabiner-dev/collector v0.2.2
+	github.com/carabiner-dev/hasher v0.2.2
 	github.com/carabiner-dev/signer v0.2.1
 	github.com/carabiner-dev/vcslocator v0.3.2
+	github.com/hjson/hjson-go/v4 v4.5.0
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.11.1
@@ -37,7 +39,6 @@ require (
 	github.com/avast/retry-go/v4 v4.6.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
-	github.com/carabiner-dev/hasher v0.2.2 // indirect
 	github.com/carabiner-dev/jsonl v0.2.1 // indirect
 	github.com/carabiner-dev/openeox v0.0.0-20250606202227-fd40810cda47 // indirect
 	github.com/carabiner-dev/osv v0.0.0-20250124012120-b8ce4531cd92 // indirect
@@ -100,7 +101,6 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
-	github.com/hjson/hjson-go/v4 v4.5.0 // indirect
 	github.com/in-toto/in-toto-golang v0.9.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect

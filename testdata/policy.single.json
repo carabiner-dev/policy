@@ -1,0 +1,19 @@
+{
+    "id": "policy-assert-mode-test",
+    "meta": {
+        "description": "Policy testing the assert modes and tenets",
+        "assertMode": "AND"
+    },
+    "tenets": [
+        {
+            "id": "tenet-1",
+            "title": "First passing tenet",
+            "code": "true"
+        },
+        {
+            "id": "tenet-2",
+            "title": "Second passing tenet",
+            "code": "true"
+        }
+    ]
+}

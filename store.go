@@ -17,48 +17,53 @@ import (
 
 // Storage backend is an interface that fronts systems that store and index policies
 type StorageBackend interface {
-	StoreReference(*api.PolicyRef) error
-	StoreReferenceWithReturn(*api.PolicyRef) (*api.PolicySet, *api.Policy, error)
-	GetReferencedPolicy(*api.PolicyRef) (*api.Policy, error)
+	StoreReference(api.RemoteReference) error
+	StoreReferenceWithReturn(api.RemoteReference) (*api.PolicySet, *api.Policy, *api.PolicyGroup, error)
+	GetReferencedPolicy(api.RemoteReference) (*api.Policy, error)
+	GetReferencedGroup(api.RemoteReference) (*api.PolicyGroup, error)
 }
 
 func newRefStore() *refStore {
 	return &refStore{
-		references: map[string]*api.PolicyRef{},
-		policySets: map[string]*api.PolicySet{},
-		policies:   map[string]*api.Policy{},
-		ids:        map[string]string{},
-		urls:       map[string]string{},
-		hashes:     map[string]string{},
+		references:   map[string]api.RemoteReference{},
+		policySets:   map[string]*api.PolicySet{},
+		policies:     map[string]*api.Policy{},
+		policyGroups: map[string]*api.PolicyGroup{},
+		ids:          map[string]string{},
+		urls:         map[string]string{},
+		hashes:       map[string]string{},
 	}
 }
 
+var _ StorageBackend = &refStore{}
+
 type refStore struct {
-	references map[string]*api.PolicyRef
-	policySets map[string]*api.PolicySet
-	policies   map[string]*api.Policy
-	ids        map[string]string
-	urls       map[string]string
-	hashes     map[string]string
+	references   map[string]api.RemoteReference
+	policySets   map[string]*api.PolicySet
+	policies     map[string]*api.Policy
+	policyGroups map[string]*api.PolicyGroup
+	ids          map[string]string
+	urls         map[string]string
+	hashes       map[string]string
 }
 
 // StoreReference stores a reference and adds it to the index
-func (rs *refStore) StoreReference(ref *api.PolicyRef) error {
-	_, _, err := rs.StoreReferenceWithReturn(ref)
+func (rs *refStore) StoreReference(ref api.RemoteReference) error {
+	_, _, _, err := rs.StoreReferenceWithReturn(ref)
 	return err
 }
 
 // StoreReferenceWithReturn stores a policy reference returning the parsed
 // Policy or PolicySet from the ref content.
-func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet, *api.Policy, error) {
+func (rs *refStore) StoreReferenceWithReturn(ref api.RemoteReference) (*api.PolicySet, *api.Policy, *api.PolicyGroup, error) {
 	if ref.GetLocation() == nil {
-		return nil, nil, fmt.Errorf("unable to store policy no location data found")
+		return nil, nil, nil, fmt.Errorf("unable to store policy no location data found")
 	}
 
 	// If the policy content is nil at some point we could try to fetch it
 	// but for now we use the fetcher as it it can fet in parallel.
 	if ref.GetLocation().GetContent() == nil {
-		return nil, nil, fmt.Errorf("unable to store policy, content is empty")
+		return nil, nil, nil, fmt.Errorf("unable to store policy, content is empty")
 	}
 
 	if ref.GetLocation().GetDigest() == nil {
@@ -75,10 +80,10 @@ func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet
 	if _, ok := ref.GetLocation().GetDigest()[string(intoto.AlgorithmSHA256)]; !ok {
 		ref.GetLocation().GetDigest()[string(intoto.AlgorithmSHA256)] = contentHash
 	} else if contentHash != ref.GetLocation().GetDigest()[string(intoto.AlgorithmSHA256)] {
-		return nil, nil, fmt.Errorf("policy sha256 digest does not match content")
+		return nil, nil, nil, fmt.Errorf("policy sha256 digest does not match content")
 	}
 
-	// TODO(puerco) Here the reference shuold be augmented if it already exists
+	// TODO(puerco) Here the reference should be augmented if it already exists
 	rs.references[contentHash] = ref
 
 	uri := ref.GetLocation().GetDownloadLocation()
@@ -94,7 +99,7 @@ func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet
 	}
 
 	// Parse the data and assign whatever comes out of it
-	set, pcy, err := NewParser().ParsePolicyOrSet(ref.Location.GetContent())
+	set, pcy, grp, _, err := NewParser().ParseVerifyPolicyOrSetOrGroup(ref.GetLocation().GetContent())
 
 	// Here, we record the policy source url in the origin. It's not great
 	// to be doing it here but otherwise the cached data will not have it.
@@ -106,7 +111,7 @@ func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet
 	switch {
 	case set != nil:
 		if err := rs.registerPolicySet(contentHash, set); err != nil {
-			return nil, nil, fmt.Errorf("indexing policy set: %w", err)
+			return nil, nil, nil, fmt.Errorf("indexing policy set: %w", err)
 		}
 		set.GetMeta().GetOrigin().DownloadLocation = sourceURI
 		if set.GetMeta().GetOrigin().Uri == "" {
@@ -114,16 +119,24 @@ func (rs *refStore) StoreReferenceWithReturn(ref *api.PolicyRef) (*api.PolicySet
 		}
 	case pcy != nil:
 		if err := rs.registerPolicy(contentHash, pcy); err != nil {
-			return nil, nil, fmt.Errorf("indexing policy: %w", err)
+			return nil, nil, nil, fmt.Errorf("indexing policy: %w", err)
 		}
 		pcy.GetMeta().GetOrigin().DownloadLocation = sourceURI
 		if pcy.GetMeta().GetOrigin().Uri == "" {
 			pcy.GetMeta().GetOrigin().Uri = sourceURI
 		}
+	case grp != nil:
+		if err := rs.registerGroup(contentHash, grp); err != nil {
+			return nil, nil, nil, fmt.Errorf("indexing group: %w", err)
+		}
+		grp.GetMeta().GetOrigin().DownloadLocation = sourceURI
+		if grp.GetMeta().GetOrigin().Uri == "" {
+			grp.GetMeta().GetOrigin().Uri = sourceURI
+		}
 	case err != nil:
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return set, pcy, err
+	return set, pcy, grp, err
 }
 
 // registerPolicy register a policy, not form a set.
@@ -137,6 +150,20 @@ func (rs *refStore) registerPolicy(contentHash string, pcy *api.Policy) error {
 	}
 	rs.ids[pcy.GetId()] = contentHash
 	rs.policies[contentHash] = pcy
+	return nil
+}
+
+// registerPolicy register a policy, not form a set.
+func (rs *refStore) registerGroup(contentHash string, grp *api.PolicyGroup) error {
+	if grp.GetId() != "" {
+		if currentHash, ok := rs.ids[grp.GetId()]; ok {
+			if currentHash != contentHash {
+				return fmt.Errorf("duplicate policy group ID %q with different hash", grp.GetId())
+			}
+		}
+	}
+	rs.ids[grp.GetId()] = contentHash
+	rs.policyGroups[contentHash] = grp
 	return nil
 }
 
@@ -175,6 +202,15 @@ func (rs *refStore) GetPolicyByURL(url string) *api.Policy {
 	return rs.GetPolicyBySHA256(sha)
 }
 
+// This retrieves a policy from the sets by its source URL
+func (rs *refStore) GetPolicyGroupByURL(url string) *api.PolicyGroup {
+	sha, ok := rs.urls[url]
+	if !ok {
+		return nil
+	}
+	return rs.GetPolicyGroupBySHA256(sha)
+}
+
 // This retrieves a policy from the sets by its ID
 func (rs *refStore) GetPolicyByID(id string) *api.Policy {
 	sha, ok := rs.ids[id]
@@ -184,6 +220,10 @@ func (rs *refStore) GetPolicyByID(id string) *api.Policy {
 
 	if _, ok := rs.policies[sha]; ok {
 		return rs.policies[sha]
+	}
+
+	if _, ok := rs.policyGroups[sha]; ok {
+		return nil
 	}
 
 	if _, ok := rs.policySets[sha]; !ok {
@@ -201,6 +241,36 @@ func (rs *refStore) GetPolicyByID(id string) *api.Policy {
 	return nil
 }
 
+// This retrieves a policy from the sets by its ID
+func (rs *refStore) GetPolicyGroupByID(id string) *api.PolicyGroup {
+	sha, ok := rs.ids[id]
+	if !ok || id == "" {
+		return nil
+	}
+
+	if _, ok := rs.policyGroups[sha]; ok {
+		return rs.policyGroups[sha]
+	}
+
+	if _, ok := rs.policies[sha]; ok {
+		return nil
+	}
+
+	if _, ok := rs.policySets[sha]; !ok {
+		return nil
+	}
+
+	for _, p := range rs.policySets[sha].GetGroups() {
+		if p.GetId() == id {
+			return p
+		}
+	}
+
+	// This should never happen as it would point to a corrupt index
+	logrus.Warnf("Indexed PolicyGroup id %q points to PolicySet that does not have it", id)
+	return nil
+}
+
 func (rs *refStore) GetPolicyBySHA256(sha string) *api.Policy {
 	if _, ok := rs.policies[sha]; ok {
 		return rs.policies[sha]
@@ -213,13 +283,6 @@ func (rs *refStore) GetPolicyBySHA256(sha string) *api.Policy {
 	return nil
 }
 
-func (rs *refStore) GetPolicyRefBySHA256(sha string) *api.PolicyRef {
-	if v, ok := rs.references[sha]; ok {
-		return v
-	}
-	return nil
-}
-
 func (rs *refStore) GetPolicySetBySHA256(sha string) *api.PolicySet {
 	sha = strings.TrimPrefix(sha, "sha256:")
 	if v, ok := rs.policySets[sha]; ok {
@@ -228,14 +291,44 @@ func (rs *refStore) GetPolicySetBySHA256(sha string) *api.PolicySet {
 	return nil
 }
 
+func (rs *refStore) GetPolicyGroupBySHA256(sha string) *api.PolicyGroup {
+	sha = strings.TrimPrefix(sha, "sha256:")
+	if v, ok := rs.policyGroups[sha]; ok {
+		return v
+	}
+	return nil
+}
+
+func (rs *refStore) GetRemoteRefBySHA256(sha string) api.RemoteReference {
+	if v, ok := rs.references[sha]; ok {
+		return v
+	}
+	return nil
+}
+
 // GetReferencedPolicy
-func (rs *refStore) GetReferencedPolicy(ref *api.PolicyRef) (*api.Policy, error) {
+func (rs *refStore) GetReferencedPolicy(ref api.RemoteReference) (*api.Policy, error) {
 	// Try finding the policy by indexed ID
 	if p := rs.GetPolicyByID(ref.GetId()); p != nil {
 		return p, nil
 	}
 
 	if p := rs.GetPolicyByURL(ref.GetSourceURL()); p != nil {
+		return p, nil
+	}
+
+	// Can't locate it through any other means
+	return nil, nil
+}
+
+// GetReferencedPolicy
+func (rs *refStore) GetReferencedGroup(ref api.RemoteReference) (*api.PolicyGroup, error) {
+	// Try finding the policy by indexed ID
+	if p := rs.GetPolicyGroupByID(ref.GetId()); p != nil {
+		return p, nil
+	}
+
+	if p := rs.GetPolicyGroupByURL(ref.GetSourceURL()); p != nil {
 		return p, nil
 	}
 

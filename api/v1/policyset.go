@@ -15,6 +15,16 @@ import (
 )
 
 func (set *PolicySet) Validate() error {
+	// TODO(puerco): Implement with learnings from building this
+	// Rules:
+	//   Check if same uri has different hashes
+	//   Check for same version in same uri
+	//   Check all IDs are not repeated
+	//
+	// Post rules:
+	//   Remote ID is not the reference id
+
+	// TODO: Check all IDS are unique (including policy set, policies and groups)
 	errs := []error{}
 	for _, p := range set.GetPolicies() {
 		if err := p.Validate(); err != nil {

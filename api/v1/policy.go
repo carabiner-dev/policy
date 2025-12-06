@@ -49,6 +49,10 @@ func (policy *Policy) TestsControl(ctrl *Control) bool {
 	return policy.GetMeta().testsControl(ctrl)
 }
 
+func (ref *PolicyRef) SetVersion(v int64) {
+	ref.Version = v
+}
+
 // GetSourceURL returns the URL to fetch the policy. First, it will try the
 // DownloadLocation, if empty returns the UR
 func (ref *PolicyRef) GetSourceURL() string {

@@ -17,15 +17,22 @@ import (
 type compilerImplementation interface {
 	ValidateSet(*CompilerOptions, *api.PolicySet) error
 	ValidatePolicy(*CompilerOptions, *api.Policy) error
-	ExtractRemoteSetReferences(*CompilerOptions, *api.PolicySet) ([]*api.PolicyRef, error)
-	ExtractRemotePolicyReferences(*CompilerOptions, *api.Policy) ([]*api.PolicyRef, error)
-	FetchRemoteResources(*CompilerOptions, StorageBackend, []*api.PolicyRef) error
+	ExtractRemoteSetReferences(*CompilerOptions, *api.PolicySet) ([]api.RemoteReference, error)
+	ExtractRemotePolicyReferences(*CompilerOptions, *api.Policy) ([]api.RemoteReference, error)
+	FetchRemoteResources(*CompilerOptions, StorageBackend, []api.RemoteReference) error
 	ValidateRemotes(*CompilerOptions, StorageBackend) error
 	AssemblePolicySet(*CompilerOptions, *api.PolicySet, StorageBackend) error
 	AssemblePolicy(*CompilerOptions, *api.Policy, StorageBackend) (*api.Policy, error)
 	ValidateAssembledSet(*CompilerOptions, *api.PolicySet) error
 	ValidateAssembledPolicy(*CompilerOptions, *api.Policy) error
+
+	ValidatePolicyGroup(*CompilerOptions, *api.PolicyGroup) error
+	ExtractRemotePolicyGroupReferences(*CompilerOptions, *api.PolicyGroup) ([]api.RemoteReference, error)
+	AssemblePolicyGroup(*CompilerOptions, *api.PolicyGroup, StorageBackend) (*api.PolicyGroup, error)
+	ValidateAssembledPolicyGroup(*CompilerOptions, *api.PolicyGroup) error
 }
+
+var _ compilerImplementation = &defaultCompilerImpl{}
 
 type defaultCompilerImpl struct{}
 
@@ -33,28 +40,39 @@ func (dci *defaultCompilerImpl) ValidatePolicy(_ *CompilerOptions, p *api.Policy
 	return p.Validate()
 }
 
-func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) error {
-	// TODO(puerco): Implement with learnings from building this
-	// Rules:
-	//   Check if same uri has different hashes
-	//   Check for same version in same uri
-	//
-	// Post rules:
-	//   Remote ID is not the reference id
-	//
-	return nil
+func (dci *defaultCompilerImpl) ValidatePolicyGroup(_ *CompilerOptions, grp *api.PolicyGroup) error {
+	return grp.Validate()
+}
+
+func (dci *defaultCompilerImpl) ValidateSet(_ *CompilerOptions, set *api.PolicySet) error {
+	return set.Validate()
+}
+
+// ValidateAssembledPolicyGroup checks the integrity of a policy group
+func (dci *defaultCompilerImpl) ValidateAssembledPolicyGroup(_ *CompilerOptions, grp *api.PolicyGroup) error {
+	return grp.Validate()
 }
 
 // ExtractRemoteSetReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
-func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, set *api.PolicySet) ([]*api.PolicyRef, error) {
+func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, set *api.PolicySet) ([]api.RemoteReference, error) {
 	// Add all the references we have, first the set-level refs:
-	refs := []*api.PolicyRef{}
+	refs := []api.RemoteReference{}
 	if set.GetCommon() != nil && set.GetCommon().GetReferences() != nil {
-		refs = append(refs, set.GetCommon().GetReferences()...)
+		for _, r := range set.GetCommon().GetReferences() {
+			refs = append(refs, r)
+		}
 	}
+
+	// .. remote group references
+	for _, g := range set.GetGroups() {
+		if g.GetSource() != nil {
+			refs = append(refs, g.GetSource())
+		}
+	}
+
 	// ... and all policy sources
-	for _, p := range set.Policies {
+	for _, p := range set.GetPolicies() {
 		if p.GetSource() != nil {
 			refs = append(refs, p.GetSource())
 		}
@@ -70,9 +88,9 @@ func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, s
 
 // ExtractRemoteSetReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
-func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions, p *api.Policy) ([]*api.PolicyRef, error) {
+func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions, p *api.Policy) ([]api.RemoteReference, error) {
 	// Add all the references we have, first the set-level refs:
-	refs := []*api.PolicyRef{}
+	refs := []api.RemoteReference{}
 	if p.GetSource() != nil {
 		refs = append(refs, p.GetSource())
 	}
@@ -85,9 +103,30 @@ func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions
 	return ret, nil
 }
 
-func (dci *defaultCompilerImpl) groupRemoteRefs(refs []*api.PolicyRef) ([]*api.PolicyRef, error) {
-	uriIndex := map[string]*api.PolicyRef{}
-	ret := []*api.PolicyRef{}
+// ExtractRemoteSetReferences extracts and enriches the remote references from all
+// information available in (possibly) repeatead remote references.
+func (dci *defaultCompilerImpl) ExtractRemotePolicyGroupReferences(_ *CompilerOptions, grp *api.PolicyGroup) ([]api.RemoteReference, error) {
+	refs := []api.RemoteReference{}
+	// Get all the remote references from the policies
+	for i := range grp.GetBlocks() {
+		for _, p := range grp.GetBlocks()[i].GetPolicies() {
+			if p.GetSource() != nil {
+				refs = append(refs, p.GetSource())
+			}
+		}
+	}
+
+	ret, err := dci.groupRemoteRefs(refs)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func (dci *defaultCompilerImpl) groupRemoteRefs(refs []api.RemoteReference) ([]api.RemoteReference, error) {
+	uriIndex := map[string]api.RemoteReference{}
+	ret := []api.RemoteReference{}
 
 	// Rage over all refs and extract the ones that point to remote resources
 	for _, ref := range refs {
@@ -112,16 +151,16 @@ func (dci *defaultCompilerImpl) groupRemoteRefs(refs []*api.PolicyRef) ([]*api.P
 		}
 
 		if uriIndex[url].GetVersion() == 0 {
-			uriIndex[url].Version = ref.GetVersion()
+			uriIndex[url].SetVersion(ref.GetVersion())
 		}
 
 		for algo, val := range ref.GetLocation().GetDigest() {
-			if v, ok := uriIndex[url].Location.Digest[algo]; ok {
+			if v, ok := uriIndex[url].GetLocation().GetDigest()[algo]; ok {
 				if v != val {
 					return nil, fmt.Errorf("inconsistency detected, hash values clash for URI %s", url)
 				}
 			}
-			uriIndex[url].Location.Digest[algo] = val
+			uriIndex[url].GetLocation().Digest[algo] = val
 		}
 	}
 
@@ -132,19 +171,39 @@ func (dci *defaultCompilerImpl) groupRemoteRefs(refs []*api.PolicyRef) ([]*api.P
 	return ret, nil
 }
 
+// fetchRemoteResources gets a list of remote references and fetches and caches
+// the referenced elements
 func (dci *defaultCompilerImpl) fetchRemoteResources(
-	opts *CompilerOptions, recurse int, store StorageBackend, refs []*api.PolicyRef,
+	opts *CompilerOptions, recurse int, store StorageBackend, refs []api.RemoteReference,
 ) error {
 	// Extract the URIs
 	uris := []string{}
-	newRefs := []*api.PolicyRef{}
+	newRefs := []api.RemoteReference{}
 	for _, ref := range refs {
-		p, err := store.GetReferencedPolicy(ref)
-		if err != nil {
-			return fmt.Errorf("checking cached copy of referenced policy: %w", err)
+		haveIt := false
+		switch cref := ref.(type) {
+		case *api.PolicyRef:
+			p, err := store.GetReferencedPolicy(ref)
+			if err != nil {
+				return fmt.Errorf("checking cached copy of referenced policy: %w", err)
+			}
+			if p != nil {
+				haveIt = true
+			}
+		case *api.PolicyGroupRef:
+			p, err := store.GetReferencedPolicy(ref)
+			if err != nil {
+				return fmt.Errorf("checking cached copy of referenced policy: %w", err)
+			}
+			if p != nil {
+				haveIt = true
+			}
+		default:
+			return fmt.Errorf("unable to handle remote reference type %T", cref)
 		}
+
 		// If we already have a copy, skip
-		if p != nil {
+		if haveIt {
 			continue
 		}
 
@@ -172,14 +231,15 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 
 	remotePolicies := []*api.Policy{}
 	remoteSets := []*api.PolicySet{}
+	remoteGroups := []*api.PolicyGroup{}
 
 	// Store the retrieved data in the resource descriptor
 	for i, datum := range data {
 		// Here we shoud validate any hashes we have
-		newRefs[i].Location.Content = datum
+		newRefs[i].GetLocation().Content = datum
 
 		// Store the reference
-		set, pcy, err := store.StoreReferenceWithReturn(newRefs[i])
+		set, pcy, grp, err := store.StoreReferenceWithReturn(newRefs[i])
 		if err != nil {
 			return fmt.Errorf("storing external ref #%d: %w", i, err)
 		}
@@ -189,10 +249,13 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 		if pcy != nil {
 			remotePolicies = append(remotePolicies, pcy)
 		}
+		if grp != nil {
+			remoteGroups = append(remoteGroups, grp)
+		}
 	}
 
 	// Recurse any remote references
-	rrefs := []*api.PolicyRef{}
+	rrefs := []api.RemoteReference{}
 
 	// .. from any sets
 	for _, s := range remoteSets {
@@ -203,10 +266,21 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 		rrefs = append(rrefs, remotes...)
 	}
 
+	// .. policy groups
+	for _, grp := range remoteGroups {
+		if grp.GetSource() != nil {
+			remotes, err := dci.ExtractRemotePolicyGroupReferences(opts, grp)
+			if err != nil {
+				return fmt.Errorf("reparsing remote group refs at level %d", recurse)
+			}
+			rrefs = append(rrefs, remotes...)
+		}
+	}
+
 	// .. and single policies
 	for _, pcy := range remotePolicies {
-		if pcy.Source != nil {
-			rref, err := dci.groupRemoteRefs([]*api.PolicyRef{pcy.Source})
+		if pcy.GetSource() != nil {
+			rref, err := dci.groupRemoteRefs([]api.RemoteReference{pcy.Source})
 			if err != nil {
 				return fmt.Errorf("grouping policy source at level %d", recurse)
 			}
@@ -225,7 +299,7 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 
 // FetchRemoteResources pulls all the remote data in parallel and stores it
 // in the configured StorageBackend.
-func (dci *defaultCompilerImpl) FetchRemoteResources(opts *CompilerOptions, store StorageBackend, refs []*api.PolicyRef) error {
+func (dci *defaultCompilerImpl) FetchRemoteResources(opts *CompilerOptions, store StorageBackend, refs []api.RemoteReference) error {
 	if store == nil {
 		return errors.New("storage backend missing")
 	}
@@ -361,15 +435,121 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 	return assembledPolicy, nil
 }
 
+// assemblePolicyGroup
+func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *api.PolicyGroup, store StorageBackend) (*api.PolicyGroup, error) {
+	// First, clone the PolicyGroup
+	assembledGroup, ok := proto.Clone(grp).(*api.PolicyGroup)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast reassembled group")
+	}
+
+	// // Fetch the data if the group is a remote reference
+	if assembledGroup.GetSource() != nil {
+		remotePolicyGroup, err := store.GetReferencedGroup(grp.GetSource())
+		if err != nil {
+			return nil, fmt.Errorf("getting referenced PolicyGroup: %w", err)
+		}
+
+		if remotePolicyGroup == nil {
+			return nil, fmt.Errorf("unable to complete PolicyGroup, reference %v not resolved", grp.GetSource())
+		}
+
+		// Agument the assembled group with the remote blocks. This adds both
+		assembledGroup.Blocks = append(assembledGroup.Blocks, remotePolicyGroup.Blocks...)
+		if assembledGroup.GetMeta() == nil {
+			assembledGroup.Meta = &api.PolicyGroupMeta{}
+		}
+
+		// Merge the meta fields
+		if assembledGroup.GetMeta().GetDescription() == "" {
+			assembledGroup.GetMeta().Description = remotePolicyGroup.GetMeta().GetDescription()
+		}
+
+		// int64 version = 2; <<< Version is not inherited
+		// repeated Control controls = 3; TODO: Merge controls
+		if assembledGroup.GetMeta().GetEnforce() == "" {
+			assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
+		}
+		// optional google.protobuf.Timestamp expiration = 5; <<< Expiration is not inherited
+		// optional in_toto_attestation.v1.ResourceDescriptor origin = 6; <<< From pulled data
+
+		// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
+
+		// Nil the group source to mimic how we handle it in remote policies.
+		assembledGroup.Source = nil
+
+		// Index the overlay blocks, we only merge remote blocks if:
+		//   a) The overlay does not have one with the same ID
+		//   b) or if the remote block does not have an ID
+		blockIndex := map[string]int{}
+		for i, b := range assembledGroup.GetBlocks() {
+			if b.GetId() == "" {
+				continue
+			}
+			blockIndex[b.GetId()] = i
+		}
+
+		// Now, merge the remote blocks
+		for _, b := range remotePolicyGroup.GetBlocks() {
+			// Case b: No ID in remote block
+			if b.GetId() == "" {
+				assembledGroup.Blocks = append(assembledGroup.Blocks, b)
+				continue
+			}
+
+			i, ok := blockIndex[b.GetId()]
+			if ok {
+				// Case a1: Replace overlay when ID matches
+				assembledGroup.Blocks[i] = b
+				continue
+			}
+
+			// Case a2: Remote block has an ID but there's no local match
+			assembledGroup.Blocks = append(assembledGroup.Blocks, b)
+		}
+	}
+
+	// TODO(puerco): Check meta ?
+	for i := range assembledGroup.GetBlocks() {
+		for j := range assembledGroup.GetBlocks()[i].GetPolicies() {
+			p, err := dci.assemblePolicy(opts, 0, assembledGroup.GetBlocks()[i].GetPolicies()[j], store)
+			if err != nil {
+				return nil, fmt.Errorf("assembling policy #%d of block #%d: %w", j, i, err)
+			}
+			assembledGroup.Blocks[i].Policies[j] = p
+		}
+	}
+	return assembledGroup, nil
+}
+
+// AssemblePolicyGroup
+func (dci *defaultCompilerImpl) AssemblePolicyGroup(opts *CompilerOptions, grp *api.PolicyGroup, store StorageBackend) (*api.PolicyGroup, error) {
+	assembledGroup, err := dci.assemblePolicyGroup(opts, grp, store)
+	if err != nil {
+		return nil, fmt.Errorf("assembling policy group: %w", err)
+	}
+	return assembledGroup, nil
+}
+
 func (dci *defaultCompilerImpl) AssemblePolicySet(opts *CompilerOptions, set *api.PolicySet, store StorageBackend) error {
 	for i, p := range set.Policies {
 		assembledPolicy, err := dci.assemblePolicy(opts, 0, p, store)
 		if err != nil {
-			return fmt.Errorf("assembling policy: %w", err)
+			return fmt.Errorf("assembling policy #%d: %w", i, err)
 		}
 		// Now replace the local in the policy set with the enriched remote
 		set.Policies[i] = assembledPolicy
 	}
+
+	// Assemble the PolicyGroups
+	for i, grp := range set.Groups {
+		assembledGroup, err := dci.assemblePolicyGroup(opts, grp, store)
+		if err != nil {
+			return fmt.Errorf("assembling group #%d: %w", i, err)
+		}
+		set.Groups[i] = assembledGroup
+	}
+
 	if set.GetCommon() == nil {
 		set.Common = &api.PolicySetCommon{}
 	} else {
