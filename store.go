@@ -18,7 +18,6 @@ import (
 // Storage backend is an interface that fronts systems that store and index policies
 type StorageBackend interface {
 	StoreReference(api.RemoteReference) error
-	// StoreGroupReference(*api.PolicyGroupRef) error
 	StoreReferenceWithReturn(api.RemoteReference) (*api.PolicySet, *api.Policy, *api.PolicyGroup, error)
 	GetReferencedPolicy(api.RemoteReference) (*api.Policy, error)
 	GetReferencedGroup(api.RemoteReference) (*api.PolicyGroup, error)
@@ -26,8 +25,7 @@ type StorageBackend interface {
 
 func newRefStore() *refStore {
 	return &refStore{
-		references: map[string]api.RemoteReference{},
-		// groupReferences: map[string]*api.PolicyGroupRef{},
+		references:   map[string]api.RemoteReference{},
 		policySets:   map[string]*api.PolicySet{},
 		policies:     map[string]*api.Policy{},
 		policyGroups: map[string]*api.PolicyGroup{},
@@ -85,7 +83,7 @@ func (rs *refStore) StoreReferenceWithReturn(ref api.RemoteReference) (*api.Poli
 		return nil, nil, nil, fmt.Errorf("policy sha256 digest does not match content")
 	}
 
-	// TODO(puerco) Here the reference shuold be augmented if it already exists
+	// TODO(puerco) Here the reference should be augmented if it already exists
 	rs.references[contentHash] = ref
 
 	uri := ref.GetLocation().GetDownloadLocation()

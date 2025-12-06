@@ -63,8 +63,16 @@ func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, s
 			refs = append(refs, r)
 		}
 	}
+
+	// .. remote group references
+	for _, g := range set.GetGroups() {
+		if g.GetSource() != nil {
+			refs = append(refs, g.GetSource())
+		}
+	}
+
 	// ... and all policy sources
-	for _, p := range set.Policies {
+	for _, p := range set.GetPolicies() {
 		if p.GetSource() != nil {
 			refs = append(refs, p.GetSource())
 		}
@@ -435,7 +443,7 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 	}
 
 	// First, if remote fetch the data
-	remotePolicyGroup, err := store.GetReferencedGroup(grp.Source)
+	remotePolicyGroup, err := store.GetReferencedGroup(grp.GetSource())
 	if err != nil {
 		return nil, fmt.Errorf("getting referenced PolicyGroup: %w", err)
 	}
@@ -465,6 +473,9 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 
 	// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
 
+	// Nil the group source to mimic how we handle it in remote policies.
+	assembledGroup.Source = nil
+
 	// TODO(puerco): Check meta ?
 	for i := range assembledGroup.GetBlocks() {
 		for j := range assembledGroup.GetBlocks()[i].GetPolicies() {
@@ -491,11 +502,21 @@ func (dci *defaultCompilerImpl) AssemblePolicySet(opts *CompilerOptions, set *ap
 	for i, p := range set.Policies {
 		assembledPolicy, err := dci.assemblePolicy(opts, 0, p, store)
 		if err != nil {
-			return fmt.Errorf("assembling policy: %w", err)
+			return fmt.Errorf("assembling policy #%d: %w", i, err)
 		}
 		// Now replace the local in the policy set with the enriched remote
 		set.Policies[i] = assembledPolicy
 	}
+
+	// Assemble the PolicyGroups
+	for i, grp := range set.Groups {
+		assembledGroup, err := dci.assemblePolicyGroup(opts, grp, store)
+		if err != nil {
+			return fmt.Errorf("assembling group #%d: %w", i, err)
+		}
+		set.Groups[i] = assembledGroup
+	}
+
 	if set.GetCommon() == nil {
 		set.Common = &api.PolicySetCommon{}
 	} else {
