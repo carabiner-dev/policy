@@ -7,8 +7,10 @@ import (
 	intoto "github.com/in-toto/attestation/go/v1"
 )
 
-var _ RemoteReference = &PolicyRef{}
-var _ RemoteReference = &PolicyGroupRef{}
+var (
+	_ RemoteReference = &PolicyRef{}
+	_ RemoteReference = &PolicyGroupRef{}
+)
 
 // RemoteReference is an interface to handle policy and group references
 type RemoteReference interface {

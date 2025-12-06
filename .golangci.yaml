@@ -20,7 +20,7 @@ formatters:
     - gofumpt
     - goimports
     # - golines
-  settings: 
+  settings:
     gci:
       no-inline-comments: false
       no-prefix-comments: true
@@ -110,6 +110,8 @@ linters:
     - zerologlint
 
   settings:
+    dogsled:
+      max-blank-identifiers: 3
     gocyclo:
       min-complexity: 36
     godox:

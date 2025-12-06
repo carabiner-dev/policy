@@ -179,18 +179,20 @@ func (compiler *Compiler) CompileVerify(data []byte, funcs ...options.OptFn) (se
 	switch {
 	case pcy != nil:
 		pcy, err = compiler.CompilePolicy(pcy, funcs...)
-		return nil, pcy, nil, ver, nil
 	case grp != nil:
-		grp, err = compiler.CompileGroup(grp, funcs...)
+		grp, err = compiler.CompilePolicyGroup(grp, funcs...)
 	case set != nil:
 		set, err = compiler.CompileSet(set, funcs...)
-		return set, nil, nil, ver, err
 	default:
 		// should never happen
 		return nil, nil, nil, ver, errors.New("could not parse any policy element from data")
 	}
 
-	return nil, nil, nil, ver, fmt.Errorf("compiling: %w", err)
+	if err != nil {
+		err = fmt.Errorf("compiling: %w", err)
+	}
+
+	return set, pcy, grp, ver, err
 }
 
 // Compile builds a policy set fetching any remote pieces as necessary
@@ -235,6 +237,8 @@ func (compiler *Compiler) CompileSet(set *api.PolicySet, funcs ...options.OptFn)
 }
 
 // Compile builds a policy set fetching any remote pieces as necessary
+//
+//nolint:dupl
 func (compiler *Compiler) CompilePolicy(p *api.Policy, funcs ...options.OptFn) (*api.Policy, error) {
 	// Validate PolicySet / Policies
 	if err := compiler.impl.ValidatePolicy(&compiler.Options, p); err != nil {
@@ -273,35 +277,30 @@ func (compiler *Compiler) CompilePolicy(p *api.Policy, funcs ...options.OptFn) (
 }
 
 // Compile builds a policy set fetching any remote pieces as necessary
-func (compiler *Compiler) CompileGroup(grp *api.PolicyGroup, funcs ...options.OptFn) (*api.PolicyGroup, error) {
+//
+//nolint:dupl
+func (compiler *Compiler) CompilePolicyGroup(grp *api.PolicyGroup, funcs ...options.OptFn) (*api.PolicyGroup, error) {
 	// Validate PolicyGroup
 	if err := compiler.impl.ValidatePolicyGroup(&compiler.Options, grp); err != nil {
 		return nil, fmt.Errorf("validating PolicyGroup: %w", err)
 	}
 
-	// Extract and enrich the remote references. This step is expected to return
-	// only those refs that point to remote resources and to compound the integrity
-	// data (hashes) of the remote resources.
 	remoteRefs, err := compiler.impl.ExtractRemotePolicyGroupReferences(&compiler.Options, grp)
 	if err != nil {
-		return nil, fmt.Errorf("extracting remote refs: %w", err)
+		return nil, fmt.Errorf("extracting remote refs from policy group: %w", err)
 	}
 
-	// Fetch remote resources. This retrieves the remote data but also validates
-	// the signatures and/or hashes
 	if err := compiler.impl.FetchRemoteResources(
 		&compiler.Options, compiler.Store, remoteRefs,
 	); err != nil {
 		return nil, fmt.Errorf("fetching remote resources: %w", err)
 	}
 
-	// Assemble the local policy
 	grp, err = compiler.impl.AssemblePolicyGroup(&compiler.Options, grp, compiler.Store)
 	if err != nil {
-		return nil, fmt.Errorf("error assembling policy set: %w", err)
+		return nil, fmt.Errorf("error assembling policy group: %w", err)
 	}
 
-	// Validate (with remote parts)
 	if err := compiler.impl.ValidateAssembledPolicyGroup(&compiler.Options, grp); err != nil {
 		return nil, fmt.Errorf("validating assembled PolicyGroup: %w", err)
 	}
