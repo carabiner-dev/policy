@@ -1,0 +1,14 @@
+{
+    "meta": {
+        "description": "Policy set testing remote referenced policy"
+    },
+    "policies": [
+        {
+            "source": {
+                "location": {
+                    "uri": "git+https://github.com/carabiner-dev/policies@9a70ca49804c2b993bb6b62d51d5524f3443d6ec#sbom/sbom-exists.json"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+{
+    "meta": {
+        "description": "Simple policy set to test locally defined policies"
+    },
+    "policies": [
+        {
+            "id": "local-policy-1",
+            "meta": {
+                "description": "First local policy with AND mode",
+                "assertMode": "AND"
+            },
+            "tenets": [
+                {
+                    "id": "tenet-1",
+                    "code": "true"
+                },
+                {
+                    "id": "tenet-2",
+                    "code": "true"
+                }
+            ]
+        },
+        {
+            "id": "local-policy-2",
+            "meta": {
+                "description": "Second local policy with OR mode",
+                "assertMode": "OR"
+            },
+            "tenets": [
+                {
+                    "id": "tenet-1",
+                    "code": "true"
+                },
+                {
+                    "id": "tenet-2",
+                    "code": "false"
+                }
+            ]
+        }
+    ]
+}
