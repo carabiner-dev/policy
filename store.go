@@ -129,11 +129,11 @@ func (rs *refStore) StoreReferenceWithReturn(ref api.RemoteReference) (*api.Poli
 		}
 	case grp != nil:
 		if err := rs.registerGroup(contentHash, grp); err != nil {
-			return nil, nil, nil, fmt.Errorf("indexing policy: %w", err)
+			return nil, nil, nil, fmt.Errorf("indexing group: %w", err)
 		}
-		pcy.GetMeta().GetOrigin().DownloadLocation = sourceURI
-		if pcy.GetMeta().GetOrigin().Uri == "" {
-			pcy.GetMeta().GetOrigin().Uri = sourceURI
+		grp.GetMeta().GetOrigin().DownloadLocation = sourceURI
+		if grp.GetMeta().GetOrigin().Uri == "" {
+			grp.GetMeta().GetOrigin().Uri = sourceURI
 		}
 	case err != nil:
 		return nil, nil, nil, err
