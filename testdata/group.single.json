@@ -1,0 +1,50 @@
+{
+    "id": "group-assert-mode-test",
+    "meta": {
+        "description": "Group testing the assert modes"
+    },
+    "blocks": [
+        {
+            "id": "single-passing",
+            "meta": {
+                "description": "Single passing policy"
+            },
+            "policies": [
+                { "tenets": [ { "code": "true" } ] }
+            ]
+        },
+        {
+            "id": "two-passing-and",
+            "meta": {
+                "description": "Two passing policies, AND",
+                "assert_mode": "AND"
+            },
+            "policies": [
+                { "tenets": [ { "code": "true" } ] },
+                { "tenets": [ { "code": "true" } ] }
+            ]
+        },
+        {
+            "id": "two-passing-org",
+            "meta": {
+                "description": "Two passing policies, ORed",
+                "assert_mode": "OR"
+            },
+            "policies": [
+                { "tenets": [ { "code": "true" } ] },
+                { "tenets": [ { "code": "true" } ] }
+            ]
+        },
+        {
+            "id": "one-passing-one-failing-or",
+            "meta": {
+                "description": "One passing one failing, OR",
+                "assert_mode": "OR"
+            },
+            "policies": [
+                { "tenets": [ { "code": "true" } ] },
+                { "tenets": [ { "code": "false" } ] }
+            ]
+        }
+    ]
+}

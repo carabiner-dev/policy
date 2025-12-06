@@ -1,0 +1,14 @@
+{
+    "meta": {
+        "description": "Policy set testing remote referenced group"
+    },
+    "groups": [
+        {
+            "source": {
+                "location": {
+                    "uri": "git+https://github.com/carabiner-dev/examples@4c4ecf69b9c550fb2d57308f210a5de34802e8fb#groups/group-assert-mode-test.json"
+                }
+            }
+        }
+    ]
+}

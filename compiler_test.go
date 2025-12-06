@@ -107,3 +107,39 @@ Pulling this reference needs to fail (the hash is not right):
         }
 
 */
+
+func TestCompileLocalGroups(t *testing.T) {
+	t.Parallel()
+	t.Run("test-localset-group", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySetFile("testdata/groups-local.json")
+		require.NoError(t, err)
+		require.NotNil(t, set)
+
+		set, err = NewCompiler().CompileSet(set)
+		require.NoError(t, err)
+
+		require.Equal(t, "Simple policy set tp test locally defined policy groups", set.GetMeta().GetDescription())
+		require.Len(t, set.GetPolicies(), 0)
+		require.Len(t, set.GetGroups(), 1)
+		require.Len(t, set.GetGroups()[0].GetBlocks(), 4)
+		require.Equal(t, "single-passing", set.GetGroups()[0].GetBlocks()[0].GetId())
+		require.Len(t, set.GetGroups()[0].GetBlocks()[1].GetPolicies(), 2)
+	})
+
+	t.Run("test-local-group", func(t *testing.T) {
+		t.Parallel()
+		grp, err := NewParser().ParsePolicyGroupFile("testdata/group.single.json")
+		require.NoError(t, err)
+		require.NotNil(t, grp)
+
+		grp, err = NewCompiler().CompilePolicyGroup(grp)
+		require.NoError(t, err)
+
+		require.Equal(t, "Group testing the assert modes", grp.GetMeta().GetDescription())
+		require.Len(t, grp.GetBlocks(), 4)
+		require.Equal(t, "single-passing", grp.GetBlocks()[0].GetId())
+		require.Len(t, grp.GetBlocks()[1].GetPolicies(), 2)
+	})
+
+}
