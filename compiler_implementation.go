@@ -437,44 +437,77 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 
 // assemblePolicyGroup
 func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *api.PolicyGroup, store StorageBackend) (*api.PolicyGroup, error) {
+	// First, clone the PolicyGroup
 	assembledGroup, ok := proto.Clone(grp).(*api.PolicyGroup)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast reassembled group")
 	}
 
-	// First, if remote fetch the data
-	remotePolicyGroup, err := store.GetReferencedGroup(grp.GetSource())
-	if err != nil {
-		return nil, fmt.Errorf("getting referenced PolicyGroup: %w", err)
+	// // Fetch the data if the group is a remote reference
+	if assembledGroup.GetSource() != nil {
+		remotePolicyGroup, err := store.GetReferencedGroup(grp.GetSource())
+		if err != nil {
+			return nil, fmt.Errorf("getting referenced PolicyGroup: %w", err)
+		}
+
+		if remotePolicyGroup == nil {
+			return nil, fmt.Errorf("unable to complete PolicyGroup, reference %v not resolved", grp.GetSource())
+		}
+
+		// Agument the assembled group with the remote blocks. This adds both
+		assembledGroup.Blocks = append(assembledGroup.Blocks, remotePolicyGroup.Blocks...)
+		if assembledGroup.GetMeta() == nil {
+			assembledGroup.Meta = &api.PolicyGroupMeta{}
+		}
+
+		// Merge the meta fields
+		if assembledGroup.GetMeta().GetDescription() == "" {
+			assembledGroup.GetMeta().Description = remotePolicyGroup.GetMeta().GetDescription()
+		}
+
+		// int64 version = 2; <<< Version is not inherited
+		// repeated Control controls = 3; TODO: Merge controls
+		if assembledGroup.GetMeta().GetEnforce() == "" {
+			assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
+		}
+		// optional google.protobuf.Timestamp expiration = 5; <<< Expiration is not inherited
+		// optional in_toto_attestation.v1.ResourceDescriptor origin = 6; <<< From pulled data
+
+		// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
+
+		// Nil the group source to mimic how we handle it in remote policies.
+		assembledGroup.Source = nil
+
+		// Index the overlay blocks, we only merge remote blocks if:
+		//   a) The overlay does not have one with the same ID
+		//   b) or if the remote block does not have an ID
+		blockIndex := map[string]int{}
+		for i, b := range assembledGroup.GetBlocks() {
+			if b.GetId() == "" {
+				continue
+			}
+			blockIndex[b.GetId()] = i
+		}
+
+		// Now, merge the remote blocks
+		for _, b := range remotePolicyGroup.GetBlocks() {
+			// Case b: No ID in remote block
+			if b.GetId() == "" {
+				assembledGroup.Blocks = append(assembledGroup.Blocks, b)
+				continue
+			}
+
+			i, ok := blockIndex[b.GetId()]
+			if ok {
+				// Case a1: Replace overlay when ID matches
+				assembledGroup.Blocks[i] = b
+				continue
+			}
+
+			// Case a2: Remote block has an ID but there's no local match
+			assembledGroup.Blocks = append(assembledGroup.Blocks, b)
+		}
 	}
-
-	if remotePolicyGroup == nil {
-		return nil, fmt.Errorf("unable to complete PolicyGroup, reference %v not resolved", grp.Source)
-	}
-
-	// Agument the assembled group with the remote blocks. This adds both
-	assembledGroup.Blocks = append(assembledGroup.Blocks, remotePolicyGroup.Blocks...)
-	if assembledGroup.GetMeta() == nil {
-		assembledGroup.Meta = &api.PolicyGroupMeta{}
-	}
-
-	// Merge the meta fields
-	if assembledGroup.GetMeta().GetDescription() == "" {
-		assembledGroup.GetMeta().Description = remotePolicyGroup.GetMeta().GetDescription()
-	}
-
-	// int64 version = 2; <<< Version is not inherited
-	// repeated Control controls = 3; TODO: Merge controls
-	if assembledGroup.GetMeta().GetEnforce() == "" {
-		assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
-	}
-	// optional google.protobuf.Timestamp expiration = 5; <<< Expiration is not inherited
-	// optional in_toto_attestation.v1.ResourceDescriptor origin = 6; <<< From pulled data
-
-	// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
-
-	// Nil the group source to mimic how we handle it in remote policies.
-	assembledGroup.Source = nil
 
 	// TODO(puerco): Check meta ?
 	for i := range assembledGroup.GetBlocks() {
