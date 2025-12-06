@@ -124,7 +124,7 @@ func (p *Parser) ParseVerifyPolicySet(policySetData []byte, funcs ...options.Opt
 	// Parse the policy set data
 	set, v, err := p.impl.ParsePolicySet(&opts, policySetData)
 	if err != nil {
-		return nil, nil, fmt.Errorf("parsing policy source: %w", err)
+		return nil, nil, fmt.Errorf("parsing PolicySet source: %w", err)
 	}
 	return set, v, nil
 }
@@ -146,7 +146,7 @@ func (p *Parser) ParseVerifyPolicyGroup(policyGroupData []byte, funcs ...options
 	// Parse the PolicyGroup data
 	grp, v, err := p.impl.ParsePolicyGroup(&opts, policyGroupData)
 	if err != nil {
-		return nil, nil, fmt.Errorf("parsing policy source: %w", err)
+		return nil, nil, fmt.Errorf("parsing PolicyGroup source: %w", err)
 	}
 	return grp, v, nil
 }
@@ -226,9 +226,9 @@ func (p *Parser) ParseVerifyPolicyOrSetOrGroup(data []byte, funcs ...options.Opt
 			strings.Contains(errGroup.Error(), "unknown field"):
 			return nil, nil, nil, nil, errors.New("unable to parse a policy, group or policySet from data")
 		case !strings.Contains(errSet.Error(), "unknown field"):
-			return nil, nil, nil, nil, errPolicy
-		case !strings.Contains(errPolicy.Error(), "unknown field"):
 			return nil, nil, nil, nil, errSet
+		case !strings.Contains(errPolicy.Error(), "unknown field"):
+			return nil, nil, nil, nil, errPolicy
 		case !strings.Contains(errGroup.Error(), "unknown field"):
 			return nil, nil, nil, nil, errGroup
 		default:

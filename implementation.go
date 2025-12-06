@@ -34,14 +34,14 @@ type defaultParserImplementationV1 struct{}
 // support for both JSON and HJSON policy formats.
 func normalizeToJSON(data []byte) ([]byte, error) {
 	// First, try to parse as strict JSON to validate it's well-formed
-	var jsonTest interface{}
+	var jsonTest any
 	if err := json.Unmarshal(data, &jsonTest); err == nil {
 		// Data is valid JSON, return as-is
 		return data, nil
 	}
 
 	// If JSON parsing failed, try HJSON
-	var hjsonData interface{}
+	var hjsonData any
 	if err := hjson.Unmarshal(data, &hjsonData); err != nil {
 		// Neither JSON nor HJSON worked, return original error context
 		return nil, fmt.Errorf("failed to parse as JSON or HJSON: %w", err)

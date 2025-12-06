@@ -135,7 +135,7 @@ func (compiler *Compiler) CompileFile(path string, funcs ...options.OptFn) (*api
 func (compiler *Compiler) CompileVerifyFile(path string, funcs ...options.OptFn) (*api.PolicySet, *api.Policy, *api.PolicyGroup, attestation.Verification, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("reading policy file: %w", err)
+		return nil, nil, nil, nil, fmt.Errorf("reading file: %w", err)
 	}
 
 	// Record the original file
