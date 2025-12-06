@@ -44,16 +44,8 @@ func (dci *defaultCompilerImpl) ValidatePolicyGroup(_ *CompilerOptions, grp *api
 	return grp.Validate()
 }
 
-func (dci *defaultCompilerImpl) ValidateSet(*CompilerOptions, *api.PolicySet) error {
-	// TODO(puerco): Implement with learnings from building this
-	// Rules:
-	//   Check if same uri has different hashes
-	//   Check for same version in same uri
-	//
-	// Post rules:
-	//   Remote ID is not the reference id
-	//
-	return nil
+func (dci *defaultCompilerImpl) ValidateSet(_ *CompilerOptions, set *api.PolicySet) error {
+	return set.Validate()
 }
 
 // ValidateAssembledPolicyGroup checks the integrity of a policy group
