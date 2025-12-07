@@ -887,8 +887,10 @@ Once you've compiled a PolicySet, you pass it to the AMPEL policy engine for eva
 
 ```go
 import (
+  "context"
   "github.com/carabiner-dev/policy"
-  "github.com/carabiner-dev/ampel"
+  "github.com/carabiner-dev/ampel/pkg/verifier"
+  "github.com/carabiner-dev/attestation"
 )
 
 // Compile the policy
@@ -898,32 +900,57 @@ if err != nil {
   panic(err)
 }
 
-// Create AMPEL evaluator
-evaluator := ampel.NewEvaluator()
+// Create AMPEL verifier
+ampel := verifier.New()
 
-// Load compiled PolicySet
-err = evaluator.LoadPolicySet(set)
+// Define the subject to verify (e.g., a container image digest)
+subject := attestation.Subject{
+  // Subject details (artifact being verified)
+}
+
+// Verify the subject against the compiled PolicySet
+results, err := ampel.Verify(
+  context.Background(),
+  &verifier.VerificationOptions{
+    // Configure verification options (attestation sources, context values, etc.)
+  },
+  set,  // Can be *Policy, *PolicySet, or []*PolicySet
+  subject,
+)
 if err != nil {
   panic(err)
 }
 
-// Evaluate against attestations
-result, err := evaluator.Evaluate(attestations, subject, contextValues)
-if err != nil {
-  panic(err)
-}
-
-if result.Passed() {
-  fmt.Println("Policy evaluation passed!")
+// Check the results
+if results.Passed() {
+  fmt.Println("✓ Policy verification passed!")
 } else {
-  fmt.Println("Policy evaluation failed:")
-  for _, failure := range result.Failures() {
-    fmt.Printf("  - %s\n", failure.Message)
-  }
+  fmt.Println("✗ Policy verification failed")
+  // Access detailed failure information from results
 }
 ```
 
-See the [AMPEL documentation](https://github.com/carabiner-dev/ampel) for complete details on policy evaluation.
+### Verification Workflow
+
+The typical workflow is:
+
+1. **Compile**: Use this framework to compile a PolicySet (resolving remote references, validating structure)
+2. **Create Verifier**: Initialize an AMPEL verifier with `verifier.New()`
+3. **Verify**: Call `Verify()` with the compiled policy, subject, and options
+4. **Process Results**: Check if verification passed and access detailed results
+
+### What AMPEL Does
+
+When you call `Verify()`, AMPEL:
+- Gathers attestations for the subject from configured sources
+- Validates attestation signatures against expected identities
+- Filters attestations by predicate type
+- Executes policy tenets (CEL code) against attestation data
+- Handles evidence chaining across multiple subjects
+- Applies context values to parameterized policies
+- Returns structured results indicating pass/fail for each policy/tenet
+
+See the [AMPEL documentation](https://github.com/carabiner-dev/ampel) for complete details on policy evaluation, configuring attestation sources, and working with results.
 
 ---
 
