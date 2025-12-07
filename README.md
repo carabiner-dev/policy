@@ -449,29 +449,51 @@ https://policies.example.com/policy.json
 
 ## 🤝 Integration with AMPEL
 
-This framework provides the policy definitions and tooling. To **evaluate** policies against attestations, use the [AMPEL policy engine](https://github.com/carabiner-dev/ampel):
+This framework provides the policy definitions and tooling. To **evaluate** policies against attestations, use the [AMPEL policy engine](https://github.com/carabiner-dev/ampel).
 
 ```go
 import (
+    "context"
     "github.com/carabiner-dev/policy"
-    "github.com/carabiner-dev/ampel"
+    "github.com/carabiner-dev/ampel/pkg/verifier"
 )
 
-// Compile policy
+// Compile the policy
 compiler := policy.NewCompiler()
-set, _, _, _ := compiler.CompileFile("policy.json")
+set, _, _, err := compiler.CompileFile("policy.json")
+if err != nil {
+    log.Fatal(err)
+}
 
-// Evaluate with AMPEL
-evaluator := ampel.NewEvaluator()
-evaluator.LoadPolicySet(set)
+// Create AMPEL verifier
+ampel := verifier.New()
 
-result, err := evaluator.Evaluate(attestations, subject, contextValues)
-if result.Passed() {
-    fmt.Println("✓ Policy passed")
+// Verify subject against the compiled PolicySet
+results, err := ampel.Verify(
+    context.Background(),
+    &verifier.VerificationOptions{},
+    set,  // Can be *Policy, *PolicySet, or *PolicyGroup
+    subject,
+)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Check results
+if results.Passed() {
+    fmt.Println("✓ Policy verification passed")
+} else {
+    fmt.Println("✗ Policy verification failed")
 }
 ```
 
-See the [AMPEL documentation](https://github.com/carabiner-dev/ampel) for details.
+The typical workflow is:
+
+1. Use this framework to compile a PolicySet (resolving remote references, etc.)
+2. Pass the compiled PolicySet to AMPEL's `Verify()` method
+3. AMPEL executes the policy tenets and returns results
+
+See the [AMPEL documentation](https://github.com/carabiner-dev/ampel) for details on policy evaluation.
 
 ## 🧩 Related Projects
 
