@@ -2,8 +2,11 @@
 name: SLSA Source
 on:
   push:
-    branches: [ "main" ]
-    tags: ['**']
+    branches:
+      - "main"
+    tags:
+      - '**'
+
 permissions: {}
 
 jobs:
@@ -15,4 +18,3 @@ jobs:
     uses: slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@main
     with:
       allow-merge-commits: true
-
