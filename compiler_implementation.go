@@ -92,7 +92,7 @@ func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(opts *CompilerOptions
 	return ret, nil
 }
 
-// ExtractRemoteSetReferences extracts and enriches the remote references from all
+// ExtractRemotePolicyReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
 func (dci *defaultCompilerImpl) ExtractRemotePolicyReferences(_ *CompilerOptions, p *api.Policy) ([]api.RemoteReference, error) {
 	// Add all the references we have, first the set-level refs:
@@ -197,7 +197,7 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 				haveIt = true
 			}
 		case *api.PolicyGroupRef:
-			p, err := store.GetReferencedPolicy(ref)
+			p, err := store.GetReferencedGroup(ref)
 			if err != nil {
 				return fmt.Errorf("checking cached copy of referenced policy: %w", err)
 			}
@@ -274,13 +274,11 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 
 	// .. policy groups
 	for _, grp := range remoteGroups {
-		if grp.GetSource() != nil {
-			remotes, err := dci.ExtractRemotePolicyGroupReferences(opts, grp)
-			if err != nil {
-				return fmt.Errorf("reparsing remote group refs at level %d", recurse)
-			}
-			rrefs = append(rrefs, remotes...)
+		remotes, err := dci.ExtractRemotePolicyGroupReferences(opts, grp)
+		if err != nil {
+			return fmt.Errorf("reparsing remote group refs at level %d", recurse)
 		}
+		rrefs = append(rrefs, remotes...)
 	}
 
 	// .. and single policies
