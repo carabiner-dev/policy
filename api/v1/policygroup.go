@@ -6,7 +6,10 @@ package v1
 import (
 	"fmt"
 
+	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/signer/key"
+	intoto "github.com/in-toto/attestation/go/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // GetSourceURL returns the URL to fetch the policy. First, it will try the
@@ -32,9 +35,9 @@ func (grp *PolicyGroup) Validate() error {
 }
 
 // PublicKeys returns any public keys defined in the policy identities
-func (s *PolicyGroup) PublicKeys() ([]key.PublicKeyProvider, error) {
+func (grp *PolicyGroup) PublicKeys() ([]key.PublicKeyProvider, error) {
 	keys := []key.PublicKeyProvider{}
-	for _, id := range s.GetCommon().GetIdentities() {
+	for _, id := range grp.GetCommon().GetIdentities() {
 		k, err := id.PublicKey()
 		if err != nil {
 			return nil, fmt.Errorf("parsing key: %w", err)
@@ -44,4 +47,37 @@ func (s *PolicyGroup) PublicKeys() ([]key.PublicKeyProvider, error) {
 		}
 	}
 	return keys, nil
+}
+
+// GetOrigin returns the coordinates where the predicate data originated from.
+func (grp *PolicyGroup) GetOrigin() attestation.Subject {
+	if grp.GetMeta() == nil {
+		return nil
+	}
+	return grp.GetMeta().GetOrigin()
+}
+
+// SetOrigin sets the origin of the policy. It is designed to match the signature
+// of the attestation.Predicate method, but if the argument is a resource descriptor,
+// then we will clone it and use its value.
+func (grp *PolicyGroup) SetOrigin(origin attestation.Subject) {
+	if grp.GetMeta() == nil {
+		grp.Meta = &PolicyGroupMeta{}
+	}
+
+	rd, ok := origin.(*intoto.ResourceDescriptor)
+	if ok {
+		msg := proto.Clone(rd)
+		nrd, ok := msg.(*intoto.ResourceDescriptor)
+		if ok {
+			grp.Meta.Origin = nrd
+			return
+		}
+	}
+
+	grp.Meta.Origin = &intoto.ResourceDescriptor{
+		Name:   origin.GetName(),
+		Uri:    origin.GetUri(),
+		Digest: origin.GetDigest(),
+	}
 }
