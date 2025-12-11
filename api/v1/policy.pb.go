@@ -39,7 +39,7 @@ type PolicySet struct {
 	// Policies is the list of policies grouped in the PolicySet
 	Policies []*Policy `protobuf:"bytes,4,rep,name=policies,proto3" json:"policies,omitempty"`
 	// Chain is the evidence chain to compute a set of subjects to which
-	// al the policies will apply.
+	// all the policies will apply.
 	Chain []*ChainLink `protobuf:"bytes,5,rep,name=chain,proto3" json:"chain,omitempty"`
 	// PolicyGroup definitions
 	Groups        []*PolicyGroup `protobuf:"bytes,6,rep,name=groups,proto3" json:"groups,omitempty"`
@@ -1551,10 +1551,16 @@ type PolicyGroup struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Group metadata
 	Meta *PolicyGroupMeta `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
+	// Common groups the common data elements to be share by all the
+	// policies in the group.
+	Common *PolicySetCommon `protobuf:"bytes,3,opt,name=common,proto3" json:"common,omitempty"`
 	// Group reference
-	Source *PolicyGroupRef `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+	Source *PolicyGroupRef `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
 	// Policy blocks modeling the group begaviour.
-	Blocks        []*PolicyBlock `protobuf:"bytes,4,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	Blocks []*PolicyBlock `protobuf:"bytes,5,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	// Chain is the evidence chain to compute a set of subjects to which
+	// PolicyGroup will apply.
+	Chain         []*ChainLink `protobuf:"bytes,6,rep,name=chain,proto3" json:"chain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1603,6 +1609,13 @@ func (x *PolicyGroup) GetMeta() *PolicyGroupMeta {
 	return nil
 }
 
+func (x *PolicyGroup) GetCommon() *PolicySetCommon {
+	if x != nil {
+		return x.Common
+	}
+	return nil
+}
+
 func (x *PolicyGroup) GetSource() *PolicyGroupRef {
 	if x != nil {
 		return x.Source
@@ -1617,14 +1630,21 @@ func (x *PolicyGroup) GetBlocks() []*PolicyBlock {
 	return nil
 }
 
+func (x *PolicyGroup) GetChain() []*ChainLink {
+	if x != nil {
+		return x.Chain
+	}
+	return nil
+}
+
 // PolicyBlock groups policies in the PolicySet to apply properties to more
 // than one policy at once.
 type PolicyBlock struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// ID string identifying the block
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// BlockMeta contains the metadata describing the
-	Meta *BlockMeta `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
+	// Meta contains the metadata describing the
+	Meta *PolicyBlockMeta `protobuf:"bytes,2,opt,name=meta,proto3" json:"meta,omitempty"`
 	// Policies is the list of policies grouped in the block
 	Policies      []*Policy `protobuf:"bytes,3,rep,name=policies,proto3" json:"policies,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1668,7 +1688,7 @@ func (x *PolicyBlock) GetId() string {
 	return ""
 }
 
-func (x *PolicyBlock) GetMeta() *BlockMeta {
+func (x *PolicyBlock) GetMeta() *PolicyBlockMeta {
 	if x != nil {
 		return x.Meta
 	}
@@ -1697,6 +1717,7 @@ type PolicyGroupMeta struct {
 	Expiration *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expiration,proto3,oneof" json:"expiration,omitempty"`
 	// Source of the group data when compiled from remote sources
 	Origin        *v1.ResourceDescriptor `protobuf:"bytes,6,opt,name=origin,proto3,oneof" json:"origin,omitempty"`
+	Runtime       string                 `protobuf:"bytes,7,opt,name=runtime,proto3" json:"runtime,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1773,8 +1794,15 @@ func (x *PolicyGroupMeta) GetOrigin() *v1.ResourceDescriptor {
 	return nil
 }
 
-// BlockMeta defines the metadata definition of a policy block
-type BlockMeta struct {
+func (x *PolicyGroupMeta) GetRuntime() string {
+	if x != nil {
+		return x.Runtime
+	}
+	return ""
+}
+
+// PolicyBlockMeta defines the metadata definition of a policy block
+type PolicyBlockMeta struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Description of the policy block
 	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
@@ -1788,20 +1816,20 @@ type BlockMeta struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BlockMeta) Reset() {
-	*x = BlockMeta{}
+func (x *PolicyBlockMeta) Reset() {
+	*x = PolicyBlockMeta{}
 	mi := &file_v1_policy_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BlockMeta) String() string {
+func (x *PolicyBlockMeta) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BlockMeta) ProtoMessage() {}
+func (*PolicyBlockMeta) ProtoMessage() {}
 
-func (x *BlockMeta) ProtoReflect() protoreflect.Message {
+func (x *PolicyBlockMeta) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_policy_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1813,33 +1841,33 @@ func (x *BlockMeta) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BlockMeta.ProtoReflect.Descriptor instead.
-func (*BlockMeta) Descriptor() ([]byte, []int) {
+// Deprecated: Use PolicyBlockMeta.ProtoReflect.Descriptor instead.
+func (*PolicyBlockMeta) Descriptor() ([]byte, []int) {
 	return file_v1_policy_proto_rawDescGZIP(), []int{25}
 }
 
-func (x *BlockMeta) GetDescription() string {
+func (x *PolicyBlockMeta) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *BlockMeta) GetAssertMode() string {
+func (x *PolicyBlockMeta) GetAssertMode() string {
 	if x != nil {
 		return x.AssertMode
 	}
 	return ""
 }
 
-func (x *BlockMeta) GetEnforce() string {
+func (x *PolicyBlockMeta) GetEnforce() string {
 	if x != nil {
 		return x.Enforce
 	}
 	return ""
 }
 
-func (x *BlockMeta) GetControls() []*Control {
+func (x *PolicyBlockMeta) GetControls() []*Control {
 	if x != nil {
 		return x.Controls
 	}
@@ -2075,16 +2103,18 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"J\n" +
 	"\x06Output\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value\"\xce\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value\"\xc2\x02\n" +
 	"\vPolicyGroup\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x128\n" +
-	"\x04meta\x18\x02 \x01(\v2$.carabiner.policy.v1.PolicyGroupMetaR\x04meta\x12;\n" +
-	"\x06source\x18\x03 \x01(\v2#.carabiner.policy.v1.PolicyGroupRefR\x06source\x128\n" +
-	"\x06blocks\x18\x04 \x03(\v2 .carabiner.policy.v1.PolicyBlockR\x06blocks\"\x8a\x01\n" +
+	"\x04meta\x18\x02 \x01(\v2$.carabiner.policy.v1.PolicyGroupMetaR\x04meta\x12<\n" +
+	"\x06common\x18\x03 \x01(\v2$.carabiner.policy.v1.PolicySetCommonR\x06common\x12;\n" +
+	"\x06source\x18\x04 \x01(\v2#.carabiner.policy.v1.PolicyGroupRefR\x06source\x128\n" +
+	"\x06blocks\x18\x05 \x03(\v2 .carabiner.policy.v1.PolicyBlockR\x06blocks\x124\n" +
+	"\x05chain\x18\x06 \x03(\v2\x1e.carabiner.policy.v1.ChainLinkR\x05chain\"\x90\x01\n" +
 	"\vPolicyBlock\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x122\n" +
-	"\x04meta\x18\x02 \x01(\v2\x1e.carabiner.policy.v1.BlockMetaR\x04meta\x127\n" +
-	"\bpolicies\x18\x03 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\"\xc5\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x128\n" +
+	"\x04meta\x18\x02 \x01(\v2$.carabiner.policy.v1.PolicyBlockMetaR\x04meta\x127\n" +
+	"\bpolicies\x18\x03 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\"\xdf\x02\n" +
 	"\x0fPolicyGroupMeta\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x128\n" +
@@ -2093,10 +2123,11 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\n" +
 	"expiration\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expiration\x88\x01\x01\x12G\n" +
-	"\x06origin\x18\x06 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x01R\x06origin\x88\x01\x01B\r\n" +
+	"\x06origin\x18\x06 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x01R\x06origin\x88\x01\x01\x12\x18\n" +
+	"\aruntime\x18\a \x01(\tR\aruntimeB\r\n" +
 	"\v_expirationB\t\n" +
-	"\a_origin\"\xa2\x01\n" +
-	"\tBlockMeta\x12 \n" +
+	"\a_origin\"\xa8\x01\n" +
+	"\x0fPolicyBlockMeta\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x1f\n" +
 	"\vassert_mode\x18\x02 \x01(\tR\n" +
 	"assertMode\x12\x18\n" +
@@ -2148,7 +2179,7 @@ var file_v1_policy_proto_goTypes = []any{
 	(*PolicyGroup)(nil),           // 22: carabiner.policy.v1.PolicyGroup
 	(*PolicyBlock)(nil),           // 23: carabiner.policy.v1.PolicyBlock
 	(*PolicyGroupMeta)(nil),       // 24: carabiner.policy.v1.PolicyGroupMeta
-	(*BlockMeta)(nil),             // 25: carabiner.policy.v1.BlockMeta
+	(*PolicyBlockMeta)(nil),       // 25: carabiner.policy.v1.PolicyBlockMeta
 	(*PolicyGroupRef)(nil),        // 26: carabiner.policy.v1.PolicyGroupRef
 	nil,                           // 27: carabiner.policy.v1.PolicySetCommon.ContextEntry
 	nil,                           // 28: carabiner.policy.v1.Policy.ContextEntry
@@ -2196,24 +2227,26 @@ var file_v1_policy_proto_depIdxs = []int32{
 	8,  // 35: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.policy.v1.Identity
 	32, // 36: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
 	24, // 37: carabiner.policy.v1.PolicyGroup.meta:type_name -> carabiner.policy.v1.PolicyGroupMeta
-	26, // 38: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
-	23, // 39: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
-	25, // 40: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.BlockMeta
-	4,  // 41: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
-	9,  // 42: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
-	30, // 43: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
-	31, // 44: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	9,  // 45: carabiner.policy.v1.BlockMeta.controls:type_name -> carabiner.policy.v1.Control
-	8,  // 46: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.policy.v1.Identity
-	31, // 47: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	13, // 48: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	13, // 49: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	21, // 50: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
-	51, // [51:51] is the sub-list for method output_type
-	51, // [51:51] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	3,  // 38: carabiner.policy.v1.PolicyGroup.common:type_name -> carabiner.policy.v1.PolicySetCommon
+	26, // 39: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
+	23, // 40: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
+	6,  // 41: carabiner.policy.v1.PolicyGroup.chain:type_name -> carabiner.policy.v1.ChainLink
+	25, // 42: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.PolicyBlockMeta
+	4,  // 43: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
+	9,  // 44: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
+	30, // 45: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
+	31, // 46: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	9,  // 47: carabiner.policy.v1.PolicyBlockMeta.controls:type_name -> carabiner.policy.v1.Control
+	8,  // 48: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.policy.v1.Identity
+	31, // 49: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	13, // 50: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	13, // 51: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	21, // 52: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
+	53, // [53:53] is the sub-list for method output_type
+	53, // [53:53] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_v1_policy_proto_init() }

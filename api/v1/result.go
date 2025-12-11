@@ -24,7 +24,13 @@ type Results interface {
 func (rs *ResultSet) Assert() error {
 	rs.DateEnd = timestamppb.Now()
 	for _, r := range rs.Results {
-		if r.Status == StatusFAIL {
+		if r.GetStatus() == StatusFAIL {
+			rs.Status = StatusFAIL
+			return nil
+		}
+	}
+	for _, r := range rs.Groups {
+		if r.GetStatus() == StatusFAIL {
 			rs.Status = StatusFAIL
 			return nil
 		}

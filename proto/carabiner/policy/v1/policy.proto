@@ -25,7 +25,7 @@ message PolicySet {
     repeated Policy policies = 4;
 
     // Chain is the evidence chain to compute a set of subjects to which
-    // al the policies will apply.
+    // all the policies will apply.
     repeated ChainLink chain = 5;
 
     // PolicyGroup definitions
@@ -214,11 +214,19 @@ message PolicyGroup {
     // Group metadata
     PolicyGroupMeta meta = 2;
 
+    // Common groups the common data elements to be share by all the
+    // policies in the group.
+    PolicySetCommon common = 3;
+
     // Group reference
-    PolicyGroupRef source = 3;
+    PolicyGroupRef source = 4;
 
     // Policy blocks modeling the group begaviour.
-    repeated PolicyBlock blocks = 4;
+    repeated PolicyBlock blocks = 5;
+
+    // Chain is the evidence chain to compute a set of subjects to which
+    // PolicyGroup will apply.
+    repeated ChainLink chain = 6;
 }
 
 // PolicyBlock groups policies in the PolicySet to apply properties to more 
@@ -227,8 +235,8 @@ message PolicyBlock {
     // ID string identifying the block
     string id = 1;
 
-    // BlockMeta contains the metadata describing the 
-    BlockMeta meta = 2;
+    // Meta contains the metadata describing the 
+    PolicyBlockMeta meta = 2;
 
     // Policies is the list of policies grouped in the block
     repeated Policy policies = 3;
@@ -253,10 +261,12 @@ message PolicyGroupMeta {
 
     // Source of the group data when compiled from remote sources
     optional in_toto_attestation.v1.ResourceDescriptor origin = 6;
+
+    string runtime = 7;
 }
 
-// BlockMeta defines the metadata definition of a policy block
-message BlockMeta {
+// PolicyBlockMeta defines the metadata definition of a policy block
+message PolicyBlockMeta {
     // Description of the policy block
     string description = 1;
 
