@@ -12,7 +12,7 @@ import "in_toto_attestation/v1/resource_descriptor.proto";
 
 option go_package = "github.com/carabiner-dev/policy/api/v1";
 
-// Result cpatures the results of a policy evaluation. This structure is
+// Result captures the results of a policy evaluation. This structure is
 // computed after evaluating all the policy's tenets.
 message Result {
     // status holds the PASS/FAIL/SOFTFAIL status label of the Policy evaluation
@@ -118,16 +118,74 @@ message ResultSet {
     // results from each of the policies in the set
     repeated Result results = 7;
 
+    // groups holds the results from policy groups
+    repeated ResultGroup groups = 8;
+
     // error captures an error that failed the evaluation at the PolicySet level
-    Error error = 8;
+    Error error = 9;
 
     // The ResultSet common struct varies from its policySet siblingas here,
     // the contextual information has the computed values, not the definitions.
-    ResultSetCommon common = 9;    
+    ResultSetCommon common = 10;
 }
 
 // ResultSetCommon
 message ResultSetCommon {
     // Context contains the computed common context values
     google.protobuf.Struct context = 9;
+}
+
+// ResultGroup cpatures the results of a PolicyGroup evaluation. This structure
+// holds the results for all blocks in the group/
+message ResultGroup {
+    // status holds the PASS/FAIL/SOFTFAIL status label of the Policy evaluation
+    string status = 1;
+
+    // Time when the policy evaluation started
+    google.protobuf.Timestamp date_start = 2;
+    
+    // Time when the policy evaluation concluded
+    google.protobuf.Timestamp date_end = 3;
+
+    // Reference to the policy code
+    PolicyGroupRef group = 4;
+
+    // eval_results holds each of the tenet's evaluation results
+    repeated BlockEvalResult eval_results = 5;
+
+    // meta from the original policy
+    PolicyGroupMeta meta = 6;
+
+    // context data loaded into the policy runtime
+    google.protobuf.Struct context = 7;
+
+    // chain holds the custody chain configuration when a policy uses chained subjects
+    repeated ChainedSubject chain = 8;
+
+    // original subject under scrutiny. This may not be the effective subject if
+    // the policy uses chained subjects.
+    in_toto_attestation.v1.ResourceDescriptor subject = 9;
+
+    // The ResultSet common struct varies from its policySet siblingas here,
+    // the contextual information has the computed values, not the definitions.
+    ResultSetCommon common = 10;
+
+    // Error contains the reason that caused the group evaluationto fail
+    string Error = 11;
+}
+
+// BlockEvalResult groups the evaluation results of a group
+message BlockEvalResult {
+    // status holds the PASS/FAIL/SOFTFAIL status label of the whole PolicySet evaluation
+    string status = 1;
+
+    string id = 2;
+
+    PolicyBlockMeta meta = 3;
+
+    // results from each of the policies in the set
+    repeated Result results = 4;
+
+    // error captures an error that failed the evaluation at the PolicySet level
+    Error error = 5;
 }
