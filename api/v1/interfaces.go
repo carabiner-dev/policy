@@ -21,3 +21,11 @@ type RemoteReference interface {
 	GetVersion() int64
 	SetVersion(int64)
 }
+
+type ChainProvider interface {
+	GetChain() []*ChainLink
+}
+
+type CommonProvider interface {
+	GetCommon() *PolicySetCommon
+}
