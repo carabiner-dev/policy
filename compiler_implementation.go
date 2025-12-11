@@ -55,7 +55,7 @@ func (dci *defaultCompilerImpl) ValidateAssembledPolicyGroup(_ *CompilerOptions,
 
 // ExtractRemoteSetReferences extracts and enriches the remote references from all
 // information available in (possibly) repeatead remote references.
-func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, set *api.PolicySet) ([]api.RemoteReference, error) {
+func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(opts *CompilerOptions, set *api.PolicySet) ([]api.RemoteReference, error) {
 	// Add all the references we have, first the set-level refs:
 	refs := []api.RemoteReference{}
 	if set.GetCommon() != nil && set.GetCommon().GetReferences() != nil {
@@ -69,6 +69,12 @@ func (dci *defaultCompilerImpl) ExtractRemoteSetReferences(_ *CompilerOptions, s
 		if g.GetSource() != nil {
 			refs = append(refs, g.GetSource())
 		}
+
+		groupRefs, err := dci.ExtractRemotePolicyGroupReferences(opts, g)
+		if err != nil {
+			return nil, fmt.Errorf("fetching remote group refs: %w", err)
+		}
+		refs = append(refs, groupRefs...)
 	}
 
 	// ... and all policy sources
@@ -328,7 +334,7 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 	}
 
 	if remotePolicy == nil {
-		return nil, fmt.Errorf("unable to complete policy, reference %v not resolved", p.Source)
+		return nil, fmt.Errorf("unable to complete policy, reference not resolved %v", p.GetSource())
 	}
 
 	if remotePolicy.GetSource() != nil {
