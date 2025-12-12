@@ -8,13 +8,14 @@ version: v2
 
 modules:
   - path: vendor/attestation/protos
-  - path: proto/carabiner/policy
+  - path: vendor/signer/proto
+  - path: proto
     lint:
       except:
         - ENUM_VALUE_PREFIX
         - ENUM_ZERO_VALUE_SUFFIX
         - PACKAGE_DIRECTORY_MATCH
-        - PACKAGE_VERSION_SUFFIX
+        - PACKAGE_VERSION_SUFFIXq
     breaking:
       except:
         - FILE_SAME_GO_PACKAGE
