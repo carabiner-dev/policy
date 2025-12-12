@@ -5,10 +5,11 @@ syntax = "proto3";
 
 package carabiner.policy.v1;
 
-import "v1/policy.proto";
+import "carabiner/policy/v1/policy.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 import "in_toto_attestation/v1/resource_descriptor.proto";
+import "carabiner/signer/v1/identity.proto";
 
 option go_package = "github.com/carabiner-dev/policy/api/v1";
 
@@ -61,7 +62,7 @@ message ChainedSubjectLink {
     // attestation coordinates
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
     // identities used to verify the attestation at ingestion time (if any)
-    repeated Identity identities = 3;
+    repeated carabiner.signer.v1.Identity identities = 3;
 }
 
 // EvalResult captures the results of a tenet evaluation. A policy `Result` contains
@@ -91,7 +92,7 @@ message StatementRef {
     in_toto_attestation.v1.ResourceDescriptor attestation = 2;
     // identities captures the identities matched when verifying
     // the statement.
-    repeated Identity identities = 3;
+    repeated carabiner.signer.v1.Identity identities = 3;
 }
 
 // ResultSet reflects the evaluation of a PolicySet. It contains a `Result` entry
