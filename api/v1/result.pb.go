@@ -5,11 +5,12 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        (unknown)
-// source: v1/result.proto
+// source: carabiner/policy/v1/result.proto
 
 package v1
 
 import (
+	v11 "github.com/carabiner-dev/signer/api/v1"
 	v1 "github.com/in-toto/attestation/go/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -56,7 +57,7 @@ type Result struct {
 
 func (x *Result) Reset() {
 	*x = Result{}
-	mi := &file_v1_result_proto_msgTypes[0]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -68,7 +69,7 @@ func (x *Result) String() string {
 func (*Result) ProtoMessage() {}
 
 func (x *Result) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[0]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -81,7 +82,7 @@ func (x *Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Result.ProtoReflect.Descriptor instead.
 func (*Result) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{0}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Result) GetStatus() string {
@@ -167,7 +168,7 @@ type ChainedSubject struct {
 
 func (x *ChainedSubject) Reset() {
 	*x = ChainedSubject{}
-	mi := &file_v1_result_proto_msgTypes[1]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -179,7 +180,7 @@ func (x *ChainedSubject) String() string {
 func (*ChainedSubject) ProtoMessage() {}
 
 func (x *ChainedSubject) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[1]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +193,7 @@ func (x *ChainedSubject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedSubject.ProtoReflect.Descriptor instead.
 func (*ChainedSubject) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{1}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ChainedSubject) GetSource() *v1.ResourceDescriptor {
@@ -227,14 +228,14 @@ type ChainedSubjectLink struct {
 	// attestation coordinates
 	Attestation *v1.ResourceDescriptor `protobuf:"bytes,2,opt,name=attestation,proto3" json:"attestation,omitempty"`
 	// identities used to verify the attestation at ingestion time (if any)
-	Identities    []*Identity `protobuf:"bytes,3,rep,name=identities,proto3" json:"identities,omitempty"`
+	Identities    []*v11.Identity `protobuf:"bytes,3,rep,name=identities,proto3" json:"identities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ChainedSubjectLink) Reset() {
 	*x = ChainedSubjectLink{}
-	mi := &file_v1_result_proto_msgTypes[2]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +247,7 @@ func (x *ChainedSubjectLink) String() string {
 func (*ChainedSubjectLink) ProtoMessage() {}
 
 func (x *ChainedSubjectLink) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[2]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +260,7 @@ func (x *ChainedSubjectLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedSubjectLink.ProtoReflect.Descriptor instead.
 func (*ChainedSubjectLink) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{2}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ChainedSubjectLink) GetType() string {
@@ -276,7 +277,7 @@ func (x *ChainedSubjectLink) GetAttestation() *v1.ResourceDescriptor {
 	return nil
 }
 
-func (x *ChainedSubjectLink) GetIdentities() []*Identity {
+func (x *ChainedSubjectLink) GetIdentities() []*v11.Identity {
 	if x != nil {
 		return x.Identities
 	}
@@ -307,7 +308,7 @@ type EvalResult struct {
 
 func (x *EvalResult) Reset() {
 	*x = EvalResult{}
-	mi := &file_v1_result_proto_msgTypes[3]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +320,7 @@ func (x *EvalResult) String() string {
 func (*EvalResult) ProtoMessage() {}
 
 func (x *EvalResult) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[3]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,7 +333,7 @@ func (x *EvalResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EvalResult.ProtoReflect.Descriptor instead.
 func (*EvalResult) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{3}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *EvalResult) GetId() string {
@@ -393,14 +394,14 @@ type StatementRef struct {
 	Attestation *v1.ResourceDescriptor `protobuf:"bytes,2,opt,name=attestation,proto3" json:"attestation,omitempty"`
 	// identities captures the identities matched when verifying
 	// the statement.
-	Identities    []*Identity `protobuf:"bytes,3,rep,name=identities,proto3" json:"identities,omitempty"`
+	Identities    []*v11.Identity `protobuf:"bytes,3,rep,name=identities,proto3" json:"identities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StatementRef) Reset() {
 	*x = StatementRef{}
-	mi := &file_v1_result_proto_msgTypes[4]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +413,7 @@ func (x *StatementRef) String() string {
 func (*StatementRef) ProtoMessage() {}
 
 func (x *StatementRef) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[4]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +426,7 @@ func (x *StatementRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatementRef.ProtoReflect.Descriptor instead.
 func (*StatementRef) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{4}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StatementRef) GetType() string {
@@ -442,7 +443,7 @@ func (x *StatementRef) GetAttestation() *v1.ResourceDescriptor {
 	return nil
 }
 
-func (x *StatementRef) GetIdentities() []*Identity {
+func (x *StatementRef) GetIdentities() []*v11.Identity {
 	if x != nil {
 		return x.Identities
 	}
@@ -480,7 +481,7 @@ type ResultSet struct {
 
 func (x *ResultSet) Reset() {
 	*x = ResultSet{}
-	mi := &file_v1_result_proto_msgTypes[5]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -492,7 +493,7 @@ func (x *ResultSet) String() string {
 func (*ResultSet) ProtoMessage() {}
 
 func (x *ResultSet) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[5]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -505,7 +506,7 @@ func (x *ResultSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultSet.ProtoReflect.Descriptor instead.
 func (*ResultSet) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{5}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ResultSet) GetPolicySet() *PolicyRef {
@@ -589,7 +590,7 @@ type ResultSetCommon struct {
 
 func (x *ResultSetCommon) Reset() {
 	*x = ResultSetCommon{}
-	mi := &file_v1_result_proto_msgTypes[6]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -601,7 +602,7 @@ func (x *ResultSetCommon) String() string {
 func (*ResultSetCommon) ProtoMessage() {}
 
 func (x *ResultSetCommon) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[6]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -614,7 +615,7 @@ func (x *ResultSetCommon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultSetCommon.ProtoReflect.Descriptor instead.
 func (*ResultSetCommon) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{6}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ResultSetCommon) GetContext() *structpb.Struct {
@@ -658,7 +659,7 @@ type ResultGroup struct {
 
 func (x *ResultGroup) Reset() {
 	*x = ResultGroup{}
-	mi := &file_v1_result_proto_msgTypes[7]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -670,7 +671,7 @@ func (x *ResultGroup) String() string {
 func (*ResultGroup) ProtoMessage() {}
 
 func (x *ResultGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[7]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,7 +684,7 @@ func (x *ResultGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultGroup.ProtoReflect.Descriptor instead.
 func (*ResultGroup) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{7}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ResultGroup) GetStatus() string {
@@ -780,7 +781,7 @@ type BlockEvalResult struct {
 
 func (x *BlockEvalResult) Reset() {
 	*x = BlockEvalResult{}
-	mi := &file_v1_result_proto_msgTypes[8]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -792,7 +793,7 @@ func (x *BlockEvalResult) String() string {
 func (*BlockEvalResult) ProtoMessage() {}
 
 func (x *BlockEvalResult) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_result_proto_msgTypes[8]
+	mi := &file_carabiner_policy_v1_result_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -805,7 +806,7 @@ func (x *BlockEvalResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockEvalResult.ProtoReflect.Descriptor instead.
 func (*BlockEvalResult) Descriptor() ([]byte, []int) {
-	return file_v1_result_proto_rawDescGZIP(), []int{8}
+	return file_carabiner_policy_v1_result_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *BlockEvalResult) GetStatus() string {
@@ -843,11 +844,11 @@ func (x *BlockEvalResult) GetError() *Error {
 	return nil
 }
 
-var File_v1_result_proto protoreflect.FileDescriptor
+var File_carabiner_policy_v1_result_proto protoreflect.FileDescriptor
 
-const file_v1_result_proto_rawDesc = "" +
+const file_carabiner_policy_v1_result_proto_rawDesc = "" +
 	"\n" +
-	"\x0fv1/result.proto\x12\x13carabiner.policy.v1\x1a\x0fv1/policy.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\"\xf1\x03\n" +
+	" carabiner/policy/v1/result.proto\x12\x13carabiner.policy.v1\x1a carabiner/policy/v1/policy.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\x1a\"carabiner/signer/v1/identity.proto\"\xf1\x03\n" +
 	"\x06Result\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x129\n" +
 	"\n" +
@@ -867,7 +868,7 @@ const file_v1_result_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12L\n" +
 	"\vattestation\x18\x02 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\vattestation\x12=\n" +
 	"\n" +
-	"identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
+	"identities\x18\x03 \x03(\v2\x1d.carabiner.signer.v1.IdentityR\n" +
 	"identities\"\xcb\x02\n" +
 	"\n" +
 	"EvalResult\x12\x0e\n" +
@@ -886,7 +887,7 @@ const file_v1_result_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12L\n" +
 	"\vattestation\x18\x02 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\vattestation\x12=\n" +
 	"\n" +
-	"identities\x18\x03 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
+	"identities\x18\x03 \x03(\v2\x1d.carabiner.signer.v1.IdentityR\n" +
 	"identities\"\xb3\x04\n" +
 	"\tResultSet\x12=\n" +
 	"\n" +
@@ -927,19 +928,19 @@ const file_v1_result_proto_rawDesc = "" +
 	"\x17com.carabiner.policy.v1B\vResultProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
-	file_v1_result_proto_rawDescOnce sync.Once
-	file_v1_result_proto_rawDescData []byte
+	file_carabiner_policy_v1_result_proto_rawDescOnce sync.Once
+	file_carabiner_policy_v1_result_proto_rawDescData []byte
 )
 
-func file_v1_result_proto_rawDescGZIP() []byte {
-	file_v1_result_proto_rawDescOnce.Do(func() {
-		file_v1_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_v1_result_proto_rawDesc), len(file_v1_result_proto_rawDesc)))
+func file_carabiner_policy_v1_result_proto_rawDescGZIP() []byte {
+	file_carabiner_policy_v1_result_proto_rawDescOnce.Do(func() {
+		file_carabiner_policy_v1_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_carabiner_policy_v1_result_proto_rawDesc), len(file_carabiner_policy_v1_result_proto_rawDesc)))
 	})
-	return file_v1_result_proto_rawDescData
+	return file_carabiner_policy_v1_result_proto_rawDescData
 }
 
-var file_v1_result_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_v1_result_proto_goTypes = []any{
+var file_carabiner_policy_v1_result_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_carabiner_policy_v1_result_proto_goTypes = []any{
 	(*Result)(nil),                // 0: carabiner.policy.v1.Result
 	(*ChainedSubject)(nil),        // 1: carabiner.policy.v1.ChainedSubject
 	(*ChainedSubjectLink)(nil),    // 2: carabiner.policy.v1.ChainedSubjectLink
@@ -954,7 +955,7 @@ var file_v1_result_proto_goTypes = []any{
 	(*Meta)(nil),                  // 11: carabiner.policy.v1.Meta
 	(*structpb.Struct)(nil),       // 12: google.protobuf.Struct
 	(*v1.ResourceDescriptor)(nil), // 13: in_toto_attestation.v1.ResourceDescriptor
-	(*Identity)(nil),              // 14: carabiner.policy.v1.Identity
+	(*v11.Identity)(nil),          // 14: carabiner.signer.v1.Identity
 	(*Error)(nil),                 // 15: carabiner.policy.v1.Error
 	(*Assessment)(nil),            // 16: carabiner.policy.v1.Assessment
 	(*PolicySetMeta)(nil),         // 17: carabiner.policy.v1.PolicySetMeta
@@ -962,7 +963,7 @@ var file_v1_result_proto_goTypes = []any{
 	(*PolicyGroupMeta)(nil),       // 19: carabiner.policy.v1.PolicyGroupMeta
 	(*PolicyBlockMeta)(nil),       // 20: carabiner.policy.v1.PolicyBlockMeta
 }
-var file_v1_result_proto_depIdxs = []int32{
+var file_carabiner_policy_v1_result_proto_depIdxs = []int32{
 	9,  // 0: carabiner.policy.v1.Result.date_start:type_name -> google.protobuf.Timestamp
 	9,  // 1: carabiner.policy.v1.Result.date_end:type_name -> google.protobuf.Timestamp
 	10, // 2: carabiner.policy.v1.Result.policy:type_name -> carabiner.policy.v1.PolicyRef
@@ -975,14 +976,14 @@ var file_v1_result_proto_depIdxs = []int32{
 	13, // 9: carabiner.policy.v1.ChainedSubject.destination:type_name -> in_toto_attestation.v1.ResourceDescriptor
 	2,  // 10: carabiner.policy.v1.ChainedSubject.link:type_name -> carabiner.policy.v1.ChainedSubjectLink
 	13, // 11: carabiner.policy.v1.ChainedSubjectLink.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	14, // 12: carabiner.policy.v1.ChainedSubjectLink.identities:type_name -> carabiner.policy.v1.Identity
+	14, // 12: carabiner.policy.v1.ChainedSubjectLink.identities:type_name -> carabiner.signer.v1.Identity
 	9,  // 13: carabiner.policy.v1.EvalResult.date:type_name -> google.protobuf.Timestamp
 	12, // 14: carabiner.policy.v1.EvalResult.output:type_name -> google.protobuf.Struct
 	4,  // 15: carabiner.policy.v1.EvalResult.statements:type_name -> carabiner.policy.v1.StatementRef
 	15, // 16: carabiner.policy.v1.EvalResult.error:type_name -> carabiner.policy.v1.Error
 	16, // 17: carabiner.policy.v1.EvalResult.assessment:type_name -> carabiner.policy.v1.Assessment
 	13, // 18: carabiner.policy.v1.StatementRef.attestation:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	14, // 19: carabiner.policy.v1.StatementRef.identities:type_name -> carabiner.policy.v1.Identity
+	14, // 19: carabiner.policy.v1.StatementRef.identities:type_name -> carabiner.signer.v1.Identity
 	10, // 20: carabiner.policy.v1.ResultSet.policy_set:type_name -> carabiner.policy.v1.PolicyRef
 	17, // 21: carabiner.policy.v1.ResultSet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
 	9,  // 22: carabiner.policy.v1.ResultSet.date_start:type_name -> google.protobuf.Timestamp
@@ -1012,27 +1013,27 @@ var file_v1_result_proto_depIdxs = []int32{
 	0,  // [0:42] is the sub-list for field type_name
 }
 
-func init() { file_v1_result_proto_init() }
-func file_v1_result_proto_init() {
-	if File_v1_result_proto != nil {
+func init() { file_carabiner_policy_v1_result_proto_init() }
+func file_carabiner_policy_v1_result_proto_init() {
+	if File_carabiner_policy_v1_result_proto != nil {
 		return
 	}
-	file_v1_policy_proto_init()
+	file_carabiner_policy_v1_policy_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_result_proto_rawDesc), len(file_v1_result_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_carabiner_policy_v1_result_proto_rawDesc), len(file_carabiner_policy_v1_result_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_v1_result_proto_goTypes,
-		DependencyIndexes: file_v1_result_proto_depIdxs,
-		MessageInfos:      file_v1_result_proto_msgTypes,
+		GoTypes:           file_carabiner_policy_v1_result_proto_goTypes,
+		DependencyIndexes: file_carabiner_policy_v1_result_proto_depIdxs,
+		MessageInfos:      file_carabiner_policy_v1_result_proto_msgTypes,
 	}.Build()
-	File_v1_result_proto = out.File
-	file_v1_result_proto_goTypes = nil
-	file_v1_result_proto_depIdxs = nil
+	File_carabiner_policy_v1_result_proto = out.File
+	file_carabiner_policy_v1_result_proto_goTypes = nil
+	file_carabiner_policy_v1_result_proto_depIdxs = nil
 }
