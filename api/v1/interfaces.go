@@ -4,6 +4,7 @@
 package v1
 
 import (
+	sapi "github.com/carabiner-dev/signer/api/v1"
 	intoto "github.com/in-toto/attestation/go/v1"
 )
 
@@ -15,7 +16,7 @@ var (
 // RemoteReference is an interface to handle policy and group references
 type RemoteReference interface {
 	GetId() string
-	GetIdentity() *Identity
+	GetIdentity() *sapi.Identity
 	GetLocation() *intoto.ResourceDescriptor
 	GetSourceURL() string
 	GetVersion() int64
