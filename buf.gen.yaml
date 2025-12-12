@@ -5,15 +5,14 @@ version: v2
 
 managed:
   enabled: true
+inputs:
+  - directory: proto
 plugins:
   - protoc_builtin: go
-    out: ./api
-    opt: 
-      #- paths=import
-      - paths=source_relative
-      #- module=github.com/carabiner-dev/policy/api/v1
-      #- module=github.com
-      # - module=policy/api/v1
+    out: .
+    opt:
+      - paths=import
+      - module=github.com/carabiner-dev/policy
     # include_imports: false
 #inputs:
 #  - git_repo: https://github.com/in-toto/attestation

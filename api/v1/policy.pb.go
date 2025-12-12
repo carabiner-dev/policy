@@ -5,11 +5,12 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        (unknown)
-// source: v1/policy.proto
+// source: carabiner/policy/v1/policy.proto
 
 package v1
 
 import (
+	v11 "github.com/carabiner-dev/signer/api/v1"
 	v1 "github.com/in-toto/attestation/go/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -49,7 +50,7 @@ type PolicySet struct {
 
 func (x *PolicySet) Reset() {
 	*x = PolicySet{}
-	mi := &file_v1_policy_proto_msgTypes[0]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -61,7 +62,7 @@ func (x *PolicySet) String() string {
 func (*PolicySet) ProtoMessage() {}
 
 func (x *PolicySet) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[0]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -74,7 +75,7 @@ func (x *PolicySet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySet.ProtoReflect.Descriptor instead.
 func (*PolicySet) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{0}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PolicySet) GetId() string {
@@ -134,7 +135,7 @@ type PolicySetMeta struct {
 
 func (x *PolicySetMeta) Reset() {
 	*x = PolicySetMeta{}
-	mi := &file_v1_policy_proto_msgTypes[1]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +147,7 @@ func (x *PolicySetMeta) String() string {
 func (*PolicySetMeta) ProtoMessage() {}
 
 func (x *PolicySetMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[1]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,7 +160,7 @@ func (x *PolicySetMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySetMeta.ProtoReflect.Descriptor instead.
 func (*PolicySetMeta) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{1}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PolicySetMeta) GetRuntime() string {
@@ -224,7 +225,7 @@ type FrameworkRef struct {
 
 func (x *FrameworkRef) Reset() {
 	*x = FrameworkRef{}
-	mi := &file_v1_policy_proto_msgTypes[2]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -236,7 +237,7 @@ func (x *FrameworkRef) String() string {
 func (*FrameworkRef) ProtoMessage() {}
 
 func (x *FrameworkRef) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[2]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -249,7 +250,7 @@ func (x *FrameworkRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameworkRef.ProtoReflect.Descriptor instead.
 func (*FrameworkRef) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{2}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FrameworkRef) GetId() string {
@@ -275,7 +276,7 @@ func (x *FrameworkRef) GetDefinition() *v1.ResourceDescriptor {
 
 type PolicySetCommon struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Identities    []*Identity            `protobuf:"bytes,1,rep,name=identities,proto3" json:"identities,omitempty"`
+	Identities    []*v11.Identity        `protobuf:"bytes,1,rep,name=identities,proto3" json:"identities,omitempty"`
 	References    []*PolicyRef           `protobuf:"bytes,2,rep,name=references,proto3" json:"references,omitempty"`
 	Context       map[string]*ContextVal `protobuf:"bytes,3,rep,name=context,proto3" json:"context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
@@ -284,7 +285,7 @@ type PolicySetCommon struct {
 
 func (x *PolicySetCommon) Reset() {
 	*x = PolicySetCommon{}
-	mi := &file_v1_policy_proto_msgTypes[3]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +297,7 @@ func (x *PolicySetCommon) String() string {
 func (*PolicySetCommon) ProtoMessage() {}
 
 func (x *PolicySetCommon) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[3]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,10 +310,10 @@ func (x *PolicySetCommon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicySetCommon.ProtoReflect.Descriptor instead.
 func (*PolicySetCommon) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{3}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *PolicySetCommon) GetIdentities() []*Identity {
+func (x *PolicySetCommon) GetIdentities() []*v11.Identity {
 	if x != nil {
 		return x.Identities
 	}
@@ -340,7 +341,7 @@ type Policy struct {
 	Meta          *Meta                  `protobuf:"bytes,3,opt,name=meta,proto3" json:"meta,omitempty"`
 	Context       map[string]*ContextVal `protobuf:"bytes,4,rep,name=context,proto3" json:"context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Chain         []*ChainLink           `protobuf:"bytes,5,rep,name=chain,proto3" json:"chain,omitempty"`
-	Identities    []*Identity            `protobuf:"bytes,6,rep,name=identities,proto3" json:"identities,omitempty"`
+	Identities    []*v11.Identity        `protobuf:"bytes,6,rep,name=identities,proto3" json:"identities,omitempty"`
 	Predicates    *PredicateSpec         `protobuf:"bytes,7,opt,name=predicates,proto3" json:"predicates,omitempty"`
 	Transformers  []*Transformer         `protobuf:"bytes,8,rep,name=transformers,proto3" json:"transformers,omitempty"`
 	Tenets        []*Tenet               `protobuf:"bytes,9,rep,name=tenets,proto3" json:"tenets,omitempty"`
@@ -350,7 +351,7 @@ type Policy struct {
 
 func (x *Policy) Reset() {
 	*x = Policy{}
-	mi := &file_v1_policy_proto_msgTypes[4]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -362,7 +363,7 @@ func (x *Policy) String() string {
 func (*Policy) ProtoMessage() {}
 
 func (x *Policy) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[4]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -375,7 +376,7 @@ func (x *Policy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Policy.ProtoReflect.Descriptor instead.
 func (*Policy) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{4}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Policy) GetId() string {
@@ -413,7 +414,7 @@ func (x *Policy) GetChain() []*ChainLink {
 	return nil
 }
 
-func (x *Policy) GetIdentities() []*Identity {
+func (x *Policy) GetIdentities() []*v11.Identity {
 	if x != nil {
 		return x.Identities
 	}
@@ -445,7 +446,7 @@ type PolicyRef struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Version       int64                  `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
-	Identity      *Identity              `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Identity      *v11.Identity          `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
 	Location      *v1.ResourceDescriptor `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -453,7 +454,7 @@ type PolicyRef struct {
 
 func (x *PolicyRef) Reset() {
 	*x = PolicyRef{}
-	mi := &file_v1_policy_proto_msgTypes[5]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +466,7 @@ func (x *PolicyRef) String() string {
 func (*PolicyRef) ProtoMessage() {}
 
 func (x *PolicyRef) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[5]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -478,7 +479,7 @@ func (x *PolicyRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyRef.ProtoReflect.Descriptor instead.
 func (*PolicyRef) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{5}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PolicyRef) GetId() string {
@@ -495,7 +496,7 @@ func (x *PolicyRef) GetVersion() int64 {
 	return 0
 }
 
-func (x *PolicyRef) GetIdentity() *Identity {
+func (x *PolicyRef) GetIdentity() *v11.Identity {
 	if x != nil {
 		return x.Identity
 	}
@@ -521,7 +522,7 @@ type ChainLink struct {
 
 func (x *ChainLink) Reset() {
 	*x = ChainLink{}
-	mi := &file_v1_policy_proto_msgTypes[6]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -533,7 +534,7 @@ func (x *ChainLink) String() string {
 func (*ChainLink) ProtoMessage() {}
 
 func (x *ChainLink) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[6]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -546,7 +547,7 @@ func (x *ChainLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainLink.ProtoReflect.Descriptor instead.
 func (*ChainLink) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{6}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ChainLink) GetSource() isChainLink_Source {
@@ -592,7 +593,7 @@ type Meta struct {
 
 func (x *Meta) Reset() {
 	*x = Meta{}
-	mi := &file_v1_policy_proto_msgTypes[7]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -604,7 +605,7 @@ func (x *Meta) String() string {
 func (*Meta) ProtoMessage() {}
 
 func (x *Meta) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[7]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +618,7 @@ func (x *Meta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Meta.ProtoReflect.Descriptor instead.
 func (*Meta) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{7}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Meta) GetRuntime() string {
@@ -676,79 +677,6 @@ func (x *Meta) GetOrigin() *v1.ResourceDescriptor {
 	return nil
 }
 
-// Identity captures a signer identity. An identity can one of:
-//
-//	a) A sigstore identity
-//	b) A key
-//	c) A reference to an identity defined outside the policy
-type Identity struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Sigstore      *IdentitySigstore      `protobuf:"bytes,2,opt,name=sigstore,proto3,oneof" json:"sigstore,omitempty"`
-	Key           *IdentityKey           `protobuf:"bytes,3,opt,name=key,proto3,oneof" json:"key,omitempty"`
-	Ref           *IdentityRef           `protobuf:"bytes,4,opt,name=ref,proto3,oneof" json:"ref,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Identity) Reset() {
-	*x = Identity{}
-	mi := &file_v1_policy_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Identity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Identity) ProtoMessage() {}
-
-func (x *Identity) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Identity.ProtoReflect.Descriptor instead.
-func (*Identity) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *Identity) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *Identity) GetSigstore() *IdentitySigstore {
-	if x != nil {
-		return x.Sigstore
-	}
-	return nil
-}
-
-func (x *Identity) GetKey() *IdentityKey {
-	if x != nil {
-		return x.Key
-	}
-	return nil
-}
-
-func (x *Identity) GetRef() *IdentityRef {
-	if x != nil {
-		return x.Ref
-	}
-	return nil
-}
-
 // Control is a mapping tying the policy to an framework control
 type Control struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -762,7 +690,7 @@ type Control struct {
 
 func (x *Control) Reset() {
 	*x = Control{}
-	mi := &file_v1_policy_proto_msgTypes[9]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -774,7 +702,7 @@ func (x *Control) String() string {
 func (*Control) ProtoMessage() {}
 
 func (x *Control) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[9]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -787,7 +715,7 @@ func (x *Control) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Control.ProtoReflect.Descriptor instead.
 func (*Control) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{9}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Control) GetId() string {
@@ -818,175 +746,6 @@ func (x *Control) GetTitle() string {
 	return ""
 }
 
-// IdentitySigstore represents the identity data in a Fulcio cert.
-type IdentitySigstore struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Mode          *string                `protobuf:"bytes,1,opt,name=mode,proto3,oneof" json:"mode,omitempty"`   // exact | regexp
-	Issuer        string                 `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`     // https://accounts.google.com
-	Identity      string                 `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"` //  "identity": "puerco@gmail.com"
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *IdentitySigstore) Reset() {
-	*x = IdentitySigstore{}
-	mi := &file_v1_policy_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *IdentitySigstore) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*IdentitySigstore) ProtoMessage() {}
-
-func (x *IdentitySigstore) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use IdentitySigstore.ProtoReflect.Descriptor instead.
-func (*IdentitySigstore) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *IdentitySigstore) GetMode() string {
-	if x != nil && x.Mode != nil {
-		return *x.Mode
-	}
-	return ""
-}
-
-func (x *IdentitySigstore) GetIssuer() string {
-	if x != nil {
-		return x.Issuer
-	}
-	return ""
-}
-
-func (x *IdentitySigstore) GetIdentity() string {
-	if x != nil {
-		return x.Identity
-	}
-	return ""
-}
-
-// IdentityKey registers the data of a key used to sign attestations.
-type IdentityKey struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`     // Key ID
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"` // Identity type
-	Data          string                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"` // Public key data
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *IdentityKey) Reset() {
-	*x = IdentityKey{}
-	mi := &file_v1_policy_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *IdentityKey) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*IdentityKey) ProtoMessage() {}
-
-func (x *IdentityKey) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use IdentityKey.ProtoReflect.Descriptor instead.
-func (*IdentityKey) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *IdentityKey) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *IdentityKey) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *IdentityKey) GetData() string {
-	if x != nil {
-		return x.Data
-	}
-	return ""
-}
-
-// IdentityRef represents an identity defined outside of the policy. Most commonly
-// these identities will be defined at the policy set level to have a common
-// definition that can be reused by all policies in a set.
-type IdentityRef struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *IdentityRef) Reset() {
-	*x = IdentityRef{}
-	mi := &file_v1_policy_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *IdentityRef) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*IdentityRef) ProtoMessage() {}
-
-func (x *IdentityRef) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use IdentityRef.ProtoReflect.Descriptor instead.
-func (*IdentityRef) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *IdentityRef) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
 // ContextVal defines a contextual value needed by a policy. Context values
 // are defined from external sources at runtime and if required will cause the
 // policy to fail if unset.
@@ -1003,7 +762,7 @@ type ContextVal struct {
 
 func (x *ContextVal) Reset() {
 	*x = ContextVal{}
-	mi := &file_v1_policy_proto_msgTypes[13]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1015,7 +774,7 @@ func (x *ContextVal) String() string {
 func (*ContextVal) ProtoMessage() {}
 
 func (x *ContextVal) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[13]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1028,7 +787,7 @@ func (x *ContextVal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContextVal.ProtoReflect.Descriptor instead.
 func (*ContextVal) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{13}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ContextVal) GetType() string {
@@ -1081,7 +840,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_v1_policy_proto_msgTypes[14]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1093,7 +852,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[14]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1106,7 +865,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{14}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Error) GetMessage() string {
@@ -1133,7 +892,7 @@ type Transformer struct {
 
 func (x *Transformer) Reset() {
 	*x = Transformer{}
-	mi := &file_v1_policy_proto_msgTypes[15]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +904,7 @@ func (x *Transformer) String() string {
 func (*Transformer) ProtoMessage() {}
 
 func (x *Transformer) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[15]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +917,7 @@ func (x *Transformer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transformer.ProtoReflect.Descriptor instead.
 func (*Transformer) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{15}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Transformer) GetId() string {
@@ -1178,7 +937,7 @@ type PredicateSpec struct {
 
 func (x *PredicateSpec) Reset() {
 	*x = PredicateSpec{}
-	mi := &file_v1_policy_proto_msgTypes[16]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1190,7 +949,7 @@ func (x *PredicateSpec) String() string {
 func (*PredicateSpec) ProtoMessage() {}
 
 func (x *PredicateSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[16]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1203,7 +962,7 @@ func (x *PredicateSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PredicateSpec.ProtoReflect.Descriptor instead.
 func (*PredicateSpec) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{16}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PredicateSpec) GetTypes() []string {
@@ -1237,7 +996,7 @@ type Tenet struct {
 
 func (x *Tenet) Reset() {
 	*x = Tenet{}
-	mi := &file_v1_policy_proto_msgTypes[17]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1249,7 +1008,7 @@ func (x *Tenet) String() string {
 func (*Tenet) ProtoMessage() {}
 
 func (x *Tenet) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[17]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1262,7 +1021,7 @@ func (x *Tenet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tenet.ProtoReflect.Descriptor instead.
 func (*Tenet) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{17}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Tenet) GetId() string {
@@ -1331,7 +1090,7 @@ type ChainedOutput struct {
 
 func (x *ChainedOutput) Reset() {
 	*x = ChainedOutput{}
-	mi := &file_v1_policy_proto_msgTypes[18]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1343,7 +1102,7 @@ func (x *ChainedOutput) String() string {
 func (*ChainedOutput) ProtoMessage() {}
 
 func (x *ChainedOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[18]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1356,7 +1115,7 @@ func (x *ChainedOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedOutput.ProtoReflect.Descriptor instead.
 func (*ChainedOutput) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{18}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ChainedOutput) GetPolicy() string {
@@ -1385,14 +1144,14 @@ type ChainedPredicate struct {
 	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	Selector      string                 `protobuf:"bytes,2,opt,name=selector,proto3" json:"selector,omitempty"`
 	Runtime       string                 `protobuf:"bytes,3,opt,name=runtime,proto3" json:"runtime,omitempty"`
-	Identities    []*Identity            `protobuf:"bytes,5,rep,name=identities,proto3" json:"identities,omitempty"`
+	Identities    []*v11.Identity        `protobuf:"bytes,5,rep,name=identities,proto3" json:"identities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ChainedPredicate) Reset() {
 	*x = ChainedPredicate{}
-	mi := &file_v1_policy_proto_msgTypes[19]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1404,7 +1163,7 @@ func (x *ChainedPredicate) String() string {
 func (*ChainedPredicate) ProtoMessage() {}
 
 func (x *ChainedPredicate) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[19]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1417,7 +1176,7 @@ func (x *ChainedPredicate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChainedPredicate.ProtoReflect.Descriptor instead.
 func (*ChainedPredicate) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{19}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ChainedPredicate) GetType() string {
@@ -1441,7 +1200,7 @@ func (x *ChainedPredicate) GetRuntime() string {
 	return ""
 }
 
-func (x *ChainedPredicate) GetIdentities() []*Identity {
+func (x *ChainedPredicate) GetIdentities() []*v11.Identity {
 	if x != nil {
 		return x.Identities
 	}
@@ -1457,7 +1216,7 @@ type Assessment struct {
 
 func (x *Assessment) Reset() {
 	*x = Assessment{}
-	mi := &file_v1_policy_proto_msgTypes[20]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1469,7 +1228,7 @@ func (x *Assessment) String() string {
 func (*Assessment) ProtoMessage() {}
 
 func (x *Assessment) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[20]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1482,7 +1241,7 @@ func (x *Assessment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Assessment.ProtoReflect.Descriptor instead.
 func (*Assessment) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{20}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Assessment) GetMessage() string {
@@ -1502,7 +1261,7 @@ type Output struct {
 
 func (x *Output) Reset() {
 	*x = Output{}
-	mi := &file_v1_policy_proto_msgTypes[21]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1514,7 +1273,7 @@ func (x *Output) String() string {
 func (*Output) ProtoMessage() {}
 
 func (x *Output) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[21]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1527,7 +1286,7 @@ func (x *Output) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Output.ProtoReflect.Descriptor instead.
 func (*Output) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{21}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *Output) GetCode() string {
@@ -1567,7 +1326,7 @@ type PolicyGroup struct {
 
 func (x *PolicyGroup) Reset() {
 	*x = PolicyGroup{}
-	mi := &file_v1_policy_proto_msgTypes[22]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1579,7 +1338,7 @@ func (x *PolicyGroup) String() string {
 func (*PolicyGroup) ProtoMessage() {}
 
 func (x *PolicyGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[22]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1592,7 +1351,7 @@ func (x *PolicyGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyGroup.ProtoReflect.Descriptor instead.
 func (*PolicyGroup) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{22}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *PolicyGroup) GetId() string {
@@ -1653,7 +1412,7 @@ type PolicyBlock struct {
 
 func (x *PolicyBlock) Reset() {
 	*x = PolicyBlock{}
-	mi := &file_v1_policy_proto_msgTypes[23]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1665,7 +1424,7 @@ func (x *PolicyBlock) String() string {
 func (*PolicyBlock) ProtoMessage() {}
 
 func (x *PolicyBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[23]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1678,7 +1437,7 @@ func (x *PolicyBlock) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyBlock.ProtoReflect.Descriptor instead.
 func (*PolicyBlock) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{23}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *PolicyBlock) GetId() string {
@@ -1724,7 +1483,7 @@ type PolicyGroupMeta struct {
 
 func (x *PolicyGroupMeta) Reset() {
 	*x = PolicyGroupMeta{}
-	mi := &file_v1_policy_proto_msgTypes[24]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1736,7 +1495,7 @@ func (x *PolicyGroupMeta) String() string {
 func (*PolicyGroupMeta) ProtoMessage() {}
 
 func (x *PolicyGroupMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[24]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1749,7 +1508,7 @@ func (x *PolicyGroupMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyGroupMeta.ProtoReflect.Descriptor instead.
 func (*PolicyGroupMeta) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{24}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *PolicyGroupMeta) GetDescription() string {
@@ -1818,7 +1577,7 @@ type PolicyBlockMeta struct {
 
 func (x *PolicyBlockMeta) Reset() {
 	*x = PolicyBlockMeta{}
-	mi := &file_v1_policy_proto_msgTypes[25]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1830,7 +1589,7 @@ func (x *PolicyBlockMeta) String() string {
 func (*PolicyBlockMeta) ProtoMessage() {}
 
 func (x *PolicyBlockMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[25]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1843,7 +1602,7 @@ func (x *PolicyBlockMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyBlockMeta.ProtoReflect.Descriptor instead.
 func (*PolicyBlockMeta) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{25}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *PolicyBlockMeta) GetDescription() string {
@@ -1882,7 +1641,7 @@ type PolicyGroupRef struct {
 	// Pinned version of the group
 	Version int64 `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
 	// Expected identity when the group file is signed
-	Identity *Identity `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Identity *v11.Identity `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
 	// Source location when referenced remotely
 	Location      *v1.ResourceDescriptor `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1891,7 +1650,7 @@ type PolicyGroupRef struct {
 
 func (x *PolicyGroupRef) Reset() {
 	*x = PolicyGroupRef{}
-	mi := &file_v1_policy_proto_msgTypes[26]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1903,7 +1662,7 @@ func (x *PolicyGroupRef) String() string {
 func (*PolicyGroupRef) ProtoMessage() {}
 
 func (x *PolicyGroupRef) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_policy_proto_msgTypes[26]
+	mi := &file_carabiner_policy_v1_policy_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1916,7 +1675,7 @@ func (x *PolicyGroupRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyGroupRef.ProtoReflect.Descriptor instead.
 func (*PolicyGroupRef) Descriptor() ([]byte, []int) {
-	return file_v1_policy_proto_rawDescGZIP(), []int{26}
+	return file_carabiner_policy_v1_policy_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *PolicyGroupRef) GetId() string {
@@ -1933,7 +1692,7 @@ func (x *PolicyGroupRef) GetVersion() int64 {
 	return 0
 }
 
-func (x *PolicyGroupRef) GetIdentity() *Identity {
+func (x *PolicyGroupRef) GetIdentity() *v11.Identity {
 	if x != nil {
 		return x.Identity
 	}
@@ -1947,11 +1706,11 @@ func (x *PolicyGroupRef) GetLocation() *v1.ResourceDescriptor {
 	return nil
 }
 
-var File_v1_policy_proto protoreflect.FileDescriptor
+var File_carabiner_policy_v1_policy_proto protoreflect.FileDescriptor
 
-const file_v1_policy_proto_rawDesc = "" +
+const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\n" +
-	"\x0fv1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\"\xba\x02\n" +
+	" carabiner/policy/v1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\x1a\"carabiner/signer/v1/identity.proto\"\xba\x02\n" +
 	"\tPolicySet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12<\n" +
@@ -1980,7 +1739,7 @@ const file_v1_policy_proto_rawDesc = "" +
 	"definition\"\xba\x02\n" +
 	"\x0fPolicySetCommon\x12=\n" +
 	"\n" +
-	"identities\x18\x01 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
+	"identities\x18\x01 \x03(\v2\x1d.carabiner.signer.v1.IdentityR\n" +
 	"identities\x12>\n" +
 	"\n" +
 	"references\x18\x02 \x03(\v2\x1e.carabiner.policy.v1.PolicyRefR\n" +
@@ -1996,7 +1755,7 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\acontext\x18\x04 \x03(\v2(.carabiner.policy.v1.Policy.ContextEntryR\acontext\x124\n" +
 	"\x05chain\x18\x05 \x03(\v2\x1e.carabiner.policy.v1.ChainLinkR\x05chain\x12=\n" +
 	"\n" +
-	"identities\x18\x06 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
+	"identities\x18\x06 \x03(\v2\x1d.carabiner.signer.v1.IdentityR\n" +
 	"identities\x12B\n" +
 	"\n" +
 	"predicates\x18\a \x01(\v2\".carabiner.policy.v1.PredicateSpecR\n" +
@@ -2009,7 +1768,7 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\tPolicyRef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x129\n" +
-	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.policy.v1.IdentityR\bidentity\x12F\n" +
+	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.signer.v1.IdentityR\bidentity\x12F\n" +
 	"\blocation\x18\x04 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\blocation\"\\\n" +
 	"\tChainLink\x12E\n" +
 	"\tpredicate\x18\x01 \x01(\v2%.carabiner.policy.v1.ChainedPredicateH\x00R\tpredicateB\b\n" +
@@ -2027,31 +1786,12 @@ const file_v1_policy_proto_rawDesc = "" +
 	"expiration\x88\x01\x01\x12G\n" +
 	"\x06origin\x18\b \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x01R\x06origin\x88\x01\x01B\r\n" +
 	"\v_expirationB\t\n" +
-	"\a_origin\"\xf1\x01\n" +
-	"\bIdentity\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12F\n" +
-	"\bsigstore\x18\x02 \x01(\v2%.carabiner.policy.v1.IdentitySigstoreH\x00R\bsigstore\x88\x01\x01\x127\n" +
-	"\x03key\x18\x03 \x01(\v2 .carabiner.policy.v1.IdentityKeyH\x01R\x03key\x88\x01\x01\x127\n" +
-	"\x03ref\x18\x04 \x01(\v2 .carabiner.policy.v1.IdentityRefH\x02R\x03ref\x88\x01\x01B\v\n" +
-	"\t_sigstoreB\x06\n" +
-	"\x04_keyB\x06\n" +
-	"\x04_ref\"c\n" +
+	"\a_origin\"c\n" +
 	"\aControl\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05class\x18\x02 \x01(\tR\x05class\x12\x1c\n" +
 	"\tframework\x18\x03 \x01(\tR\tframework\x12\x14\n" +
-	"\x05title\x18\x04 \x01(\tR\x05title\"h\n" +
-	"\x10IdentitySigstore\x12\x17\n" +
-	"\x04mode\x18\x01 \x01(\tH\x00R\x04mode\x88\x01\x01\x12\x16\n" +
-	"\x06issuer\x18\x02 \x01(\tR\x06issuer\x12\x1a\n" +
-	"\bidentity\x18\x03 \x01(\tR\bidentityB\a\n" +
-	"\x05_mode\"E\n" +
-	"\vIdentityKey\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04type\x18\x02 \x01(\tR\x04type\x12\x12\n" +
-	"\x04data\x18\x03 \x01(\tR\x04data\"\x1d\n" +
-	"\vIdentityRef\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x85\x02\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\"\x85\x02\n" +
 	"\n" +
 	"ContextVal\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1f\n" +
@@ -2096,7 +1836,7 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\bselector\x18\x02 \x01(\tR\bselector\x12\x18\n" +
 	"\aruntime\x18\x03 \x01(\tR\aruntime\x12=\n" +
 	"\n" +
-	"identities\x18\x05 \x03(\v2\x1d.carabiner.policy.v1.IdentityR\n" +
+	"identities\x18\x05 \x03(\v2\x1d.carabiner.signer.v1.IdentityR\n" +
 	"identities\"&\n" +
 	"\n" +
 	"Assessment\x12\x18\n" +
@@ -2136,24 +1876,24 @@ const file_v1_policy_proto_rawDesc = "" +
 	"\x0ePolicyGroupRef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x129\n" +
-	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.policy.v1.IdentityR\bidentity\x12F\n" +
+	"\bidentity\x18\x03 \x01(\v2\x1d.carabiner.signer.v1.IdentityR\bidentity\x12F\n" +
 	"\blocation\x18\x04 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\blocationB\xbc\x01\n" +
 	"\x17com.carabiner.policy.v1B\vPolicyProtoP\x01Z&github.com/carabiner-dev/policy/api/v1\xa2\x02\x03CPX\xaa\x02\x13Carabiner.Policy.V1\xca\x02\x13Carabiner\\Policy\\V1\xe2\x02\x1fCarabiner\\Policy\\V1\\GPBMetadata\xea\x02\x15Carabiner::Policy::V1b\x06proto3"
 
 var (
-	file_v1_policy_proto_rawDescOnce sync.Once
-	file_v1_policy_proto_rawDescData []byte
+	file_carabiner_policy_v1_policy_proto_rawDescOnce sync.Once
+	file_carabiner_policy_v1_policy_proto_rawDescData []byte
 )
 
-func file_v1_policy_proto_rawDescGZIP() []byte {
-	file_v1_policy_proto_rawDescOnce.Do(func() {
-		file_v1_policy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_v1_policy_proto_rawDesc), len(file_v1_policy_proto_rawDesc)))
+func file_carabiner_policy_v1_policy_proto_rawDescGZIP() []byte {
+	file_carabiner_policy_v1_policy_proto_rawDescOnce.Do(func() {
+		file_carabiner_policy_v1_policy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_carabiner_policy_v1_policy_proto_rawDesc), len(file_carabiner_policy_v1_policy_proto_rawDesc)))
 	})
-	return file_v1_policy_proto_rawDescData
+	return file_carabiner_policy_v1_policy_proto_rawDescData
 }
 
-var file_v1_policy_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
-var file_v1_policy_proto_goTypes = []any{
+var file_carabiner_policy_v1_policy_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_carabiner_policy_v1_policy_proto_goTypes = []any{
 	(*PolicySet)(nil),             // 0: carabiner.policy.v1.PolicySet
 	(*PolicySetMeta)(nil),         // 1: carabiner.policy.v1.PolicySetMeta
 	(*FrameworkRef)(nil),          // 2: carabiner.policy.v1.FrameworkRef
@@ -2162,122 +1902,114 @@ var file_v1_policy_proto_goTypes = []any{
 	(*PolicyRef)(nil),             // 5: carabiner.policy.v1.PolicyRef
 	(*ChainLink)(nil),             // 6: carabiner.policy.v1.ChainLink
 	(*Meta)(nil),                  // 7: carabiner.policy.v1.Meta
-	(*Identity)(nil),              // 8: carabiner.policy.v1.Identity
-	(*Control)(nil),               // 9: carabiner.policy.v1.Control
-	(*IdentitySigstore)(nil),      // 10: carabiner.policy.v1.IdentitySigstore
-	(*IdentityKey)(nil),           // 11: carabiner.policy.v1.IdentityKey
-	(*IdentityRef)(nil),           // 12: carabiner.policy.v1.IdentityRef
-	(*ContextVal)(nil),            // 13: carabiner.policy.v1.ContextVal
-	(*Error)(nil),                 // 14: carabiner.policy.v1.Error
-	(*Transformer)(nil),           // 15: carabiner.policy.v1.Transformer
-	(*PredicateSpec)(nil),         // 16: carabiner.policy.v1.PredicateSpec
-	(*Tenet)(nil),                 // 17: carabiner.policy.v1.Tenet
-	(*ChainedOutput)(nil),         // 18: carabiner.policy.v1.ChainedOutput
-	(*ChainedPredicate)(nil),      // 19: carabiner.policy.v1.ChainedPredicate
-	(*Assessment)(nil),            // 20: carabiner.policy.v1.Assessment
-	(*Output)(nil),                // 21: carabiner.policy.v1.Output
-	(*PolicyGroup)(nil),           // 22: carabiner.policy.v1.PolicyGroup
-	(*PolicyBlock)(nil),           // 23: carabiner.policy.v1.PolicyBlock
-	(*PolicyGroupMeta)(nil),       // 24: carabiner.policy.v1.PolicyGroupMeta
-	(*PolicyBlockMeta)(nil),       // 25: carabiner.policy.v1.PolicyBlockMeta
-	(*PolicyGroupRef)(nil),        // 26: carabiner.policy.v1.PolicyGroupRef
-	nil,                           // 27: carabiner.policy.v1.PolicySetCommon.ContextEntry
-	nil,                           // 28: carabiner.policy.v1.Policy.ContextEntry
-	nil,                           // 29: carabiner.policy.v1.Tenet.OutputsEntry
-	(*timestamppb.Timestamp)(nil), // 30: google.protobuf.Timestamp
-	(*v1.ResourceDescriptor)(nil), // 31: in_toto_attestation.v1.ResourceDescriptor
-	(*structpb.Value)(nil),        // 32: google.protobuf.Value
+	(*Control)(nil),               // 8: carabiner.policy.v1.Control
+	(*ContextVal)(nil),            // 9: carabiner.policy.v1.ContextVal
+	(*Error)(nil),                 // 10: carabiner.policy.v1.Error
+	(*Transformer)(nil),           // 11: carabiner.policy.v1.Transformer
+	(*PredicateSpec)(nil),         // 12: carabiner.policy.v1.PredicateSpec
+	(*Tenet)(nil),                 // 13: carabiner.policy.v1.Tenet
+	(*ChainedOutput)(nil),         // 14: carabiner.policy.v1.ChainedOutput
+	(*ChainedPredicate)(nil),      // 15: carabiner.policy.v1.ChainedPredicate
+	(*Assessment)(nil),            // 16: carabiner.policy.v1.Assessment
+	(*Output)(nil),                // 17: carabiner.policy.v1.Output
+	(*PolicyGroup)(nil),           // 18: carabiner.policy.v1.PolicyGroup
+	(*PolicyBlock)(nil),           // 19: carabiner.policy.v1.PolicyBlock
+	(*PolicyGroupMeta)(nil),       // 20: carabiner.policy.v1.PolicyGroupMeta
+	(*PolicyBlockMeta)(nil),       // 21: carabiner.policy.v1.PolicyBlockMeta
+	(*PolicyGroupRef)(nil),        // 22: carabiner.policy.v1.PolicyGroupRef
+	nil,                           // 23: carabiner.policy.v1.PolicySetCommon.ContextEntry
+	nil,                           // 24: carabiner.policy.v1.Policy.ContextEntry
+	nil,                           // 25: carabiner.policy.v1.Tenet.OutputsEntry
+	(*timestamppb.Timestamp)(nil), // 26: google.protobuf.Timestamp
+	(*v1.ResourceDescriptor)(nil), // 27: in_toto_attestation.v1.ResourceDescriptor
+	(*v11.Identity)(nil),          // 28: carabiner.signer.v1.Identity
+	(*structpb.Value)(nil),        // 29: google.protobuf.Value
 }
-var file_v1_policy_proto_depIdxs = []int32{
+var file_carabiner_policy_v1_policy_proto_depIdxs = []int32{
 	1,  // 0: carabiner.policy.v1.PolicySet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
 	3,  // 1: carabiner.policy.v1.PolicySet.common:type_name -> carabiner.policy.v1.PolicySetCommon
 	4,  // 2: carabiner.policy.v1.PolicySet.policies:type_name -> carabiner.policy.v1.Policy
 	6,  // 3: carabiner.policy.v1.PolicySet.chain:type_name -> carabiner.policy.v1.ChainLink
-	22, // 4: carabiner.policy.v1.PolicySet.groups:type_name -> carabiner.policy.v1.PolicyGroup
-	30, // 5: carabiner.policy.v1.PolicySetMeta.expiration:type_name -> google.protobuf.Timestamp
+	18, // 4: carabiner.policy.v1.PolicySet.groups:type_name -> carabiner.policy.v1.PolicyGroup
+	26, // 5: carabiner.policy.v1.PolicySetMeta.expiration:type_name -> google.protobuf.Timestamp
 	2,  // 6: carabiner.policy.v1.PolicySetMeta.frameworks:type_name -> carabiner.policy.v1.FrameworkRef
-	31, // 7: carabiner.policy.v1.PolicySetMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	31, // 8: carabiner.policy.v1.FrameworkRef.definition:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	8,  // 9: carabiner.policy.v1.PolicySetCommon.identities:type_name -> carabiner.policy.v1.Identity
+	27, // 7: carabiner.policy.v1.PolicySetMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	27, // 8: carabiner.policy.v1.FrameworkRef.definition:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	28, // 9: carabiner.policy.v1.PolicySetCommon.identities:type_name -> carabiner.signer.v1.Identity
 	5,  // 10: carabiner.policy.v1.PolicySetCommon.references:type_name -> carabiner.policy.v1.PolicyRef
-	27, // 11: carabiner.policy.v1.PolicySetCommon.context:type_name -> carabiner.policy.v1.PolicySetCommon.ContextEntry
+	23, // 11: carabiner.policy.v1.PolicySetCommon.context:type_name -> carabiner.policy.v1.PolicySetCommon.ContextEntry
 	5,  // 12: carabiner.policy.v1.Policy.source:type_name -> carabiner.policy.v1.PolicyRef
 	7,  // 13: carabiner.policy.v1.Policy.meta:type_name -> carabiner.policy.v1.Meta
-	28, // 14: carabiner.policy.v1.Policy.context:type_name -> carabiner.policy.v1.Policy.ContextEntry
+	24, // 14: carabiner.policy.v1.Policy.context:type_name -> carabiner.policy.v1.Policy.ContextEntry
 	6,  // 15: carabiner.policy.v1.Policy.chain:type_name -> carabiner.policy.v1.ChainLink
-	8,  // 16: carabiner.policy.v1.Policy.identities:type_name -> carabiner.policy.v1.Identity
-	16, // 17: carabiner.policy.v1.Policy.predicates:type_name -> carabiner.policy.v1.PredicateSpec
-	15, // 18: carabiner.policy.v1.Policy.transformers:type_name -> carabiner.policy.v1.Transformer
-	17, // 19: carabiner.policy.v1.Policy.tenets:type_name -> carabiner.policy.v1.Tenet
-	8,  // 20: carabiner.policy.v1.PolicyRef.identity:type_name -> carabiner.policy.v1.Identity
-	31, // 21: carabiner.policy.v1.PolicyRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	19, // 22: carabiner.policy.v1.ChainLink.predicate:type_name -> carabiner.policy.v1.ChainedPredicate
-	9,  // 23: carabiner.policy.v1.Meta.controls:type_name -> carabiner.policy.v1.Control
-	30, // 24: carabiner.policy.v1.Meta.expiration:type_name -> google.protobuf.Timestamp
-	31, // 25: carabiner.policy.v1.Meta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	10, // 26: carabiner.policy.v1.Identity.sigstore:type_name -> carabiner.policy.v1.IdentitySigstore
-	11, // 27: carabiner.policy.v1.Identity.key:type_name -> carabiner.policy.v1.IdentityKey
-	12, // 28: carabiner.policy.v1.Identity.ref:type_name -> carabiner.policy.v1.IdentityRef
-	32, // 29: carabiner.policy.v1.ContextVal.value:type_name -> google.protobuf.Value
-	32, // 30: carabiner.policy.v1.ContextVal.default:type_name -> google.protobuf.Value
-	16, // 31: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
-	29, // 32: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
-	14, // 33: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
-	20, // 34: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
-	8,  // 35: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.policy.v1.Identity
-	32, // 36: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
-	24, // 37: carabiner.policy.v1.PolicyGroup.meta:type_name -> carabiner.policy.v1.PolicyGroupMeta
-	3,  // 38: carabiner.policy.v1.PolicyGroup.common:type_name -> carabiner.policy.v1.PolicySetCommon
-	26, // 39: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
-	23, // 40: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
-	6,  // 41: carabiner.policy.v1.PolicyGroup.chain:type_name -> carabiner.policy.v1.ChainLink
-	25, // 42: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.PolicyBlockMeta
-	4,  // 43: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
-	9,  // 44: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
-	30, // 45: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
-	31, // 46: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	9,  // 47: carabiner.policy.v1.PolicyBlockMeta.controls:type_name -> carabiner.policy.v1.Control
-	8,  // 48: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.policy.v1.Identity
-	31, // 49: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	13, // 50: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	13, // 51: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	21, // 52: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
-	53, // [53:53] is the sub-list for method output_type
-	53, // [53:53] is the sub-list for method input_type
-	53, // [53:53] is the sub-list for extension type_name
-	53, // [53:53] is the sub-list for extension extendee
-	0,  // [0:53] is the sub-list for field type_name
+	28, // 16: carabiner.policy.v1.Policy.identities:type_name -> carabiner.signer.v1.Identity
+	12, // 17: carabiner.policy.v1.Policy.predicates:type_name -> carabiner.policy.v1.PredicateSpec
+	11, // 18: carabiner.policy.v1.Policy.transformers:type_name -> carabiner.policy.v1.Transformer
+	13, // 19: carabiner.policy.v1.Policy.tenets:type_name -> carabiner.policy.v1.Tenet
+	28, // 20: carabiner.policy.v1.PolicyRef.identity:type_name -> carabiner.signer.v1.Identity
+	27, // 21: carabiner.policy.v1.PolicyRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	15, // 22: carabiner.policy.v1.ChainLink.predicate:type_name -> carabiner.policy.v1.ChainedPredicate
+	8,  // 23: carabiner.policy.v1.Meta.controls:type_name -> carabiner.policy.v1.Control
+	26, // 24: carabiner.policy.v1.Meta.expiration:type_name -> google.protobuf.Timestamp
+	27, // 25: carabiner.policy.v1.Meta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	29, // 26: carabiner.policy.v1.ContextVal.value:type_name -> google.protobuf.Value
+	29, // 27: carabiner.policy.v1.ContextVal.default:type_name -> google.protobuf.Value
+	12, // 28: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
+	25, // 29: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
+	10, // 30: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
+	16, // 31: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
+	28, // 32: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.signer.v1.Identity
+	29, // 33: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
+	20, // 34: carabiner.policy.v1.PolicyGroup.meta:type_name -> carabiner.policy.v1.PolicyGroupMeta
+	3,  // 35: carabiner.policy.v1.PolicyGroup.common:type_name -> carabiner.policy.v1.PolicySetCommon
+	22, // 36: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
+	19, // 37: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
+	6,  // 38: carabiner.policy.v1.PolicyGroup.chain:type_name -> carabiner.policy.v1.ChainLink
+	21, // 39: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.PolicyBlockMeta
+	4,  // 40: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
+	8,  // 41: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
+	26, // 42: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
+	27, // 43: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	8,  // 44: carabiner.policy.v1.PolicyBlockMeta.controls:type_name -> carabiner.policy.v1.Control
+	28, // 45: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.signer.v1.Identity
+	27, // 46: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	9,  // 47: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	9,  // 48: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	17, // 49: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
+	50, // [50:50] is the sub-list for method output_type
+	50, // [50:50] is the sub-list for method input_type
+	50, // [50:50] is the sub-list for extension type_name
+	50, // [50:50] is the sub-list for extension extendee
+	0,  // [0:50] is the sub-list for field type_name
 }
 
-func init() { file_v1_policy_proto_init() }
-func file_v1_policy_proto_init() {
-	if File_v1_policy_proto != nil {
+func init() { file_carabiner_policy_v1_policy_proto_init() }
+func file_carabiner_policy_v1_policy_proto_init() {
+	if File_carabiner_policy_v1_policy_proto != nil {
 		return
 	}
-	file_v1_policy_proto_msgTypes[1].OneofWrappers = []any{}
-	file_v1_policy_proto_msgTypes[6].OneofWrappers = []any{
+	file_carabiner_policy_v1_policy_proto_msgTypes[1].OneofWrappers = []any{}
+	file_carabiner_policy_v1_policy_proto_msgTypes[6].OneofWrappers = []any{
 		(*ChainLink_Predicate)(nil),
 	}
-	file_v1_policy_proto_msgTypes[7].OneofWrappers = []any{}
-	file_v1_policy_proto_msgTypes[8].OneofWrappers = []any{}
-	file_v1_policy_proto_msgTypes[10].OneofWrappers = []any{}
-	file_v1_policy_proto_msgTypes[13].OneofWrappers = []any{}
-	file_v1_policy_proto_msgTypes[24].OneofWrappers = []any{}
+	file_carabiner_policy_v1_policy_proto_msgTypes[7].OneofWrappers = []any{}
+	file_carabiner_policy_v1_policy_proto_msgTypes[9].OneofWrappers = []any{}
+	file_carabiner_policy_v1_policy_proto_msgTypes[20].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_policy_proto_rawDesc), len(file_v1_policy_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_carabiner_policy_v1_policy_proto_rawDesc), len(file_carabiner_policy_v1_policy_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   30,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_v1_policy_proto_goTypes,
-		DependencyIndexes: file_v1_policy_proto_depIdxs,
-		MessageInfos:      file_v1_policy_proto_msgTypes,
+		GoTypes:           file_carabiner_policy_v1_policy_proto_goTypes,
+		DependencyIndexes: file_carabiner_policy_v1_policy_proto_depIdxs,
+		MessageInfos:      file_carabiner_policy_v1_policy_proto_msgTypes,
 	}.Build()
-	File_v1_policy_proto = out.File
-	file_v1_policy_proto_goTypes = nil
-	file_v1_policy_proto_depIdxs = nil
+	File_carabiner_policy_v1_policy_proto = out.File
+	file_carabiner_policy_v1_policy_proto_goTypes = nil
+	file_carabiner_policy_v1_policy_proto_depIdxs = nil
 }

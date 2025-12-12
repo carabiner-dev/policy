@@ -13,6 +13,7 @@ import (
 	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/collector/envelope"
 	"github.com/carabiner-dev/hasher"
+	sapi "github.com/carabiner-dev/signer/api/v1"
 	"github.com/hjson/hjson-go/v4"
 	intoto "github.com/in-toto/attestation/go/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -245,14 +246,14 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 		return envelopes[0].GetPredicate().GetData(), nil, nil
 	}
 
-	v, ok := verification.(*v1.Verification)
+	v, ok := verification.(*sapi.Verification)
 	if !ok {
 		return nil, nil, fmt.Errorf("unsupported verification result type: %T", verification)
 	}
 
-	validIds := []*v1.Identity{}
+	validIds := []*sapi.Identity{}
 	for _, idstring := range opts.IdentityStrings {
-		id, err := v1.NewIdentityFromSlug(idstring)
+		id, err := sapi.NewIdentityFromSlug(idstring)
 		if err != nil {
 			return nil, nil, fmt.Errorf("parsing id string %q: %w", idstring, err)
 		}
@@ -262,7 +263,7 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 	// If there were valid identities specified, we mutate the verification
 	// results, in other words, white listing here and fail it if needed.
 	if len(validIds) > 0 {
-		acceptedIds := []*v1.Identity{}
+		acceptedIds := []*sapi.Identity{}
 		for _, id := range validIds {
 			if v.MatchesIdentity(id) {
 				acceptedIds = append(acceptedIds, id)

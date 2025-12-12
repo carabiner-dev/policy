@@ -6,6 +6,7 @@ package v1
 import (
 	"testing"
 
+	sapi "github.com/carabiner-dev/signer/api/v1"
 	intoto "github.com/in-toto/attestation/go/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -80,14 +81,14 @@ func TestParseIdentitySlug(t *testing.T) {
 		name    string
 		slug    string
 		mustErr bool
-		expect  *Identity
+		expect  *sapi.Identity
 	}{
 		{
 			"sigstore",
 			"sigstore::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/slsa-source-poc/.github/workflows/release.yaml@refs/tags/v0.6.1",
 			false,
-			&Identity{
-				Sigstore: &IdentitySigstore{
+			&sapi.Identity{
+				Sigstore: &sapi.IdentitySigstore{
 					Mode:     &modeExact,
 					Issuer:   "https://token.actions.githubusercontent.com",
 					Identity: "https://github.com/slsa-framework/slsa-source-poc/.github/workflows/release.yaml@refs/tags/v0.6.1",
@@ -98,8 +99,8 @@ func TestParseIdentitySlug(t *testing.T) {
 			"sigstore-regexp",
 			"sigstore(regexp)::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/slsa-source-poc/.github/workflows/release.yaml@refs/tags/v0.6.1",
 			false,
-			&Identity{
-				Sigstore: &IdentitySigstore{
+			&sapi.Identity{
+				Sigstore: &sapi.IdentitySigstore{
 					Mode:     &modeRegexp,
 					Issuer:   "https://token.actions.githubusercontent.com",
 					Identity: "https://github.com/slsa-framework/slsa-source-poc/.github/workflows/release.yaml@refs/tags/v0.6.1",
@@ -110,8 +111,8 @@ func TestParseIdentitySlug(t *testing.T) {
 			"key",
 			"key::ed25519::c6d8e2f4g7h9i1j3k5l7m9n2o4p6q8r1s3t5u7v9w2x4y6z8a1b3c5d7e9f1a3b5",
 			false,
-			&Identity{
-				Key: &IdentityKey{
+			&sapi.Identity{
+				Key: &sapi.IdentityKey{
 					Type: "ed25519",
 					Id:   "c6d8e2f4g7h9i1j3k5l7m9n2o4p6q8r1s3t5u7v9w2x4y6z8a1b3c5d7e9f1a3b5",
 				},
@@ -121,12 +122,12 @@ func TestParseIdentitySlug(t *testing.T) {
 			"ref",
 			"ref:my-key",
 			false,
-			&Identity{Ref: &IdentityRef{Id: "my-key"}},
+			&sapi.Identity{Ref: &sapi.IdentityRef{Id: "my-key"}},
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			res, err := NewIdentityFromSlug(tt.slug)
+			res, err := sapi.NewIdentityFromSlug(tt.slug)
 			if tt.mustErr {
 				require.Error(t, err)
 			}
