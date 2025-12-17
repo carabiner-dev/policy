@@ -15,7 +15,7 @@ message PolicySet {
     // ID is the policySet identifier
     string id = 1;
 
-    // Meta holds the PolicySet metadata informartion
+    // Meta holds the PolicySet metadata information
     PolicySetMeta meta = 2;
 
     // Common groups the common data elements to be share by all the
@@ -33,22 +33,43 @@ message PolicySet {
     repeated PolicyGroup groups = 6;
 }
 
+// PolicySetMeta captures data about a policy set.
 message PolicySetMeta {
+    // Runtime to use as default for policies. Defines the runtime and version
+    // to use when evaluating policy code, eg cel/v0
     string runtime = 1;
+
+    // Human description of the PolicySet
     string description = 2;
+
+    // Expiration date. When set, the policyset will fail if the expiration date
+    // has passed.
     google.protobuf.Timestamp expiration = 3;
+
+    // Version of the PolicySet.
     int64 version = 4;
+
+    // Enforce marks if the policy engine returns FAIL or SOFTFAIL if policies 
+    // fail. Values "ON"/"OFF", defaults to "ON"
     string enforce = 5;
+
+    // Framework references checked by this policy set. The references give 
+    // meaning to control references in the policies.
     repeated FrameworkRef frameworks = 6;
+
+    // Origin of the policyset's data, recorded when compiled.
     optional in_toto_attestation.v1.ResourceDescriptor origin = 7;
 }
 
 // FrameworkRef is a reference to a security framework. The reference binds
 // the controls tested by each the policy to the the framework definition.  
 message FrameworkRef {
-    string id = 1; // String identifier for the framework
-    string name = 2; // Security framework name
-    in_toto_attestation.v1.ResourceDescriptor definition = 3; // Link to the framework definition
+    // String identifier for the framework
+    string id = 1; 
+    // Security framework name
+    string name = 2; 
+    // Link to the framework definition
+    in_toto_attestation.v1.ResourceDescriptor definition = 3; 
 }
 
 message PolicySetCommon {
@@ -85,32 +106,56 @@ message ChainLink {
 
 // Meta contains information about the policy itself
 message Meta {
+    // Runtime identifier. Defines the runtime and version. Eg cel/v0
     string runtime = 1;
+    // Human readable description o the policy.
     string description = 2;
+    // AssertMode. Controls if one tenet or all must pass for the policy to pass.
     string assert_mode = 3;
+    // Control references. Reference to framework controls the policy verifies.
     repeated Control controls = 4; 
+    // Version is an integer marking the policy version. Optional.
     int64 version = 5;
+    // Enforce controls if a FAILED policy returns FAILED or SOFTFAIL. Values "Y"/"N"
     string enforce = 6;
+    // Expiration date. Policies can expire as defined by this optional field.
     optional google.protobuf.Timestamp expiration = 7;
+    // Origin captures the origin of a policy when the compiler gathers its data.
     optional in_toto_attestation.v1.ResourceDescriptor origin = 8;
 }
 
 // Control is a mapping tying the policy to an framework control
 message Control {
+    // Control ID string.
     string id = 1;
-    string class = 2;
+
+    // Human readable description of the control
+    string title = 2;
+
+    // Framework identifier string
     string framework = 3;
-    string title = 4;
+
+    // Control class/family within its framework
+    string class = 4;
+
+    // Subitem identifier of control checks
+    string item = 5;
 }
 
 // ContextVal defines a contextual value needed by a policy. Context values
 // are defined from external sources at runtime and if required will cause the
 // policy to fail if unset. 
 message ContextVal {
+    // Data type of the context value. Enforced values are "string", "int", "bool", "float".
     string type = 1;
+    // Required flag. If set to true, policies will not evaluate if the context value is not set.
     optional bool required = 2;
+    // Value field. If the ContextVal is typed, the data should be castable to the type defined in Type.
     optional google.protobuf.Value value = 3;
+    // Default value when ContextVal is not set. If the ContextVal is typed, the
+    // default value should be castable into the type defined in type
     optional google.protobuf.Value default = 4;
+    // Human readable description of the ContextValue
     optional string description = 5;
 }
 
