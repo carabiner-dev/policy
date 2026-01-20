@@ -8,12 +8,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 	"sync"
 
 	"github.com/carabiner-dev/vcslocator"
-	httputil "sigs.k8s.io/release-utils/http"
+	"sigs.k8s.io/release-utils/http"
 
 	"github.com/carabiner-dev/policy/options"
 )
@@ -138,7 +137,7 @@ func (gf *Fetcher) GetGroup(uris []string) ([][]byte, error) {
 		}
 
 		var res [][]byte
-		res, errs = httputil.NewAgent().GetGroup(uris)
+		res, errs = http.NewAgent().GetGroup(uris)
 		if errors.Join(errs...) != nil {
 			return
 		}
@@ -226,38 +225,17 @@ func (gf *Fetcher) GetFromHTTP(url string) ([]byte, error) {
 	maxSize := gf.Limits.MaxInputSize
 	if maxSize <= 0 {
 		// No limit, use the standard agent
-		return httputil.NewAgent().Get(url)
+		return http.NewAgent().Get(url)
 	}
 
-	// Perform HTTP request with size limiting
-	resp, err := http.Get(url) //nolint:gosec // URL is from policy configuration
-	if err != nil {
+	// Use limited writer to enforce size limit
+	var b bytes.Buffer
+	lw := &limitedWriter{w: &b, max: maxSize}
+	if err := http.NewAgent().GetToWriter(lw, url); err != nil {
 		return nil, fmt.Errorf("fetching URL: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HTTP error: %s", resp.Status)
-	}
-
-	// Check Content-Length header if available
-	if resp.ContentLength > maxSize {
-		return nil, options.NewInputSizeError(maxSize, resp.ContentLength, url)
-	}
-
-	// Use LimitReader to enforce the size limit during reading
-	limitedReader := io.LimitReader(resp.Body, maxSize+1)
-	data, err := io.ReadAll(limitedReader)
-	if err != nil {
-		return nil, fmt.Errorf("reading response body: %w", err)
-	}
-
-	// Check if we hit the limit
-	if int64(len(data)) > maxSize {
-		return nil, options.NewInputSizeError(maxSize, int64(len(data)), url)
-	}
-
-	return data, nil
+	return b.Bytes(), nil
 }
 
 // GetFromGit gets data from a git repository at the specified revision with size limits.

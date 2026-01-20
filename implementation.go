@@ -46,7 +46,7 @@ func checkJSONDepth(data []byte, maxDepth int) (int, error) {
 			break
 		}
 		if err != nil {
-			// Invalid JSON will be caught later by the actual parser
+			//nolint:nilerr // Invalid JSON will be caught later by the actual parser
 			return maxObserved, nil
 		}
 

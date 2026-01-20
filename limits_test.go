@@ -24,7 +24,7 @@ func TestLimits_InputSizeExceeded(t *testing.T) {
 
 	// Create a file with content larger than 100 bytes
 	largeContent := `{"id":"` + strings.Repeat("x", 200) + `"}`
-	err := os.WriteFile(largePath, []byte(largeContent), 0o644)
+	err := os.WriteFile(largePath, []byte(largeContent), 0o600)
 	require.NoError(t, err)
 
 	parser := NewParser()
@@ -43,7 +43,7 @@ func TestLimits_InputSizeAllowed(t *testing.T) {
 	smallPath := filepath.Join(tmpDir, "small.json")
 
 	smallContent := `{"id":"test-policy"}`
-	err := os.WriteFile(smallPath, []byte(smallContent), 0o644)
+	err := os.WriteFile(smallPath, []byte(smallContent), 0o600)
 	require.NoError(t, err)
 
 	parser := NewParser()
@@ -437,6 +437,7 @@ func TestLimits_ErrorConstructors(t *testing.T) {
 	t.Parallel()
 
 	t.Run("NewInputSizeError", func(t *testing.T) {
+		t.Parallel()
 		err := options.NewInputSizeError(1024, 2048, "/test/file.json")
 		assert.Equal(t, "input size", err.Limit)
 		assert.Equal(t, int64(1024), err.Max)
@@ -445,6 +446,7 @@ func TestLimits_ErrorConstructors(t *testing.T) {
 	})
 
 	t.Run("NewJSONDepthError", func(t *testing.T) {
+		t.Parallel()
 		err := options.NewJSONDepthError(100, 150, "")
 		assert.Equal(t, "JSON depth", err.Limit)
 		assert.Equal(t, int64(100), err.Max)
@@ -452,6 +454,7 @@ func TestLimits_ErrorConstructors(t *testing.T) {
 	})
 
 	t.Run("NewCollectionSizeError", func(t *testing.T) {
+		t.Parallel()
 		err := options.NewCollectionSizeError("policies per set", 100, 150, "test-set")
 		assert.Equal(t, "policies per set", err.Limit)
 		assert.Equal(t, int64(100), err.Max)
@@ -460,6 +463,7 @@ func TestLimits_ErrorConstructors(t *testing.T) {
 	})
 
 	t.Run("NewTotalFetchesError", func(t *testing.T) {
+		t.Parallel()
 		err := options.NewTotalFetchesError(100, 150, "")
 		assert.Equal(t, "total fetches", err.Limit)
 		assert.Equal(t, int64(100), err.Max)

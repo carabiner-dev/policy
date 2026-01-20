@@ -106,40 +106,40 @@ var (
 )
 
 // NewInputSizeError creates a new input size limit error.
-func NewInputSizeError(max, actual int64, context string) *LimitError {
+func NewInputSizeError(maxVal, actual int64, context string) *LimitError {
 	return &LimitError{
 		Limit:   "input size",
-		Max:     max,
+		Max:     maxVal,
 		Actual:  actual,
 		Context: context,
 	}
 }
 
 // NewJSONDepthError creates a new JSON depth limit error.
-func NewJSONDepthError(max, actual int, context string) *LimitError {
+func NewJSONDepthError(maxVal, actual int, context string) *LimitError {
 	return &LimitError{
 		Limit:   "JSON depth",
-		Max:     int64(max),
+		Max:     int64(maxVal),
 		Actual:  int64(actual),
 		Context: context,
 	}
 }
 
 // NewCollectionSizeError creates a new collection size limit error.
-func NewCollectionSizeError(limitName string, max, actual int, context string) *LimitError {
+func NewCollectionSizeError(limitName string, maxVal, actual int, context string) *LimitError {
 	return &LimitError{
 		Limit:   limitName,
-		Max:     int64(max),
+		Max:     int64(maxVal),
 		Actual:  int64(actual),
 		Context: context,
 	}
 }
 
 // NewTotalFetchesError creates a new total fetches limit error.
-func NewTotalFetchesError(max, actual int, context string) *LimitError {
+func NewTotalFetchesError(maxVal, actual int, context string) *LimitError {
 	return &LimitError{
 		Limit:   "total fetches",
-		Max:     int64(max),
+		Max:     int64(maxVal),
 		Actual:  int64(actual),
 		Context: context,
 	}
@@ -178,13 +178,13 @@ func WithMaxJSONDepth(depth int) OptFn {
 }
 
 // WithMaxPoliciesPerSet sets the maximum policies per set limit.
-func WithMaxPoliciesPerSet(max int) OptFn {
+func WithMaxPoliciesPerSet(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxPoliciesPerSet = max
+			o.Limits.MaxPoliciesPerSet = maxVal
 		case *CompileOptions:
-			o.Limits.MaxPoliciesPerSet = max
+			o.Limits.MaxPoliciesPerSet = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -193,13 +193,13 @@ func WithMaxPoliciesPerSet(max int) OptFn {
 }
 
 // WithMaxGroupsPerSet sets the maximum groups per set limit.
-func WithMaxGroupsPerSet(max int) OptFn {
+func WithMaxGroupsPerSet(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxGroupsPerSet = max
+			o.Limits.MaxGroupsPerSet = maxVal
 		case *CompileOptions:
-			o.Limits.MaxGroupsPerSet = max
+			o.Limits.MaxGroupsPerSet = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -208,13 +208,13 @@ func WithMaxGroupsPerSet(max int) OptFn {
 }
 
 // WithMaxBlocksPerGroup sets the maximum blocks per group limit.
-func WithMaxBlocksPerGroup(max int) OptFn {
+func WithMaxBlocksPerGroup(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxBlocksPerGroup = max
+			o.Limits.MaxBlocksPerGroup = maxVal
 		case *CompileOptions:
-			o.Limits.MaxBlocksPerGroup = max
+			o.Limits.MaxBlocksPerGroup = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -223,13 +223,13 @@ func WithMaxBlocksPerGroup(max int) OptFn {
 }
 
 // WithMaxPoliciesPerBlock sets the maximum policies per block limit.
-func WithMaxPoliciesPerBlock(max int) OptFn {
+func WithMaxPoliciesPerBlock(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxPoliciesPerBlock = max
+			o.Limits.MaxPoliciesPerBlock = maxVal
 		case *CompileOptions:
-			o.Limits.MaxPoliciesPerBlock = max
+			o.Limits.MaxPoliciesPerBlock = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -238,13 +238,13 @@ func WithMaxPoliciesPerBlock(max int) OptFn {
 }
 
 // WithMaxTenetsPerPolicy sets the maximum tenets per policy limit.
-func WithMaxTenetsPerPolicy(max int) OptFn {
+func WithMaxTenetsPerPolicy(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxTenetsPerPolicy = max
+			o.Limits.MaxTenetsPerPolicy = maxVal
 		case *CompileOptions:
-			o.Limits.MaxTenetsPerPolicy = max
+			o.Limits.MaxTenetsPerPolicy = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -253,13 +253,13 @@ func WithMaxTenetsPerPolicy(max int) OptFn {
 }
 
 // WithMaxParallelFetches sets the maximum parallel fetches limit.
-func WithMaxParallelFetches(max int) OptFn {
+func WithMaxParallelFetches(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxParallelFetches = max
+			o.Limits.MaxParallelFetches = maxVal
 		case *CompileOptions:
-			o.Limits.MaxParallelFetches = max
+			o.Limits.MaxParallelFetches = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
@@ -268,13 +268,13 @@ func WithMaxParallelFetches(max int) OptFn {
 }
 
 // WithMaxTotalFetches sets the maximum total fetches limit.
-func WithMaxTotalFetches(max int) OptFn {
+func WithMaxTotalFetches(maxVal int) OptFn {
 	return func(opts Options) error {
 		switch o := opts.(type) {
 		case *ParseOptions:
-			o.Limits.MaxTotalFetches = max
+			o.Limits.MaxTotalFetches = maxVal
 		case *CompileOptions:
-			o.Limits.MaxTotalFetches = max
+			o.Limits.MaxTotalFetches = maxVal
 		default:
 			return ErrUnsupportedOptionsType
 		}
