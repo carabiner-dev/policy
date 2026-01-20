@@ -70,11 +70,15 @@ func checkJSONDepth(data []byte, maxDepth int) (int, error) {
 // normalizeToJSON attempts to parse data as JSON first. If that fails,
 // it tries to parse as HJSON and converts it to JSON. This allows transparent
 // support for both JSON and HJSON policy formats.
-func normalizeToJSON(data []byte) ([]byte, error) {
+// If maxDepth > 0, it also validates that the JSON depth does not exceed the limit.
+func normalizeToJSON(data []byte, maxDepth int) ([]byte, error) {
 	// First, try to parse as strict JSON to validate it's well-formed
 	var jsonTest any
 	if err := json.Unmarshal(data, &jsonTest); err == nil {
-		// Data is valid JSON, return as-is
+		// Data is valid JSON, check depth limit before returning
+		if _, err := checkJSONDepth(data, maxDepth); err != nil {
+			return nil, err
+		}
 		return data, nil
 	}
 
@@ -91,13 +95,18 @@ func normalizeToJSON(data []byte) ([]byte, error) {
 		return nil, fmt.Errorf("converting HJSON to JSON: %w", err)
 	}
 
+	// Check depth limit on the normalized JSON
+	if _, err := checkJSONDepth(jsonData, maxDepth); err != nil {
+		return nil, err
+	}
+
 	return jsonData, nil
 }
 
 // ParsePolicySet parses a policy set from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOptions, policySetData []byte) (*v1.PolicySet, attestation.Verification, error) {
 	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
-	policySetData, err := normalizeToJSON(policySetData)
+	policySetData, err := normalizeToJSON(policySetData, opts.Limits.MaxJSONDepth)
 	if err != nil {
 		return nil, nil, fmt.Errorf("normalizing policy data: %w", err)
 	}
@@ -115,6 +124,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 	}.Unmarshal(policySetData, set)
 	if err != nil {
 		return nil, verification, fmt.Errorf("parsing policy set source: %w", err)
+	}
+
+	// Validate collection sizes
+	if err := validatePolicySetLimits(opts, set); err != nil {
+		return nil, verification, err
 	}
 
 	// hash the data to record it in the policy origin
@@ -163,7 +177,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 // ParsePolicy parses a policy from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions, policyData []byte) (*v1.Policy, attestation.Verification, error) {
 	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
-	policyData, err := normalizeToJSON(policyData)
+	policyData, err := normalizeToJSON(policyData, opts.Limits.MaxJSONDepth)
 	if err != nil {
 		return nil, nil, fmt.Errorf("normalizing policy data: %w", err)
 	}
@@ -178,6 +192,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 	err = protojson.UnmarshalOptions{}.Unmarshal(policyData, p)
 	if err != nil {
 		return nil, verification, fmt.Errorf("parsing policy source: %w", err)
+	}
+
+	// Validate collection sizes
+	if err := validatePolicyLimits(opts, p); err != nil {
+		return nil, verification, err
 	}
 
 	// hash the data to record it in the policy origin
@@ -211,7 +230,7 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 // ParsePolicyGroup parses a PolicyGroup from a byte slice.
 func (dpi *defaultParserImplementationV1) ParsePolicyGroup(opts *options.ParseOptions, policyData []byte) (*v1.PolicyGroup, attestation.Verification, error) {
 	// Normalize HJSON to JSON if needed (must happen before envelope parsing)
-	policyData, err := normalizeToJSON(policyData)
+	policyData, err := normalizeToJSON(policyData, opts.Limits.MaxJSONDepth)
 	if err != nil {
 		return nil, nil, fmt.Errorf("normalizing policygroup data: %w", err)
 	}
@@ -226,6 +245,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicyGroup(opts *options.ParseOp
 	err = protojson.UnmarshalOptions{}.Unmarshal(policyGroupData, g)
 	if err != nil {
 		return nil, verification, fmt.Errorf("parsing group source: %w", err)
+	}
+
+	// Validate collection sizes
+	if err := validatePolicyGroupLimits(opts, g); err != nil {
+		return nil, verification, err
 	}
 
 	// hash the data to record it in the policy origin
