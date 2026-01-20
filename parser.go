@@ -66,6 +66,14 @@ type Parser struct {
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
 func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, grp *api.PolicyGroup, v attestation.Verification, err error) {
+	// Parse options to get limits
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, nil, nil, nil, err
+		}
+	}
+
 	// Open de PolicySet/Policy data from files or remote locations
 	var data []byte
 	switch {
@@ -78,11 +86,16 @@ func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.P
 	case strings.HasPrefix(location, "https://"):
 		data, err = http.NewAgent().Get(location)
 	default:
-		data, err = os.ReadFile(location)
+		data, err = readFileWithLimit(location, opts.Limits.MaxInputSize)
 	}
 
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("opening policy data: %w", err)
+	}
+
+	// Check size limit for remotely fetched data
+	if opts.Limits.MaxInputSize > 0 && int64(len(data)) > opts.Limits.MaxInputSize {
+		return nil, nil, nil, nil, options.NewInputSizeError(opts.Limits.MaxInputSize, int64(len(data)), location)
 	}
 
 	// Parse the read data
