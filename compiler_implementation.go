@@ -178,9 +178,10 @@ func (dci *defaultCompilerImpl) groupRemoteRefs(refs []api.RemoteReference) ([]a
 }
 
 // fetchRemoteResources gets a list of remote references and fetches and caches
-// the referenced elements
+// the referenced elements. The fetchCount pointer tracks total fetches across
+// recursive calls to enforce the MaxTotalFetches limit.
 func (dci *defaultCompilerImpl) fetchRemoteResources(
-	opts *CompilerOptions, recurse int, store StorageBackend, refs []api.RemoteReference,
+	opts *CompilerOptions, recurse int, store StorageBackend, refs []api.RemoteReference, fetchCount *int,
 ) error {
 	// Extract the URIs
 	uris := []string{}
@@ -227,13 +228,31 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 		return nil
 	}
 
-	logrus.Debugf("Fetching remote references (depth %d): %+v", recurse, uris)
+	// Check total fetch limit before fetching
+	if opts.MaxTotalFetches > 0 && *fetchCount+len(uris) > opts.MaxTotalFetches {
+		return fmt.Errorf("total fetches limit exceeded: limit=%d, would need=%d",
+			opts.MaxTotalFetches, *fetchCount+len(uris))
+	}
 
-	// Retrieve the remote data
-	data, err := NewFetcher().GetGroup(uris)
+	logrus.Debugf("Fetching remote references (depth %d, total fetches: %d): %+v", recurse, *fetchCount, uris)
+
+	// Create fetcher with batching support
+	fetcher := NewFetcher()
+
+	// Retrieve the remote data using batched fetching to limit parallelism
+	var data [][]byte
+	var err error
+	if opts.MaxParallelFetches > 0 && len(uris) > opts.MaxParallelFetches {
+		data, err = fetcher.GetGroupBatched(uris, opts.MaxParallelFetches)
+	} else {
+		data, err = fetcher.GetGroup(uris)
+	}
 	if err != nil {
 		return fmt.Errorf("fetching remote data: %w", err)
 	}
+
+	// Update fetch count
+	*fetchCount += len(uris)
 
 	remotePolicies := []*api.Policy{}
 	remoteSets := []*api.PolicySet{}
@@ -298,7 +317,7 @@ func (dci *defaultCompilerImpl) fetchRemoteResources(
 	}
 
 	// ... or if not, recurse
-	return dci.fetchRemoteResources(opts, recurse+1, store, rrefs)
+	return dci.fetchRemoteResources(opts, recurse+1, store, rrefs, fetchCount)
 }
 
 // FetchRemoteResources pulls all the remote data in parallel and stores it
@@ -308,7 +327,8 @@ func (dci *defaultCompilerImpl) FetchRemoteResources(opts *CompilerOptions, stor
 		return errors.New("storage backend missing")
 	}
 
-	return dci.fetchRemoteResources(opts, 0, store, refs)
+	fetchCount := 0
+	return dci.fetchRemoteResources(opts, 0, store, refs, &fetchCount)
 }
 
 func (dci *defaultCompilerImpl) ValidateRemotes(*CompilerOptions, StorageBackend) error {

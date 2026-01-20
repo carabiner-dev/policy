@@ -47,10 +47,21 @@ type CompilerOptions struct {
 	// compiler will do to fetch remote content. Note that this setting
 	// causes exponential requests, so be careful when defining a value.
 	MaxRemoteRecursion int
+
+	// MaxParallelFetches limits the number of concurrent remote fetches.
+	// Default: 50
+	MaxParallelFetches int
+
+	// MaxTotalFetches limits the total number of remote fetches during compilation.
+	// This prevents exponential expansion attacks.
+	// Default: 100
+	MaxTotalFetches int
 }
 
 var defaultCompilerOpts = CompilerOptions{
 	MaxRemoteRecursion: 3,
+	MaxParallelFetches: options.DefaultMaxParallelFetches,
+	MaxTotalFetches:    options.DefaultMaxTotalFetches,
 }
 
 // Compiler is the policy compiler
