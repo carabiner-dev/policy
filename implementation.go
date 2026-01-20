@@ -30,6 +30,43 @@ type parserImplementation interface {
 
 type defaultParserImplementationV1 struct{}
 
+// checkJSONDepth validates that JSON data does not exceed the maximum nesting depth.
+// This prevents stack overflow attacks from deeply nested structures.
+func checkJSONDepth(data []byte, maxDepth int) (int, error) {
+	if maxDepth <= 0 {
+		return 0, nil
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+	var depth, maxObserved int
+
+	for {
+		token, err := dec.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// Invalid JSON will be caught later by the actual parser
+			return maxObserved, nil
+		}
+
+		switch token {
+		case json.Delim('['), json.Delim('{'):
+			depth++
+			if depth > maxObserved {
+				maxObserved = depth
+			}
+			if depth > maxDepth {
+				return maxObserved, options.NewJSONDepthError(maxDepth, depth, "")
+			}
+		case json.Delim(']'), json.Delim('}'):
+			depth--
+		}
+	}
+
+	return maxObserved, nil
+}
+
 // normalizeToJSON attempts to parse data as JSON first. If that fails,
 // it tries to parse as HJSON and converts it to JSON. This allows transparent
 // support for both JSON and HJSON policy formats.
