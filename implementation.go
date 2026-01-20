@@ -67,6 +67,99 @@ func checkJSONDepth(data []byte, maxDepth int) (int, error) {
 	return maxObserved, nil
 }
 
+// validatePolicySetLimits validates that a PolicySet does not exceed configured limits.
+func validatePolicySetLimits(opts *options.ParseOptions, set *v1.PolicySet) error {
+	limits := opts.Limits
+
+	// Check policies per set
+	if limits.MaxPoliciesPerSet > 0 && len(set.GetPolicies()) > limits.MaxPoliciesPerSet {
+		return options.NewCollectionSizeError(
+			"policies per set",
+			limits.MaxPoliciesPerSet,
+			len(set.GetPolicies()),
+			set.GetId(),
+		)
+	}
+
+	// Check groups per set
+	if limits.MaxGroupsPerSet > 0 && len(set.GetGroups()) > limits.MaxGroupsPerSet {
+		return options.NewCollectionSizeError(
+			"groups per set",
+			limits.MaxGroupsPerSet,
+			len(set.GetGroups()),
+			set.GetId(),
+		)
+	}
+
+	// Validate nested policies
+	for i, p := range set.GetPolicies() {
+		if err := validatePolicyLimits(opts, p); err != nil {
+			return fmt.Errorf("policy #%d: %w", i, err)
+		}
+	}
+
+	// Validate nested groups
+	for i, g := range set.GetGroups() {
+		if err := validatePolicyGroupLimits(opts, g); err != nil {
+			return fmt.Errorf("group #%d: %w", i, err)
+		}
+	}
+
+	return nil
+}
+
+// validatePolicyLimits validates that a Policy does not exceed configured limits.
+func validatePolicyLimits(opts *options.ParseOptions, p *v1.Policy) error {
+	limits := opts.Limits
+
+	// Check tenets per policy
+	if limits.MaxTenetsPerPolicy > 0 && len(p.GetTenets()) > limits.MaxTenetsPerPolicy {
+		return options.NewCollectionSizeError(
+			"tenets per policy",
+			limits.MaxTenetsPerPolicy,
+			len(p.GetTenets()),
+			p.GetId(),
+		)
+	}
+
+	return nil
+}
+
+// validatePolicyGroupLimits validates that a PolicyGroup does not exceed configured limits.
+func validatePolicyGroupLimits(opts *options.ParseOptions, g *v1.PolicyGroup) error {
+	limits := opts.Limits
+
+	// Check blocks per group
+	if limits.MaxBlocksPerGroup > 0 && len(g.GetBlocks()) > limits.MaxBlocksPerGroup {
+		return options.NewCollectionSizeError(
+			"blocks per group",
+			limits.MaxBlocksPerGroup,
+			len(g.GetBlocks()),
+			g.GetId(),
+		)
+	}
+
+	// Check policies per block and validate nested policies
+	for i, block := range g.GetBlocks() {
+		if limits.MaxPoliciesPerBlock > 0 && len(block.GetPolicies()) > limits.MaxPoliciesPerBlock {
+			return options.NewCollectionSizeError(
+				"policies per block",
+				limits.MaxPoliciesPerBlock,
+				len(block.GetPolicies()),
+				fmt.Sprintf("%s/block#%d", g.GetId(), i),
+			)
+		}
+
+		for j, p := range block.GetPolicies() {
+			if err := validatePolicyLimits(opts, p); err != nil {
+				return fmt.Errorf("block #%d, policy #%d: %w", i, j, err)
+			}
+		}
+	}
+
+	return nil
+}
+
 // normalizeToJSON attempts to parse data as JSON first. If that fails,
 // it tries to parse as HJSON and converts it to JSON. This allows transparent
 // support for both JSON and HJSON policy formats.
