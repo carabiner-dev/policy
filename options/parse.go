@@ -9,11 +9,13 @@ import "errors"
 type ParseOptions struct {
 	VerificationOptions
 	VerifySignatures bool
+	Limits           Limits
 }
 
 var DefaultParseOptions = ParseOptions{
 	VerificationOptions: DefaultVerificationOptions,
 	VerifySignatures:    true,
+	Limits:              DefaultLimits,
 }
 
 // WithParseOptions replaces all parse options with a new set
@@ -25,6 +27,7 @@ func WithParseOptions(newopts *ParseOptions) OptFn {
 			o.PublicKeys = newopts.PublicKeys
 			o.VerificationOptions = newopts.VerificationOptions
 			o.VerifySignatures = newopts.VerifySignatures
+			o.Limits = newopts.Limits
 		case *CompileOptions:
 			o.ParseOptions = *newopts
 		default:
