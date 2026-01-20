@@ -29,6 +29,25 @@ const (
 
 var ErrUnsupportedLocationURI = errors.New("unsupported policy location")
 
+// readFileWithLimit reads a file and checks that its size does not exceed maxSize.
+// If maxSize is <= 0, the limit check is skipped.
+func readFileWithLimit(path string, maxSize int64) ([]byte, error) {
+	if maxSize > 0 {
+		fi, err := os.Stat(path)
+		if err != nil {
+			return nil, fmt.Errorf("getting file info: %w", err)
+		}
+		if fi.Size() > maxSize {
+			return nil, options.NewInputSizeError(maxSize, fi.Size(), path)
+		}
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading file: %w", err)
+	}
+	return data, nil
+}
+
 // NewParser creates a new policy parser
 func NewParser() *Parser {
 	return &Parser{
@@ -47,6 +66,14 @@ type Parser struct {
 // (https URLs or VCS locators) and will eventually verify signatures after
 // reading and parsing data (still under construction).
 func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.PolicySet, pcy *api.Policy, grp *api.PolicyGroup, v attestation.Verification, err error) {
+	// Parse options to get limits
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, nil, nil, nil, err
+		}
+	}
+
 	// Open de PolicySet/Policy data from files or remote locations
 	var data []byte
 	switch {
@@ -59,11 +86,16 @@ func (p *Parser) OpenVerify(location string, funcs ...options.OptFn) (set *api.P
 	case strings.HasPrefix(location, "https://"):
 		data, err = http.NewAgent().Get(location)
 	default:
-		data, err = os.ReadFile(location)
+		data, err = readFileWithLimit(location, opts.Limits.MaxInputSize)
 	}
 
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("opening policy data: %w", err)
+	}
+
+	// Check size limit for remotely fetched data
+	if opts.Limits.MaxInputSize > 0 && int64(len(data)) > opts.Limits.MaxInputSize {
+		return nil, nil, nil, nil, options.NewInputSizeError(opts.Limits.MaxInputSize, int64(len(data)), location)
 	}
 
 	// Parse the read data
@@ -85,7 +117,13 @@ func (p *Parser) Open(location string, funcs ...options.OptFn) (*api.PolicySet, 
 
 // ParseFile parses a policySet from a file
 func (p *Parser) ParsePolicySetFile(path string, funcs ...options.OptFn) (*api.PolicySet, error) {
-	data, err := os.ReadFile(path)
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, err
+		}
+	}
+	data, err := readFileWithLimit(path, opts.Limits.MaxInputSize)
 	if err != nil {
 		return nil, fmt.Errorf("reading policy file: %w", err)
 	}
@@ -95,19 +133,31 @@ func (p *Parser) ParsePolicySetFile(path string, funcs ...options.OptFn) (*api.P
 
 // ParsePolicyFile parses a policy from a file
 func (p *Parser) ParsePolicyFile(path string, funcs ...options.OptFn) (*api.Policy, error) {
-	data, err := os.ReadFile(path)
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, err
+		}
+	}
+	data, err := readFileWithLimit(path, opts.Limits.MaxInputSize)
 	if err != nil {
-		return nil, fmt.Errorf("reading polciy file: %w", err)
+		return nil, fmt.Errorf("reading policy file: %w", err)
 	}
 
 	return p.ParsePolicy(data, funcs...)
 }
 
-// ParsePolicyFile parses a policy from a file
+// ParsePolicyGroupFile parses a policy group from a file
 func (p *Parser) ParsePolicyGroupFile(path string, funcs ...options.OptFn) (*api.PolicyGroup, error) {
-	data, err := os.ReadFile(path)
+	opts := options.DefaultParseOptions
+	for _, f := range funcs {
+		if err := f(&opts); err != nil {
+			return nil, err
+		}
+	}
+	data, err := readFileWithLimit(path, opts.Limits.MaxInputSize)
 	if err != nil {
-		return nil, fmt.Errorf("reading polciy file: %w", err)
+		return nil, fmt.Errorf("reading policy file: %w", err)
 	}
 
 	return p.ParsePolicyGroup(data, funcs...)

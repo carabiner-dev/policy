@@ -7,11 +7,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 	"sync"
 
 	"github.com/carabiner-dev/vcslocator"
 	"sigs.k8s.io/release-utils/http"
+
+	"github.com/carabiner-dev/policy/options"
 )
 
 type PolicyFetcher interface {
@@ -20,12 +23,39 @@ type PolicyFetcher interface {
 }
 
 func NewFetcher() *Fetcher {
-	return &Fetcher{}
+	return &Fetcher{
+		Limits: options.DefaultLimits,
+	}
+}
+
+// NewFetcherWithLimits creates a new Fetcher with the specified limits.
+func NewFetcherWithLimits(limits options.Limits) *Fetcher {
+	return &Fetcher{
+		Limits: limits,
+	}
 }
 
 // Fetcher is the ampel policy fetcher. It optimizes retrieval of policy data
 // from repositories and source control systems.
-type Fetcher struct{}
+type Fetcher struct {
+	Limits options.Limits
+}
+
+// limitedWriter wraps a writer and enforces a maximum write size.
+type limitedWriter struct {
+	w       io.Writer
+	max     int64
+	written int64
+}
+
+func (lw *limitedWriter) Write(p []byte) (int, error) {
+	if lw.max > 0 && lw.written+int64(len(p)) > lw.max {
+		return 0, options.NewInputSizeError(lw.max, lw.written+int64(len(p)), "")
+	}
+	n, err := lw.w.Write(p)
+	lw.written += int64(n)
+	return n, err
+}
 
 // GetGroup fetches a list of uris that can be HTTP(S) URLs or SPDX VCS locators.
 // The functions uses the vcslocator module and the k8s http agent to fetch in
@@ -132,7 +162,51 @@ func (gf *Fetcher) GetGroup(uris []string) ([][]byte, error) {
 		return nil, err
 	}
 
+	// Check size limits on fetched data
+	maxSize := gf.Limits.MaxInputSize
+	if maxSize > 0 {
+		for i, data := range ret {
+			if int64(len(data)) > maxSize {
+				return nil, options.NewInputSizeError(maxSize, int64(len(data)), uris[i])
+			}
+		}
+	}
+
 	return ret, nil
+}
+
+// GetGroupBatched fetches URIs in batches to limit parallel connections.
+// This is useful for preventing connection exhaustion when fetching many resources.
+func (gf *Fetcher) GetGroupBatched(uris []string, batchSize int) ([][]byte, error) {
+	if batchSize <= 0 {
+		batchSize = gf.Limits.MaxParallelFetches
+	}
+	if batchSize <= 0 {
+		batchSize = options.DefaultMaxParallelFetches
+	}
+
+	results := make([][]byte, len(uris))
+
+	// Process in batches
+	for i := 0; i < len(uris); i += batchSize {
+		end := i + batchSize
+		if end > len(uris) {
+			end = len(uris)
+		}
+
+		batch := uris[i:end]
+		batchResults, err := gf.GetGroup(batch)
+		if err != nil {
+			return nil, fmt.Errorf("fetching batch starting at index %d: %w", i, err)
+		}
+
+		// Copy batch results to the appropriate positions
+		for j, data := range batchResults {
+			results[i+j] = data
+		}
+	}
+
+	return results, nil
 }
 
 func (gf *Fetcher) Get(uri string) ([]byte, error) {
@@ -146,15 +220,40 @@ func (gf *Fetcher) Get(uri string) ([]byte, error) {
 	}
 }
 
-// GetFromHTTP retrieves data from an http endpoint
+// GetFromHTTP retrieves data from an http endpoint with size limits.
 func (gf *Fetcher) GetFromHTTP(url string) ([]byte, error) {
-	return http.NewAgent().Get(url)
+	maxSize := gf.Limits.MaxInputSize
+	if maxSize <= 0 {
+		// No limit, use the standard agent
+		return http.NewAgent().Get(url)
+	}
+
+	// Use limited writer to enforce size limit
+	var b bytes.Buffer
+	lw := &limitedWriter{w: &b, max: maxSize}
+	if err := http.NewAgent().GetToWriter(lw, url); err != nil {
+		return nil, fmt.Errorf("fetching URL: %w", err)
+	}
+
+	return b.Bytes(), nil
 }
 
-// GetFromGit gets data from a git repository at the specified revision
+// GetFromGit gets data from a git repository at the specified revision with size limits.
 func (gf *Fetcher) GetFromGit(locator string) ([]byte, error) {
 	var b bytes.Buffer
-	if err := vcslocator.CopyFile(locator, &b); err != nil {
+	maxSize := gf.Limits.MaxInputSize
+
+	if maxSize <= 0 {
+		// No limit
+		if err := vcslocator.CopyFile(locator, &b); err != nil {
+			return nil, fmt.Errorf("fetching data from git: %w", err)
+		}
+		return b.Bytes(), nil
+	}
+
+	// Use limited writer to enforce size limit
+	lw := &limitedWriter{w: &b, max: maxSize}
+	if err := vcslocator.CopyFile(locator, lw); err != nil {
 		return nil, fmt.Errorf("fetching data from git: %w", err)
 	}
 	return b.Bytes(), nil

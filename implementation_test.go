@@ -93,7 +93,7 @@ func TestNormalizeToJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			result, err := normalizeToJSON(tt.input)
+			result, err := normalizeToJSON(tt.input, 0) // 0 disables depth check for existing tests
 
 			if tt.expectError {
 				require.Error(t, err)
