@@ -8,7 +8,7 @@ require (
 	github.com/carabiner-dev/hasher v0.2.3
 	github.com/carabiner-dev/signer v0.3.6
 	github.com/carabiner-dev/vcslocator v0.4.0
-	github.com/hjson/hjson-go/v4 v4.5.0
+	github.com/hjson/hjson-go/v4 v4.6.0
 	github.com/in-toto/attestation v1.1.2
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
