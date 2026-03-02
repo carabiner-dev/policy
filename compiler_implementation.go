@@ -499,6 +499,11 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 
 		// TODO(puerco): If remote policy group has a remote ref, then what? Fail?
 
+		// Inherit the group ID from the remote group if local is empty
+		if assembledGroup.GetId() == "" {
+			assembledGroup.Id = remotePolicyGroup.GetId()
+		}
+
 		// Nil the group source to mimic how we handle it in remote policies.
 		assembledGroup.Source = nil
 
