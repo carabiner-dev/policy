@@ -490,7 +490,9 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 		}
 
 		// int64 version = 2; <<< Version is not inherited
-		// repeated Control controls = 3; TODO: Merge controls
+		if len(assembledGroup.GetMeta().GetControls()) == 0 {
+			assembledGroup.GetMeta().Controls = remotePolicyGroup.GetMeta().GetControls()
+		}
 		if assembledGroup.GetMeta().GetEnforce() == "" {
 			assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
 		}
