@@ -33,12 +33,6 @@ jobs:
         id: tag
         run: echo "tag_name=${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
 
-      - name: Generate SBOM
-        id: sbom
-        uses: carabiner-dev/actions/unpack/sbom@ba6f58b7120233bc312a76fb6bf3397704bcdcef # v1.1.5
-        with:
-          output-path: /tmp
-
       - name: Publish Release
         uses: kubernetes-sigs/release-actions/publish-release@8753ea6bdadb814d779c6ec34eaca689dbfb492b # v0.4.3
         env:
@@ -46,12 +40,10 @@ jobs:
         with:
           sbom: false
 
-      - name: Upload SBOM
-        shell: bash
+      - name: Generate SBOM
+        id: sbom
+        uses: carabiner-dev/actions/unpack/sbom@73e94b6ec4adbf65bb7b9f4ecec334dc6576553f # v1.1.6
+        with:
+          push-to-release: ${{ steps.tag.outputs.tag_name }}
         env:
           GH_TOKEN: ${{ github.token }}
-          SBOM_FILES: ${{ steps.sbom.outputs.files }}
-        run: |
-          for f in ${SBOM_FILES}; do
-            gh release upload ${{ steps.tag.outputs.tag_name }} "$f"
-          done
