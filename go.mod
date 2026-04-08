@@ -7,7 +7,7 @@ require (
 	github.com/carabiner-dev/collector v0.3.3
 	github.com/carabiner-dev/hasher v0.2.3
 	github.com/carabiner-dev/signer v0.4.2
-	github.com/carabiner-dev/vcslocator v0.4.1
+	github.com/carabiner-dev/vcslocator v0.4.2
 	github.com/hjson/hjson-go/v4 v4.6.0
 	github.com/in-toto/attestation v1.2.0
 	github.com/sirupsen/logrus v1.9.4
@@ -45,7 +45,7 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
-	github.com/go-git/go-billy/v5 v5.8.0 // indirect
+	github.com/go-git/go-billy/v5 v5.8.1-0.20260407233109-416e0a5b21a8 // indirect
 	github.com/go-git/go-git/v5 v5.17.2 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
