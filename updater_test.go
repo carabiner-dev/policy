@@ -6,6 +6,8 @@ package policy
 import (
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/carabiner-dev/vcslocator"
@@ -390,6 +392,187 @@ func TestCheckUpdatesNoExternalRefs(t *testing.T) {
 	updates, err := NewUpdater().CheckUpdates(dir)
 	require.NoError(t, err)
 	require.Empty(t, updates)
+}
+
+func TestApplyRefUpdatesReplacesURIAndDigest(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	src := filepath.Join(dir, "policy.json")
+	const oldURI = "git+https://example.com/org/repo@deadbeef#p.json"
+	const newURI = "git+https://example.com/org/repo@cafef00d#p.json"
+	const oldDigest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	const newDigest = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+	content := `{
+  "policies": [
+    {
+      "source": {
+        "location": {
+          "uri": "` + oldURI + `",
+          "digest": { "sha256": "` + oldDigest + `" }
+        }
+      }
+    }
+  ]
+}
+`
+	require.NoError(t, os.WriteFile(src, []byte(content), 0o600))
+
+	refs := []*RefUpdate{
+		{
+			Old: &api.PolicyRef{Location: &intoto.ResourceDescriptor{
+				Uri:    oldURI,
+				Digest: map[string]string{"sha256": oldDigest},
+			}},
+			New: &api.PolicyRef{Location: &intoto.ResourceDescriptor{
+				Uri:    newURI,
+				Digest: map[string]string{"sha256": newDigest},
+			}},
+		},
+	}
+
+	applied, err := applyRefUpdates(src, refs)
+	require.NoError(t, err)
+	require.Len(t, applied, 1)
+
+	patched, err := os.ReadFile(src)
+	require.NoError(t, err)
+	patchedStr := string(patched)
+	require.Contains(t, patchedStr, newURI)
+	require.Contains(t, patchedStr, newDigest)
+	require.NotContains(t, patchedStr, oldURI)
+	require.NotContains(t, patchedStr, oldDigest)
+
+	// Minimal-diff guarantee: only the two changed strings should differ
+	// from the original content.
+	expected := strings.ReplaceAll(content, oldURI, newURI)
+	expected = strings.ReplaceAll(expected, oldDigest, newDigest)
+	require.Equal(t, expected, patchedStr)
+}
+
+func TestApplyRefUpdatesNoMatchLeavesFileUnchanged(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	src := filepath.Join(dir, "policy.json")
+	original := []byte(`{"id":"x"}`)
+	require.NoError(t, os.WriteFile(src, original, 0o600))
+
+	refs := []*RefUpdate{
+		{
+			Old: &api.PolicyRef{Location: &intoto.ResourceDescriptor{
+				Uri: "git+https://example.com/org/repo@deadbeef#p.json",
+			}},
+			New: &api.PolicyRef{Location: &intoto.ResourceDescriptor{
+				Uri: "git+https://example.com/org/repo@cafef00d#p.json",
+			}},
+		},
+	}
+
+	applied, err := applyRefUpdates(src, refs)
+	require.NoError(t, err)
+	require.Empty(t, applied)
+
+	got, err := os.ReadFile(src)
+	require.NoError(t, err)
+	require.Equal(t, original, got)
+}
+
+func TestApplyRefUpdatesPreservesFileMode(t *testing.T) {
+	t.Parallel()
+	if runtime.GOOS == "windows" {
+		t.Skip("Unix file permission bits do not round-trip through os.WriteFile/os.Stat on Windows")
+	}
+	dir := t.TempDir()
+	src := filepath.Join(dir, "policy.json")
+	const oldURI = "git+https://example.com/org/repo@deadbeef#p.json"
+	const newURI = "git+https://example.com/org/repo@cafef00d#p.json"
+	require.NoError(t, os.WriteFile(src, []byte(oldURI), 0o640)) //nolint:gosec // intentional: test verifies applyRefUpdates preserves this exact mode
+
+	refs := []*RefUpdate{
+		{
+			Old: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: oldURI}},
+			New: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: newURI}},
+		},
+	}
+
+	_, err := applyRefUpdates(src, refs)
+	require.NoError(t, err)
+
+	info, err := os.Stat(src)
+	require.NoError(t, err)
+	require.Equal(t, os.FileMode(0o640), info.Mode().Perm())
+}
+
+func TestApplyRefUpdatesSkipsNilLocations(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	src := filepath.Join(dir, "policy.json")
+	const body = `{"id":"x"}`
+	require.NoError(t, os.WriteFile(src, []byte(body), 0o600))
+
+	refs := []*RefUpdate{
+		{Old: &api.PolicyRef{}, New: &api.PolicyRef{}},
+	}
+	applied, err := applyRefUpdates(src, refs)
+	require.NoError(t, err)
+	require.Empty(t, applied)
+
+	got, err := os.ReadFile(src)
+	require.NoError(t, err)
+	require.JSONEq(t, body, string(got))
+}
+
+func TestApplyRefUpdatesAppliesOnlyMatchingRefs(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	src := filepath.Join(dir, "policy.json")
+	const presentOld = "git+https://example.com/a/b@1111111#p.json"
+	const presentNew = "git+https://example.com/a/b@2222222#p.json"
+	const absentOld = "git+https://example.com/c/d@3333333#q.json"
+	const absentNew = "git+https://example.com/c/d@4444444#q.json"
+	require.NoError(t, os.WriteFile(src, []byte(presentOld), 0o600))
+
+	refs := []*RefUpdate{
+		{
+			Old: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: presentOld}},
+			New: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: presentNew}},
+		},
+		{
+			Old: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: absentOld}},
+			New: &api.PolicyRef{Location: &intoto.ResourceDescriptor{Uri: absentNew}},
+		},
+	}
+
+	applied, err := applyRefUpdates(src, refs)
+	require.NoError(t, err)
+	require.Len(t, applied, 1)
+	require.Equal(t, presentOld, applied[0].Old.GetLocation().GetUri())
+
+	got, err := os.ReadFile(src)
+	require.NoError(t, err)
+	require.Equal(t, presentNew, string(got))
+}
+
+func TestUpdateNoLocations(t *testing.T) {
+	t.Parallel()
+	_, err := NewUpdater().Update()
+	require.Error(t, err)
+}
+
+func TestUpdateNoLocalLocations(t *testing.T) {
+	t.Parallel()
+	_, err := NewUpdater().Update("/definitely/does/not/exist")
+	require.Error(t, err)
+}
+
+func TestUpdateLocalNoExternalRefs(t *testing.T) {
+	t.Parallel()
+	// A policy with no external refs means CheckUpdates returns empty
+	// and Update has nothing to patch — no network calls are made.
+	dir := t.TempDir()
+	require.NoError(t, copyFile("testdata/policy.single.json", filepath.Join(dir, "p.json")))
+	applied, err := NewUpdater().Update(dir)
+	require.NoError(t, err)
+	require.Empty(t, applied)
 }
 
 // --- helpers ---
