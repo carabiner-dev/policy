@@ -224,6 +224,104 @@ func (u *Updater) CheckUpdates(locations ...string) (map[string][]*RefUpdate, er
 	return results, nil
 }
 
+// Update checks the given locations for available reference updates and
+// patches the matching policy source files in place. Only filesystem
+// locations (files or directories) are patched; VCS-locator locations
+// are skipped because their resolved files live in a temporary clone.
+// The returned map lists the updates that were actually applied, keyed
+// by source file path.
+func (u *Updater) Update(locations ...string) (map[string][]*RefUpdate, error) {
+	if len(locations) == 0 {
+		return nil, errors.New("no locations provided")
+	}
+
+	local := make([]string, 0, len(locations))
+	for _, loc := range locations {
+		if _, err := os.Stat(loc); err == nil {
+			local = append(local, loc)
+		}
+	}
+	if len(local) == 0 {
+		return nil, errors.New("no local locations to update (remote locations are not supported by Update)")
+	}
+
+	updates, err := u.CheckUpdates(local...)
+	if err != nil {
+		return nil, err
+	}
+
+	applied := map[string][]*RefUpdate{}
+	for file, refs := range updates {
+		patched, err := applyRefUpdates(file, refs)
+		if err != nil {
+			return applied, fmt.Errorf("patching %s: %w", file, err)
+		}
+		if len(patched) > 0 {
+			applied[file] = patched
+		}
+	}
+	return applied, nil
+}
+
+// applyRefUpdates rewrites file in place, replacing every old
+// URI/DownloadLocation/digest value with its new counterpart. The
+// replacements are done as raw string substitutions so that the file's
+// formatting, comments, and non-policy content are preserved verbatim.
+// Returns the list of updates whose values were actually present in the
+// file.
+func applyRefUpdates(file string, refs []*RefUpdate) ([]*RefUpdate, error) {
+	info, err := os.Stat(file)
+	if err != nil {
+		return nil, err
+	}
+	data, err := os.ReadFile(file) //nolint:gosec // path comes from the policy source set we just walked
+	if err != nil {
+		return nil, err
+	}
+
+	out := string(data)
+	applied := []*RefUpdate{}
+	for _, r := range refs {
+		mutated := false
+		oldLoc := r.Old.GetLocation()
+		newLoc := r.New.GetLocation()
+		if oldLoc == nil || newLoc == nil {
+			continue
+		}
+
+		if ov, nv := oldLoc.GetUri(), newLoc.GetUri(); ov != "" && ov != nv && strings.Contains(out, ov) {
+			out = strings.ReplaceAll(out, ov, nv)
+			mutated = true
+		}
+		if ov, nv := oldLoc.GetDownloadLocation(), newLoc.GetDownloadLocation(); ov != "" && ov != nv && strings.Contains(out, ov) {
+			out = strings.ReplaceAll(out, ov, nv)
+			mutated = true
+		}
+		for algo, ov := range oldLoc.GetDigest() {
+			nv, ok := newLoc.GetDigest()[algo]
+			if !ok || ov == "" || ov == nv {
+				continue
+			}
+			if !strings.Contains(out, ov) {
+				continue
+			}
+			out = strings.ReplaceAll(out, ov, nv)
+			mutated = true
+		}
+		if mutated {
+			applied = append(applied, r)
+		}
+	}
+
+	if len(applied) == 0 {
+		return applied, nil
+	}
+	if err := os.WriteFile(file, []byte(out), info.Mode().Perm()); err != nil {
+		return applied, err
+	}
+	return applied, nil
+}
+
 // extractedRef is the internal working copy of a reference under review.
 type extractedRef struct {
 	file       string
