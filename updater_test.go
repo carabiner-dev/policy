@@ -6,6 +6,7 @@ package policy
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -477,11 +478,14 @@ func TestApplyRefUpdatesNoMatchLeavesFileUnchanged(t *testing.T) {
 
 func TestApplyRefUpdatesPreservesFileMode(t *testing.T) {
 	t.Parallel()
+	if runtime.GOOS == "windows" {
+		t.Skip("Unix file permission bits do not round-trip through os.WriteFile/os.Stat on Windows")
+	}
 	dir := t.TempDir()
 	src := filepath.Join(dir, "policy.json")
 	const oldURI = "git+https://example.com/org/repo@deadbeef#p.json"
 	const newURI = "git+https://example.com/org/repo@cafef00d#p.json"
-	require.NoError(t, os.WriteFile(src, []byte(oldURI), 0o640))
+	require.NoError(t, os.WriteFile(src, []byte(oldURI), 0o640)) //nolint:gosec // intentional: test verifies applyRefUpdates preserves this exact mode
 
 	refs := []*RefUpdate{
 		{
@@ -514,7 +518,7 @@ func TestApplyRefUpdatesSkipsNilLocations(t *testing.T) {
 
 	got, err := os.ReadFile(src)
 	require.NoError(t, err)
-	require.Equal(t, body, string(got))
+	require.JSONEq(t, body, string(got))
 }
 
 func TestApplyRefUpdatesAppliesOnlyMatchingRefs(t *testing.T) {

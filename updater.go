@@ -283,7 +283,7 @@ func applyRefUpdates(file string, refs []*RefUpdate) ([]*RefUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := os.ReadFile(file) //nolint:gosec // path comes from the policy source set we just walked
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func applyRefUpdates(file string, refs []*RefUpdate) ([]*RefUpdate, error) {
 	if len(applied) == 0 {
 		return applied, nil
 	}
-	if err := os.WriteFile(file, []byte(out), info.Mode().Perm()); err != nil {
+	if err := os.WriteFile(file, []byte(out), info.Mode().Perm()); err != nil { //nolint:gosec // file is the policy source we just read; mode is preserved from its existing stat
 		return applied, err
 	}
 	return applied, nil
