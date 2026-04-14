@@ -249,7 +249,16 @@ func (u *Updater) Update(locations ...string) (map[string][]*RefUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
+	return u.ApplyUpdates(updates)
+}
 
+// ApplyUpdates patches each file in the given updates map in place, using
+// the same backend as Update. This is the method to call when the updates
+// were computed elsewhere (e.g. loaded from a previously-saved plan) and
+// only the filesystem patch step needs to run. Returns the subset of
+// updates that were actually applied (i.e. whose old values were present
+// in their source file).
+func (u *Updater) ApplyUpdates(updates map[string][]*RefUpdate) (map[string][]*RefUpdate, error) {
 	applied := map[string][]*RefUpdate{}
 	for file, refs := range updates {
 		patched, err := applyRefUpdates(file, refs)
