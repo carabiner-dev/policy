@@ -1,6 +1,6 @@
 module github.com/carabiner-dev/policy
 
-go 1.25.8
+go 1.25.9
 
 require (
 	github.com/carabiner-dev/attestation v0.2.1

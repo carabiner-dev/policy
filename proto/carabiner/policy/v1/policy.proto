@@ -36,7 +36,7 @@ message PolicySet {
 // PolicySetMeta captures data about a policy set.
 message PolicySetMeta {
     // Runtime to use as default for policies. Defines the runtime and version
-    // to use when evaluating policy code, eg cel/v0
+    // to use when evaluating policy code. Defaults to cel/v0 in AMPEL.
     string runtime = 1;
 
     // Human description of the PolicySet
@@ -59,6 +59,9 @@ message PolicySetMeta {
 
     // Origin of the policyset's data, recorded when compiled.
     optional in_toto_attestation.v1.ResourceDescriptor origin = 7;
+
+    // PolicySet changelog, records the changes in the policy code
+    repeated ChangeLog changelog = 8;
 }
 
 // FrameworkRef is a reference to a security framework. The reference binds
@@ -122,6 +125,18 @@ message Meta {
     optional google.protobuf.Timestamp expiration = 7;
     // Origin captures the origin of a policy when the compiler gathers its data.
     optional in_toto_attestation.v1.ResourceDescriptor origin = 8;
+    // Policy changelog
+    repeated ChangeLog changelog = 9;
+}
+
+// ChangeLog records a change in the policy or policyset code.
+message ChangeLog {
+    // Changelog message
+    string message = 1;
+    // Recorded date of the change
+    optional google.protobuf.Timestamp date = 2;
+    // Version number when the change was introduced
+    optional string version = 3;
 }
 
 // Control is a mapping tying the policy to an framework control
@@ -179,7 +194,8 @@ message PredicateSpec {
     int32 limit = 2;
 }
 
-// Tenet
+// Tenet is the foundational condition of a policy. It is held as a truth that
+// needs to be proven for the policy to pass.
 message Tenet {
     string id = 1;
     string runtime = 2;
@@ -276,7 +292,11 @@ message PolicyGroupMeta {
     // Source of the group data when compiled from remote sources
     optional in_toto_attestation.v1.ResourceDescriptor origin = 6;
 
+    // Runtime engine identifier. Defaults to cel/v0 in AMPEL.
     string runtime = 7;
+
+    // PolicyGroup changelog
+    repeated ChangeLog changelog = 8;
 }
 
 // PolicyBlockMeta defines the metadata definition of a policy block
