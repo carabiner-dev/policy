@@ -4,6 +4,7 @@
 syntax = "proto3";
 package carabiner.policy.v1;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 import "in_toto_attestation/v1/resource_descriptor.proto";
@@ -184,9 +185,16 @@ message Error {
     string guidance = 2;
 }
 
-// Este hay que arreglarlo
+// Transformer loads and configures a transformer to operate on the policy data
+// before the predicates reach the runtime. Transformers are loaded by their id
+// string and need to be compiled into the AMPEL engine.
 message Transformer {
-    string id = 1;
+    // Transformer identifier string, currently only internal:ID ids are recognized.
+    // Optional @vM or @vM.m suffix selects a transformer version.
+    string id = 1 [(buf.validate.field).string.pattern = "^internal:[-_a-z0-9]+(@v[0-9]+(\\.[0-9]+)?)?$"];
+
+    // Configuration struct for the transformer, implementation specific
+    optional google.protobuf.Struct config = 2;
 }
 
 message PredicateSpec {
