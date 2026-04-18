@@ -6,7 +6,7 @@ require (
 	github.com/carabiner-dev/attestation v0.2.1
 	github.com/carabiner-dev/collector v0.3.3
 	github.com/carabiner-dev/hasher v0.2.3
-	github.com/carabiner-dev/signer v0.4.3
+	github.com/carabiner-dev/signer v0.4.4
 	github.com/carabiner-dev/vcslocator v0.4.2
 	github.com/go-git/go-git/v5 v5.17.2
 	github.com/hjson/hjson-go/v4 v4.6.0
@@ -135,8 +135,8 @@ require (
 	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/term v0.41.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/term v0.42.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260311181403-84a4fc48630c // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260311181403-84a4fc48630c // indirect
