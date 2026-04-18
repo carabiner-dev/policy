@@ -3,6 +3,7 @@ module github.com/carabiner-dev/policy
 go 1.25.9
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260415201107-50325440f8f2.1
 	github.com/carabiner-dev/attestation v0.2.1
 	github.com/carabiner-dev/collector v0.3.4
 	github.com/carabiner-dev/hasher v0.2.4

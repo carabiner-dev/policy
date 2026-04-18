@@ -10,6 +10,7 @@
 package v1
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	v11 "github.com/carabiner-dev/signer/api/v1"
 	v1 "github.com/in-toto/attestation/go/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -1006,10 +1007,16 @@ func (x *Error) GetGuidance() string {
 	return ""
 }
 
-// Este hay que arreglarlo
+// Transformer loads and configures a transformer to operate on the policy data
+// before the predicates reach the runtime. Transformers are loaded by their id
+// string and need to be compiled into the AMPEL engine.
 type Transformer struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Transformer identifier string, currently only internal:ID ids are recognized.
+	// Optional @vM or @vM.m suffix selects a transformer version.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Configuration struct for the transformer, implementation specific
+	Config        *structpb.Struct `protobuf:"bytes,2,opt,name=config,proto3,oneof" json:"config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1049,6 +1056,13 @@ func (x *Transformer) GetId() string {
 		return x.Id
 	}
 	return ""
+}
+
+func (x *Transformer) GetConfig() *structpb.Struct {
+	if x != nil {
+		return x.Config
+	}
+	return nil
 }
 
 type PredicateSpec struct {
@@ -1845,7 +1859,7 @@ var File_carabiner_policy_v1_policy_proto protoreflect.FileDescriptor
 
 const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\n" +
-	" carabiner/policy/v1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\x1a\"carabiner/signer/v1/identity.proto\"\xba\x02\n" +
+	" carabiner/policy/v1/policy.proto\x12\x13carabiner.policy.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a0in_toto_attestation/v1/resource_descriptor.proto\x1a\"carabiner/signer/v1/identity.proto\"\xba\x02\n" +
 	"\tPolicySet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
 	"\x04meta\x18\x02 \x01(\v2\".carabiner.policy.v1.PolicySetMetaR\x04meta\x12<\n" +
@@ -1951,9 +1965,11 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\f_description\"=\n" +
 	"\x05Error\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1a\n" +
-	"\bguidance\x18\x02 \x01(\tR\bguidance\"\x1d\n" +
-	"\vTransformer\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\";\n" +
+	"\bguidance\x18\x02 \x01(\tR\bguidance\"\x93\x01\n" +
+	"\vTransformer\x12C\n" +
+	"\x02id\x18\x01 \x01(\tB3\xbaH0r.2,^internal:[-_a-z0-9]+(@v[0-9]+(\\.[0-9]+)?)?$R\x02id\x124\n" +
+	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructH\x00R\x06config\x88\x01\x01B\t\n" +
+	"\a_config\";\n" +
 	"\rPredicateSpec\x12\x14\n" +
 	"\x05types\x18\x01 \x03(\tR\x05types\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"\xae\x03\n" +
@@ -2071,6 +2087,7 @@ var file_carabiner_policy_v1_policy_proto_goTypes = []any{
 	(*v1.ResourceDescriptor)(nil), // 28: in_toto_attestation.v1.ResourceDescriptor
 	(*v11.Identity)(nil),          // 29: carabiner.signer.v1.Identity
 	(*structpb.Value)(nil),        // 30: google.protobuf.Value
+	(*structpb.Struct)(nil),       // 31: google.protobuf.Struct
 }
 var file_carabiner_policy_v1_policy_proto_depIdxs = []int32{
 	1,  // 0: carabiner.policy.v1.PolicySet.meta:type_name -> carabiner.policy.v1.PolicySetMeta
@@ -2104,34 +2121,35 @@ var file_carabiner_policy_v1_policy_proto_depIdxs = []int32{
 	27, // 28: carabiner.policy.v1.ChangeLog.date:type_name -> google.protobuf.Timestamp
 	30, // 29: carabiner.policy.v1.ContextVal.value:type_name -> google.protobuf.Value
 	30, // 30: carabiner.policy.v1.ContextVal.default:type_name -> google.protobuf.Value
-	13, // 31: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
-	26, // 32: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
-	11, // 33: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
-	17, // 34: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
-	29, // 35: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.signer.v1.Identity
-	30, // 36: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
-	21, // 37: carabiner.policy.v1.PolicyGroup.meta:type_name -> carabiner.policy.v1.PolicyGroupMeta
-	3,  // 38: carabiner.policy.v1.PolicyGroup.common:type_name -> carabiner.policy.v1.PolicySetCommon
-	23, // 39: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
-	20, // 40: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
-	6,  // 41: carabiner.policy.v1.PolicyGroup.chain:type_name -> carabiner.policy.v1.ChainLink
-	22, // 42: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.PolicyBlockMeta
-	4,  // 43: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
-	9,  // 44: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
-	27, // 45: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
-	28, // 46: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	8,  // 47: carabiner.policy.v1.PolicyGroupMeta.changelog:type_name -> carabiner.policy.v1.ChangeLog
-	9,  // 48: carabiner.policy.v1.PolicyBlockMeta.controls:type_name -> carabiner.policy.v1.Control
-	29, // 49: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.signer.v1.Identity
-	28, // 50: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
-	10, // 51: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	10, // 52: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
-	18, // 53: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
-	54, // [54:54] is the sub-list for method output_type
-	54, // [54:54] is the sub-list for method input_type
-	54, // [54:54] is the sub-list for extension type_name
-	54, // [54:54] is the sub-list for extension extendee
-	0,  // [0:54] is the sub-list for field type_name
+	31, // 31: carabiner.policy.v1.Transformer.config:type_name -> google.protobuf.Struct
+	13, // 32: carabiner.policy.v1.Tenet.predicates:type_name -> carabiner.policy.v1.PredicateSpec
+	26, // 33: carabiner.policy.v1.Tenet.outputs:type_name -> carabiner.policy.v1.Tenet.OutputsEntry
+	11, // 34: carabiner.policy.v1.Tenet.error:type_name -> carabiner.policy.v1.Error
+	17, // 35: carabiner.policy.v1.Tenet.assessment:type_name -> carabiner.policy.v1.Assessment
+	29, // 36: carabiner.policy.v1.ChainedPredicate.identities:type_name -> carabiner.signer.v1.Identity
+	30, // 37: carabiner.policy.v1.Output.value:type_name -> google.protobuf.Value
+	21, // 38: carabiner.policy.v1.PolicyGroup.meta:type_name -> carabiner.policy.v1.PolicyGroupMeta
+	3,  // 39: carabiner.policy.v1.PolicyGroup.common:type_name -> carabiner.policy.v1.PolicySetCommon
+	23, // 40: carabiner.policy.v1.PolicyGroup.source:type_name -> carabiner.policy.v1.PolicyGroupRef
+	20, // 41: carabiner.policy.v1.PolicyGroup.blocks:type_name -> carabiner.policy.v1.PolicyBlock
+	6,  // 42: carabiner.policy.v1.PolicyGroup.chain:type_name -> carabiner.policy.v1.ChainLink
+	22, // 43: carabiner.policy.v1.PolicyBlock.meta:type_name -> carabiner.policy.v1.PolicyBlockMeta
+	4,  // 44: carabiner.policy.v1.PolicyBlock.policies:type_name -> carabiner.policy.v1.Policy
+	9,  // 45: carabiner.policy.v1.PolicyGroupMeta.controls:type_name -> carabiner.policy.v1.Control
+	27, // 46: carabiner.policy.v1.PolicyGroupMeta.expiration:type_name -> google.protobuf.Timestamp
+	28, // 47: carabiner.policy.v1.PolicyGroupMeta.origin:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	8,  // 48: carabiner.policy.v1.PolicyGroupMeta.changelog:type_name -> carabiner.policy.v1.ChangeLog
+	9,  // 49: carabiner.policy.v1.PolicyBlockMeta.controls:type_name -> carabiner.policy.v1.Control
+	29, // 50: carabiner.policy.v1.PolicyGroupRef.identity:type_name -> carabiner.signer.v1.Identity
+	28, // 51: carabiner.policy.v1.PolicyGroupRef.location:type_name -> in_toto_attestation.v1.ResourceDescriptor
+	10, // 52: carabiner.policy.v1.PolicySetCommon.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	10, // 53: carabiner.policy.v1.Policy.ContextEntry.value:type_name -> carabiner.policy.v1.ContextVal
+	18, // 54: carabiner.policy.v1.Tenet.OutputsEntry.value:type_name -> carabiner.policy.v1.Output
+	55, // [55:55] is the sub-list for method output_type
+	55, // [55:55] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_carabiner_policy_v1_policy_proto_init() }
@@ -2146,6 +2164,7 @@ func file_carabiner_policy_v1_policy_proto_init() {
 	file_carabiner_policy_v1_policy_proto_msgTypes[7].OneofWrappers = []any{}
 	file_carabiner_policy_v1_policy_proto_msgTypes[8].OneofWrappers = []any{}
 	file_carabiner_policy_v1_policy_proto_msgTypes[10].OneofWrappers = []any{}
+	file_carabiner_policy_v1_policy_proto_msgTypes[12].OneofWrappers = []any{}
 	file_carabiner_policy_v1_policy_proto_msgTypes[21].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
