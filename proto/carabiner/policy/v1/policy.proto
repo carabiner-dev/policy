@@ -305,6 +305,9 @@ message PolicyGroupMeta {
 
     // PolicyGroup changelog
     repeated ChangeLog changelog = 8;
+
+    // Assert mode to consider the policy group passing (OR or AND)
+    string assert_mode = 9;
 }
 
 // PolicyBlockMeta defines the metadata definition of a policy block

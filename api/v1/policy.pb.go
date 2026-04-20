@@ -1618,7 +1618,9 @@ type PolicyGroupMeta struct {
 	// Runtime engine identifier. Defaults to cel/v0 in AMPEL.
 	Runtime string `protobuf:"bytes,7,opt,name=runtime,proto3" json:"runtime,omitempty"`
 	// PolicyGroup changelog
-	Changelog     []*ChangeLog `protobuf:"bytes,8,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	Changelog []*ChangeLog `protobuf:"bytes,8,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	// Assert mode to consider the policy group passing (OR or AND)
+	AssertMode    string `protobuf:"bytes,9,opt,name=assert_mode,json=assertMode,proto3" json:"assert_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1707,6 +1709,13 @@ func (x *PolicyGroupMeta) GetChangelog() []*ChangeLog {
 		return x.Changelog
 	}
 	return nil
+}
+
+func (x *PolicyGroupMeta) GetAssertMode() string {
+	if x != nil {
+		return x.AssertMode
+	}
+	return ""
 }
 
 // PolicyBlockMeta defines the metadata definition of a policy block
@@ -2015,7 +2024,7 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\vPolicyBlock\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x128\n" +
 	"\x04meta\x18\x02 \x01(\v2$.carabiner.policy.v1.PolicyBlockMetaR\x04meta\x127\n" +
-	"\bpolicies\x18\x03 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\"\x9d\x03\n" +
+	"\bpolicies\x18\x03 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\"\xbe\x03\n" +
 	"\x0fPolicyGroupMeta\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x128\n" +
@@ -2026,7 +2035,9 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"expiration\x88\x01\x01\x12G\n" +
 	"\x06origin\x18\x06 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x01R\x06origin\x88\x01\x01\x12\x18\n" +
 	"\aruntime\x18\a \x01(\tR\aruntime\x12<\n" +
-	"\tchangelog\x18\b \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelogB\r\n" +
+	"\tchangelog\x18\b \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelog\x12\x1f\n" +
+	"\vassert_mode\x18\t \x01(\tR\n" +
+	"assertModeB\r\n" +
 	"\v_expirationB\t\n" +
 	"\a_origin\"\xa8\x01\n" +
 	"\x0fPolicyBlockMeta\x12 \n" +
