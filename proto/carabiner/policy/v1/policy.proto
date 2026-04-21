@@ -160,19 +160,33 @@ message Control {
 
 // ContextVal defines a contextual value needed by a policy. Context values
 // are defined from external sources at runtime and if required will cause the
-// policy to fail if unset. 
+// policy to fail if unset.
 message ContextVal {
     // Data type of the context value. Enforced values are "string", "int", "bool", "float".
     string type = 1;
+
     // Required flag. If set to true, policies will not evaluate if the context value is not set.
     optional bool required = 2;
+
     // Value field. If the ContextVal is typed, the data should be castable to the type defined in Type.
     optional google.protobuf.Value value = 3;
+
     // Default value when ContextVal is not set. If the ContextVal is typed, the
     // default value should be castable into the type defined in type
     optional google.protobuf.Value default = 4;
+
     // Human readable description of the ContextValue
     optional string description = 5;
+
+    // Expression is an evaluator-language snippet resolved at evaluation time
+    // to produce the context value dynamically (e.g. from the subject under
+    // evaluation). It is mutually exclusive with both `value` and `default`,
+    // since an expression is a burned-in computation with no static fallback.
+    optional string expression = 6;
+
+    // Runtime selects the evaluator used to resolve `expression`. When empty,
+    // the policy's default runtime is used.
+    optional string runtime = 7;
 }
 
 // The error structure is returned when a policy is evaluated successfully but 
