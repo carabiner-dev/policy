@@ -162,10 +162,15 @@ func (p *Policy) SetOrigin(origin attestation.Subject) {
 // interface te be able to be wrapped in an intoto statement
 
 // ContextMap compiles the context data values into a map, filling the fields
-// with their defaults when needed.
+// with their defaults when needed. Entries whose value is resolved dynamically
+// via an `expression` are skipped: they cannot be known without an evaluator
+// and an evaluation context.
 func (p *Policy) ContextMap() map[string]any {
 	ret := map[string]any{}
 	for label, value := range p.Context {
+		if value.GetExpression() != "" {
+			continue
+		}
 		if value.Value != nil {
 			ret[label] = value.Value.AsInterface()
 		} else {
