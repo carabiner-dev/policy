@@ -880,7 +880,15 @@ type ContextVal struct {
 	// default value should be castable into the type defined in type
 	Default *structpb.Value `protobuf:"bytes,4,opt,name=default,proto3,oneof" json:"default,omitempty"`
 	// Human readable description of the ContextValue
-	Description   *string `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Description *string `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Expression is an evaluator-language snippet resolved at evaluation time
+	// to produce the context value dynamically (e.g. from the subject under
+	// evaluation). It is mutually exclusive with both `value` and `default`,
+	// since an expression is a burned-in computation with no static fallback.
+	Expression *string `protobuf:"bytes,6,opt,name=expression,proto3,oneof" json:"expression,omitempty"`
+	// Runtime selects the evaluator used to resolve `expression`. When empty,
+	// the policy's default runtime is used.
+	Runtime       *string `protobuf:"bytes,7,opt,name=runtime,proto3,oneof" json:"runtime,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -946,6 +954,20 @@ func (x *ContextVal) GetDefault() *structpb.Value {
 func (x *ContextVal) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
+	}
+	return ""
+}
+
+func (x *ContextVal) GetExpression() string {
+	if x != nil && x.Expression != nil {
+		return *x.Expression
+	}
+	return ""
+}
+
+func (x *ContextVal) GetRuntime() string {
+	if x != nil && x.Runtime != nil {
+		return *x.Runtime
 	}
 	return ""
 }
@@ -1959,19 +1981,26 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1c\n" +
 	"\tframework\x18\x03 \x01(\tR\tframework\x12\x14\n" +
 	"\x05class\x18\x04 \x01(\tR\x05class\x12\x12\n" +
-	"\x04item\x18\x05 \x01(\tR\x04item\"\x85\x02\n" +
+	"\x04item\x18\x05 \x01(\tR\x04item\"\xe4\x02\n" +
 	"\n" +
 	"ContextVal\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1f\n" +
 	"\brequired\x18\x02 \x01(\bH\x00R\brequired\x88\x01\x01\x121\n" +
 	"\x05value\x18\x03 \x01(\v2\x16.google.protobuf.ValueH\x01R\x05value\x88\x01\x01\x125\n" +
 	"\adefault\x18\x04 \x01(\v2\x16.google.protobuf.ValueH\x02R\adefault\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tH\x03R\vdescription\x88\x01\x01B\v\n" +
+	"\vdescription\x18\x05 \x01(\tH\x03R\vdescription\x88\x01\x01\x12#\n" +
+	"\n" +
+	"expression\x18\x06 \x01(\tH\x04R\n" +
+	"expression\x88\x01\x01\x12\x1d\n" +
+	"\aruntime\x18\a \x01(\tH\x05R\aruntime\x88\x01\x01B\v\n" +
 	"\t_requiredB\b\n" +
 	"\x06_valueB\n" +
 	"\n" +
 	"\b_defaultB\x0e\n" +
-	"\f_description\"=\n" +
+	"\f_descriptionB\r\n" +
+	"\v_expressionB\n" +
+	"\n" +
+	"\b_runtime\"=\n" +
 	"\x05Error\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1a\n" +
 	"\bguidance\x18\x02 \x01(\tR\bguidance\"\x93\x01\n" +
