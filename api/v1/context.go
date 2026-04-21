@@ -25,6 +25,15 @@ func (cv *ContextVal) Validate() error {
 	if cv.GetType() != "" && !slices.Contains(ContextTypes, cv.GetType()) {
 		return fmt.Errorf("invalid context type: %q", cv.GetType())
 	}
+	if cv.Value != nil && cv.Expression != nil {
+		return fmt.Errorf("context value cannot define both `value` and `expression`")
+	}
+	if cv.Default != nil && cv.Expression != nil {
+		return fmt.Errorf("context value cannot define both `default` and `expression`")
+	}
+	if cv.Expression == nil && cv.GetRuntime() != "" {
+		return fmt.Errorf("context value `runtime` is only valid when `expression` is set")
+	}
 	return nil
 }
 
@@ -39,5 +48,11 @@ func (cv *ContextVal) Merge(cv2 *ContextVal) {
 	}
 	if v := cv2.Required; v != nil {
 		cv.Required = v
+	}
+	if v := cv2.Expression; v != nil {
+		cv.Expression = v
+	}
+	if v := cv2.Runtime; v != nil {
+		cv.Runtime = v
 	}
 }
