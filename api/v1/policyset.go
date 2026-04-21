@@ -26,8 +26,18 @@ func (set *PolicySet) Validate() error {
 
 	// TODO: Check all IDS are unique (including policy set, policies and groups)
 	errs := []error{}
+	for key, def := range set.GetCommon().GetContext() {
+		if err := def.Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("invalid common context definition for %q: %w", key, err))
+		}
+	}
 	for _, p := range set.GetPolicies() {
 		if err := p.Validate(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	for _, g := range set.GetGroups() {
+		if err := g.Validate(); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -71,10 +81,15 @@ func (set *PolicySet) GetData() []byte {
 }
 
 // ContextMap compiles the context data values into a map, filling the fields
-// with their defaults when needed.
+// with their defaults when needed. Entries whose value is resolved dynamically
+// via an `expression` are skipped: they cannot be known without an evaluator
+// and an evaluation context.
 func (s *PolicySet) ContextMap() map[string]any {
 	ret := map[string]any{}
 	for label, value := range s.GetCommon().GetContext() {
+		if value.GetExpression() != "" {
+			continue
+		}
 		if value.Value != nil {
 			ret[label] = value.Value.AsInterface()
 		} else {

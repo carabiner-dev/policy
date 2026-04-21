@@ -38,8 +38,22 @@ func (cv *ContextVal) Validate() error {
 }
 
 // Merge merges the values set in cv2 into cv. If values are not set nothing
-// is replaced
+// is replaced.
+//
+// Static (value/default) and dynamic (expression/runtime) forms are mutually
+// exclusive, so when cv2 introduces one form, any stale fields of the other
+// form on cv are cleared before applying cv2's values. This keeps a merged
+// ContextVal within the shape Validate() accepts.
 func (cv *ContextVal) Merge(cv2 *ContextVal) {
+	switch {
+	case cv2.Expression != nil:
+		cv.Value = nil
+		cv.Default = nil
+	case cv2.Value != nil || cv2.Default != nil:
+		cv.Expression = nil
+		cv.Runtime = nil
+	}
+
 	if v := cv2.Default; v != nil {
 		cv.Default = v
 	}
