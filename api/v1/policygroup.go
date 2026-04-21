@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/carabiner-dev/attestation"
@@ -31,7 +32,20 @@ func (ref *PolicyGroupRef) SetVersion(v int64) {
 
 // Validate checks the consistency of the policy group
 func (grp *PolicyGroup) Validate() error {
-	return nil
+	errs := []error{}
+	for key, def := range grp.GetCommon().GetContext() {
+		if err := def.Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("invalid common context definition for %q: %w", key, err))
+		}
+	}
+	for _, b := range grp.GetBlocks() {
+		for _, p := range b.GetPolicies() {
+			if err := p.Validate(); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+	return errors.Join(errs...)
 }
 
 // PublicKeys returns any public keys defined in the policy identities

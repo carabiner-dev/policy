@@ -26,8 +26,18 @@ func (set *PolicySet) Validate() error {
 
 	// TODO: Check all IDS are unique (including policy set, policies and groups)
 	errs := []error{}
+	for key, def := range set.GetCommon().GetContext() {
+		if err := def.Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("invalid common context definition for %q: %w", key, err))
+		}
+	}
 	for _, p := range set.GetPolicies() {
 		if err := p.Validate(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	for _, g := range set.GetGroups() {
+		if err := g.Validate(); err != nil {
 			errs = append(errs, err)
 		}
 	}
