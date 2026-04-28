@@ -63,7 +63,7 @@ func (ps *Signer) SignPolicyData(data []byte, w io.Writer, funcs ...options.Sign
 	}
 
 	// OK, data is valid, sign it.
-	bundle, err := signer.NewSigner().SignStatement(
+	bundle, err := signer.NewSigner().SignStatementBundle(
 		stmtJson, soptions.WithPayloadType("application/vnd.in-toto+json"),
 	)
 	if err != nil {

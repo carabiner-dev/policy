@@ -74,7 +74,6 @@ func TestPolicyRefValidate(t *testing.T) {
 }
 
 func TestParseIdentitySlug(t *testing.T) {
-	modeExact := SigstoreModeExact
 	modeRegexp := SigstoreModeRegexp
 	t.Parallel()
 	for _, tt := range []struct {
@@ -89,7 +88,6 @@ func TestParseIdentitySlug(t *testing.T) {
 			false,
 			&sapi.Identity{
 				Sigstore: &sapi.IdentitySigstore{
-					Mode:     &modeExact,
 					Issuer:   "https://token.actions.githubusercontent.com",
 					Identity: "https://github.com/slsa-framework/slsa-source-poc/.github/workflows/release.yaml@refs/tags/v0.6.1",
 				},
@@ -127,12 +125,12 @@ func TestParseIdentitySlug(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			res, err := sapi.NewIdentityFromSlug(tt.slug)
+			res, err := sapi.NewIdentityFromSpec(tt.slug)
 			if tt.mustErr {
 				require.Error(t, err)
 			}
 			require.NoError(t, err)
-			require.True(t, proto.Equal(tt.expect, res))
+			require.True(t, proto.Equal(tt.expect, res), "want: %v got: %v", tt.expect, res)
 		})
 	}
 }
