@@ -407,7 +407,7 @@ func parseEnvelope(opts *options.ParseOptions, bundleData []byte) ([]byte, attes
 
 	validIds := []*sapi.Identity{}
 	for _, idstring := range opts.IdentityStrings {
-		id, err := sapi.NewIdentityFromSlug(idstring)
+		id, err := sapi.NewIdentityFromSpec(idstring)
 		if err != nil {
 			return nil, nil, fmt.Errorf("parsing id string %q: %w", idstring, err)
 		}
