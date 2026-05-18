@@ -9,7 +9,7 @@ require (
 	github.com/carabiner-dev/hasher v0.2.4
 	github.com/carabiner-dev/signer v0.4.6-0.20260428182929-2749e66cbe88
 	github.com/carabiner-dev/vcslocator v0.4.3
-	github.com/go-git/go-git/v5 v5.19.0
+	github.com/go-git/go-git/v5 v5.19.1
 	github.com/hjson/hjson-go/v4 v4.6.0
 	github.com/in-toto/attestation v1.2.0
 	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481
