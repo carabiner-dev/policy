@@ -5,9 +5,9 @@ go 1.25.11
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260415201107-50325440f8f2.1
 	github.com/carabiner-dev/attestation v0.2.1
-	github.com/carabiner-dev/collector v0.3.6
+	github.com/carabiner-dev/collector v0.3.7
 	github.com/carabiner-dev/hasher v0.2.4
-	github.com/carabiner-dev/signer v0.5.0
+	github.com/carabiner-dev/signer v0.5.1
 	github.com/carabiner-dev/vcslocator v0.4.4
 	github.com/go-git/go-git/v5 v5.19.1
 	github.com/hjson/hjson-go/v4 v4.6.0
