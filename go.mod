@@ -10,7 +10,7 @@ require (
 	github.com/carabiner-dev/signer v0.5.4
 	github.com/carabiner-dev/vcslocator v0.4.7
 	github.com/go-git/go-git/v5 v5.19.2
-	github.com/hjson/hjson-go/v4 v4.6.0
+	github.com/hjson/hjson-go/v4 v4.7.0
 	github.com/in-toto/attestation v1.2.0
 	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481
 	github.com/sirupsen/logrus v1.10.1
