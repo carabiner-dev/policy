@@ -496,6 +496,9 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 		if assembledGroup.GetMeta().GetEnforce() == "" {
 			assembledGroup.GetMeta().Enforce = remotePolicyGroup.GetMeta().GetEnforce()
 		}
+		if assembledGroup.GetMeta().GetAssertMode() == "" {
+			assembledGroup.GetMeta().AssertMode = remotePolicyGroup.GetMeta().GetAssertMode()
+		}
 		// optional google.protobuf.Timestamp expiration = 5; <<< Expiration is not inherited
 		// optional in_toto_attestation.v1.ResourceDescriptor origin = 6; <<< From pulled data
 
