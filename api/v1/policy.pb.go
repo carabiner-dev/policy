@@ -621,7 +621,9 @@ type Meta struct {
 	// Origin captures the origin of a policy when the compiler gathers its data.
 	Origin *v1.ResourceDescriptor `protobuf:"bytes,8,opt,name=origin,proto3,oneof" json:"origin,omitempty"`
 	// Policy changelog
-	Changelog     []*ChangeLog `protobuf:"bytes,9,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	Changelog []*ChangeLog `protobuf:"bytes,9,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	// Name of the policy (single line string)
+	Name          string `protobuf:"bytes,10,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -717,6 +719,13 @@ func (x *Meta) GetChangelog() []*ChangeLog {
 		return x.Changelog
 	}
 	return nil
+}
+
+func (x *Meta) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
 }
 
 // ChangeLog records a change in the policy or policyset code.
@@ -1953,7 +1962,7 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\blocation\x18\x04 \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorR\blocation\"\\\n" +
 	"\tChainLink\x12E\n" +
 	"\tpredicate\x18\x01 \x01(\v2%.carabiner.policy.v1.ChainedPredicateH\x00R\tpredicateB\b\n" +
-	"\x06source\"\xb3\x03\n" +
+	"\x06source\"\xda\x03\n" +
 	"\x04Meta\x12\x18\n" +
 	"\aruntime\x18\x01 \x01(\tR\aruntime\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
@@ -1966,7 +1975,10 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"expiration\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expiration\x88\x01\x01\x12G\n" +
 	"\x06origin\x18\b \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x01R\x06origin\x88\x01\x01\x12<\n" +
-	"\tchangelog\x18\t \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelogB\r\n" +
+	"\tchangelog\x18\t \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelog\x12%\n" +
+	"\x04name\x18\n" +
+	" \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[^\\n\\r]*$R\x04nameB\r\n" +
 	"\v_expirationB\t\n" +
 	"\a_origin\"\x8e\x01\n" +
 	"\tChangeLog\x12\x18\n" +
