@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"buf.build/go/protovalidate"
 	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/collector/envelope"
 	"github.com/carabiner-dev/hasher"
@@ -224,6 +225,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicySet(opts *options.ParseOpti
 		return nil, verification, err
 	}
 
+	// Check the field constraints defined in the protobuf definitions
+	if err := protovalidate.Validate(set); err != nil {
+		return nil, verification, fmt.Errorf("validating policy set: %w", err)
+	}
+
 	// hash the data to record it in the policy origin
 	hset, err := hasher.New().HashReaders([]io.Reader{bytes.NewReader(policySetData)})
 	if err != nil {
@@ -292,6 +298,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicy(opts *options.ParseOptions
 		return nil, verification, err
 	}
 
+	// Check the field constraints defined in the protobuf definitions
+	if err := protovalidate.Validate(p); err != nil {
+		return nil, verification, fmt.Errorf("validating policy: %w", err)
+	}
+
 	// hash the data to record it in the policy origin
 	hset, err := hasher.New().HashReaders([]io.Reader{bytes.NewReader(policyData)})
 	if err != nil {
@@ -343,6 +354,11 @@ func (dpi *defaultParserImplementationV1) ParsePolicyGroup(opts *options.ParseOp
 	// Validate collection sizes
 	if err := validatePolicyGroupLimits(opts, g); err != nil {
 		return nil, verification, err
+	}
+
+	// Check the field constraints defined in the protobuf definitions
+	if err := protovalidate.Validate(g); err != nil {
+		return nil, verification, fmt.Errorf("validating policy group: %w", err)
 	}
 
 	// hash the data to record it in the policy origin
