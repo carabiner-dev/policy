@@ -219,6 +219,57 @@ func TestParsePolicy(t *testing.T) {
 	}
 }
 
+func TestParsePolicyValidation(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		input   []byte
+		mustErr bool
+	}{
+		{
+			name: "single-line-name",
+			input: []byte(`{
+				"id": "test-policy",
+				"meta": {"name": "My Policy"},
+				"tenets": [{"id": "test-tenet", "code": "true"}]
+			}`),
+			mustErr: false,
+		},
+		{
+			name: "multiline-name",
+			input: []byte(`{
+				"id": "test-policy",
+				"meta": {"name": "My\nPolicy"},
+				"tenets": [{"id": "test-tenet", "code": "true"}]
+			}`),
+			mustErr: true,
+		},
+		{
+			name: "invalid-transformer-id",
+			input: []byte(`{
+				"id": "test-policy",
+				"transformers": [{"id": "external:Nope"}],
+				"tenets": [{"id": "test-tenet", "code": "true"}]
+			}`),
+			mustErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			policy, err := NewParser().ParsePolicy(tt.input)
+			if tt.mustErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.NotNil(t, policy)
+		})
+	}
+}
+
 func TestParsePolicySet(t *testing.T) {
 	t.Parallel()
 
