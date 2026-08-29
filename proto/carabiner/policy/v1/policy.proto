@@ -128,6 +128,8 @@ message Meta {
     optional in_toto_attestation.v1.ResourceDescriptor origin = 8;
     // Policy changelog
     repeated ChangeLog changelog = 9;
+    // Name of the policy (single line string)
+    string name = 10 [(buf.validate.field).string.pattern = "^[^\\n\\r]*$"];
 }
 
 // ChangeLog records a change in the policy or policyset code.
