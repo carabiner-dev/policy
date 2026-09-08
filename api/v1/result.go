@@ -85,6 +85,29 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 	)
 }
 
+func (rg *ResultGroup) MarshalJSON() ([]byte, error) {
+	type Alias ResultGroup
+	var start, end string
+	if rg.DateStart != nil {
+		start = rg.DateStart.AsTime().Format("2006-01-02T15:04:05.000Z")
+	}
+	if rg.DateEnd != nil {
+		end = rg.DateEnd.AsTime().Format("2006-01-02T15:04:05.000Z")
+	}
+
+	return json.Marshal(
+		&struct {
+			DateStart string `json:"date_start"`
+			DateEnd   string `json:"date_end"`
+			*Alias
+		}{
+			DateStart: start,
+			DateEnd:   end,
+			Alias:     (*Alias)(rg),
+		},
+	)
+}
+
 func (er *EvalResult) MarshalJSON() ([]byte, error) {
 	type Alias EvalResult
 	var date string
