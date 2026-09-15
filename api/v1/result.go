@@ -22,21 +22,37 @@ type Results interface {
 	GetStatus() string
 }
 
-// Assert reads the set's results and computes the finish date
-// and set eval status.
+// Assert reads the set's results and computes the finish date and the set
+// status: FAIL when any policy or group failed, SKIP when the set has
+// members and every one of them was skipped (nothing was verified), PASS
+// otherwise. Skipped members never count against the set.
 func (rs *ResultSet) Assert() error {
 	rs.DateEnd = timestamppb.Now()
+	members := 0
+	skipped := 0
 	for _, r := range rs.Results {
-		if r.GetStatus() == StatusFAIL {
+		members++
+		switch r.GetStatus() {
+		case StatusFAIL:
 			rs.Status = StatusFAIL
 			return nil
+		case StatusSKIP:
+			skipped++
 		}
 	}
 	for _, r := range rs.Groups {
-		if r.GetStatus() == StatusFAIL {
+		members++
+		switch r.GetStatus() {
+		case StatusFAIL:
 			rs.Status = StatusFAIL
 			return nil
+		case StatusSKIP:
+			skipped++
 		}
+	}
+	if members > 0 && skipped == members {
+		rs.Status = StatusSKIP
+		return nil
 	}
 	rs.Status = StatusPASS
 	return nil
