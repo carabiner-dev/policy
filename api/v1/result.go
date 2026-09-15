@@ -13,6 +13,9 @@ const (
 	StatusFAIL     = "FAIL"
 	StatusPASS     = "PASS"
 	StatusSOFTFAIL = "SOFTFAIL"
+	// StatusSKIP marks a material whose `when` condition evaluated to
+	// false. Skipped materials do not count towards their parent's status.
+	StatusSKIP = "SKIP"
 )
 
 type Results interface {
