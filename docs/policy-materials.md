@@ -9,6 +9,7 @@ This document provides an in-depth reference for the three policy material eleme
   - [Expected Identities](#expected-identities)
   - [Tenets](#tenets)
   - [Context Values](#context-values)
+  - [Applicability Conditions](#applicability-conditions)
   - [Evidence Chains](#evidence-chains)
   - [Predicates](#predicates)
   - [Transformers](#transformers)
@@ -337,6 +338,51 @@ Context values enable powerful policy patterns:
 - **Environment-specific checks**: Different requirements for dev vs. prod
 - **Dynamic configuration**: Policies adapt to runtime conditions
 
+### Applicability Conditions
+
+A policy may declare a `when` condition that gates its evaluation. The
+condition is an expression evaluated **before any evidence is fetched**,
+against the subject under evaluation, the context values in scope and the
+runtime plugins; predicates are not available to it. When it yields `false`
+the policy is **skipped**: its result carries the status `SKIPPED`, records the
+condition, and does not count towards the status of its PolicySet or block.
+An absent `when`, or one with an empty expression, means the policy always
+evaluates.
+
+```json
+{
+    "id": "slsa-v1-provenance",
+    "when": {
+        "expression": "semver.satisfies(context.drop_version, '>=2.0.0')"
+    },
+    "context": {
+        "drop_version": { "type": "string", "required": true }
+    },
+    "tenets": [ ... ]
+}
+```
+
+#### When Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `expression` | string | Evaluator-language snippet that must yield a boolean. Empty means the policy always evaluates. |
+| `runtime` | string | Evaluator used for the expression. Defaults to the runtime of the policy, or of its parent when the policy defines none. Only valid together with `expression`. |
+
+Every context value the expression reads **must be declared**, either in the
+policy's own `context` block or in the `common.context` of the PolicySet or
+PolicyGroup it belongs to. Only declared values are exposed to the runtime, so
+an expression reading an undeclared one fails when the condition is
+evaluated.
+
+Conditions exist so one policy set can hold releases to what they shipped:
+old releases are checked against the attestations they carry, new ones
+against a stricter bar, and the policies themselves stay reusable because
+the condition lives outside their tenets. `when` is also accepted on
+[PolicyBlocks](#policyblocks), where it skips the whole block. PolicySets and
+PolicyGroups are containers and carry no condition of their own; gate the
+policies and blocks inside them instead.
+
 ### Evidence Chains
 
 Evidence chains connect attestations with different subjects, allowing policies to evaluate evidence across related artifacts.
@@ -539,6 +585,15 @@ This enables sophisticated requirements modeling:
 ```
 
 **Result**: The group passes if (all required checks pass) AND (at least one alternative passes).
+
+### Conditions on Blocks
+
+Each PolicyBlock accepts a `when` condition with the same shape and rules as a
+policy's (see [Applicability Conditions](#applicability-conditions)). A
+skipped block is reported as `SKIPPED` and does not take part in the group's
+assert mode. Context values read by a block's condition must be declared in
+the group's `common.context` or inherited from the PolicySet. The group
+itself carries no condition: it is a container for its blocks.
 
 ### When to Use PolicyGroups
 
@@ -859,6 +914,35 @@ Supported algorithms: `sha256`, `sha512`, and others from the [in-toto spec](htt
 ```
 
 **Nested References**: Remote policies can themselves reference other remote policies! The compiler handles recursive fetching up to a configurable depth (default: 3 levels).
+
+### Gating Referenced Policies
+
+A `when` condition set on the stanza that references a policy is applied to
+the assembled policy, exactly like `identities`, `context` or `meta`
+overlays. This is how a library policy is reused with a condition without
+editing it:
+
+```json
+{
+    "policies": [
+        {
+            "id": "provenance-current",
+            "source": { "location": { "uri": "git+https://github.com/carabiner-dev/policies@<commit>#slsa/has-attestation.json" } },
+            "when": { "expression": "semver.satisfies(context.drop_version, '>=2.0.0')" }
+        },
+        {
+            "id": "provenance-legacy",
+            "source": { "location": { "uri": "git+https://github.com/carabiner-dev/policies@<commit>#slsa/has-attestation.json" } },
+            "predicates": { "types": ["https://slsa.dev/provenance/v0.2"] },
+            "when": { "expression": "semver.satisfies(context.drop_version, '<2.0.0')" }
+        }
+    ]
+}
+```
+
+The same applies to a local PolicyBlock that shares its id with a block of a
+referenced group: the remote block's contents are merged in and the local
+condition gates the result.
 
 ### How Remote Referencing Works
 

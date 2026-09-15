@@ -39,6 +39,9 @@ func (grp *PolicyGroup) Validate() error {
 		}
 	}
 	for _, b := range grp.GetBlocks() {
+		if err := b.GetWhen().Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("block %q: %w", b.GetId(), err))
+		}
 		for _, p := range b.GetPolicies() {
 			if err := p.Validate(); err != nil {
 				errs = append(errs, err)
