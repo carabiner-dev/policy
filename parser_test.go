@@ -70,3 +70,22 @@ func TestParseLocalPolicies(t *testing.T) {
 		require.Equal(t, "tenet-2", policy.GetTenets()[1].GetId())
 	})
 }
+
+// TestParseRejectsMultilineNames checks the parser enforces single-line
+// names on sets and groups, like it does on policies.
+func TestParseRejectsMultilineNames(t *testing.T) {
+	t.Parallel()
+	parser := NewParser()
+
+	set, err := parser.ParsePolicySet([]byte(`{"id": "s", "meta": {"name": "drop release"}, "policies": []}`))
+	require.NoError(t, err)
+	require.Equal(t, "drop release", set.GetMeta().GetName())
+	_, err = parser.ParsePolicySet([]byte(`{"id": "s", "meta": {"name": "two\nlines"}, "policies": []}`))
+	require.Error(t, err)
+
+	grp, err := parser.ParsePolicyGroup([]byte(`{"id": "g", "meta": {"name": "OSPS baseline"}, "blocks": []}`))
+	require.NoError(t, err)
+	require.Equal(t, "OSPS baseline", grp.GetMeta().GetName())
+	_, err = parser.ParsePolicyGroup([]byte(`{"id": "g", "meta": {"name": "two\nlines"}, "blocks": []}`))
+	require.Error(t, err)
+}
