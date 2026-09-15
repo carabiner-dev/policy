@@ -411,6 +411,9 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 		if p.Meta.Runtime != "" {
 			assembledPolicy.Meta.Runtime = p.Meta.Runtime
 		}
+		if p.Meta.Name != "" {
+			assembledPolicy.Meta.Name = p.Meta.Name
+		}
 		if p.Meta.Description != "" {
 			assembledPolicy.Meta.Description = p.Meta.Description
 		}
@@ -490,6 +493,9 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 		}
 
 		// Merge the meta fields
+		if assembledGroup.GetMeta().GetName() == "" {
+			assembledGroup.GetMeta().Name = remotePolicyGroup.GetMeta().GetName()
+		}
 		if assembledGroup.GetMeta().GetDescription() == "" {
 			assembledGroup.GetMeta().Description = remotePolicyGroup.GetMeta().GetDescription()
 		}

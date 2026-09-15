@@ -143,7 +143,9 @@ type PolicySetMeta struct {
 	// Origin of the policyset's data, recorded when compiled.
 	Origin *v1.ResourceDescriptor `protobuf:"bytes,7,opt,name=origin,proto3,oneof" json:"origin,omitempty"`
 	// PolicySet changelog, records the changes in the policy code
-	Changelog     []*ChangeLog `protobuf:"bytes,8,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	Changelog []*ChangeLog `protobuf:"bytes,8,rep,name=changelog,proto3" json:"changelog,omitempty"`
+	// Name of the policy set (single line string)
+	Name          string `protobuf:"bytes,9,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -232,6 +234,13 @@ func (x *PolicySetMeta) GetChangelog() []*ChangeLog {
 		return x.Changelog
 	}
 	return nil
+}
+
+func (x *PolicySetMeta) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
 }
 
 // FrameworkRef is a reference to a security framework. The reference binds
@@ -895,7 +904,8 @@ func (x *Control) GetItem() string {
 //
 // Context values used by the expression MUST be declared in the context
 // definitions in scope (the policy's own or those it inherits from the
-// common block of its PolicySet or PolicyGroup).
+// common block of its PolicySet or PolicyGroup); the runtime evaluating the
+// expression fails on values that are not defined.
 type When struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Expression is an evaluator-language snippet that must yield a boolean.
@@ -1738,7 +1748,9 @@ type PolicyGroupMeta struct {
 	// PolicyGroup changelog
 	Changelog []*ChangeLog `protobuf:"bytes,8,rep,name=changelog,proto3" json:"changelog,omitempty"`
 	// Assert mode to consider the policy group passing (OR or AND)
-	AssertMode    string `protobuf:"bytes,9,opt,name=assert_mode,json=assertMode,proto3" json:"assert_mode,omitempty"`
+	AssertMode string `protobuf:"bytes,9,opt,name=assert_mode,json=assertMode,proto3" json:"assert_mode,omitempty"`
+	// Name of the policy group (single line string)
+	Name          string `protobuf:"bytes,10,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1832,6 +1844,13 @@ func (x *PolicyGroupMeta) GetChangelog() []*ChangeLog {
 func (x *PolicyGroupMeta) GetAssertMode() string {
 	if x != nil {
 		return x.AssertMode
+	}
+	return ""
+}
+
+func (x *PolicyGroupMeta) GetName() string {
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
@@ -1993,7 +2012,7 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\x06common\x18\x03 \x01(\v2$.carabiner.policy.v1.PolicySetCommonR\x06common\x127\n" +
 	"\bpolicies\x18\x04 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\x124\n" +
 	"\x05chain\x18\x05 \x03(\v2\x1e.carabiner.policy.v1.ChainLinkR\x05chain\x128\n" +
-	"\x06groups\x18\x06 \x03(\v2 .carabiner.policy.v1.PolicyGroupR\x06groups\"\x90\x03\n" +
+	"\x06groups\x18\x06 \x03(\v2 .carabiner.policy.v1.PolicyGroupR\x06groups\"\xb7\x03\n" +
 	"\rPolicySetMeta\x12\x18\n" +
 	"\aruntime\x18\x01 \x01(\tR\aruntime\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -2006,7 +2025,9 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"frameworks\x18\x06 \x03(\v2!.carabiner.policy.v1.FrameworkRefR\n" +
 	"frameworks\x12G\n" +
 	"\x06origin\x18\a \x01(\v2*.in_toto_attestation.v1.ResourceDescriptorH\x00R\x06origin\x88\x01\x01\x12<\n" +
-	"\tchangelog\x18\b \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelogB\t\n" +
+	"\tchangelog\x18\b \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelog\x12%\n" +
+	"\x04name\x18\t \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[^\\n\\r]*$R\x04nameB\t\n" +
 	"\a_origin\"~\n" +
 	"\fFrameworkRef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
@@ -2160,7 +2181,7 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x128\n" +
 	"\x04meta\x18\x02 \x01(\v2$.carabiner.policy.v1.PolicyBlockMetaR\x04meta\x127\n" +
 	"\bpolicies\x18\x03 \x03(\v2\x1b.carabiner.policy.v1.PolicyR\bpolicies\x12-\n" +
-	"\x04when\x18\x04 \x01(\v2\x19.carabiner.policy.v1.WhenR\x04when\"\xbe\x03\n" +
+	"\x04when\x18\x04 \x01(\v2\x19.carabiner.policy.v1.WhenR\x04when\"\xe5\x03\n" +
 	"\x0fPolicyGroupMeta\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x03R\aversion\x128\n" +
@@ -2173,7 +2194,10 @@ const file_carabiner_policy_v1_policy_proto_rawDesc = "" +
 	"\aruntime\x18\a \x01(\tR\aruntime\x12<\n" +
 	"\tchangelog\x18\b \x03(\v2\x1e.carabiner.policy.v1.ChangeLogR\tchangelog\x12\x1f\n" +
 	"\vassert_mode\x18\t \x01(\tR\n" +
-	"assertModeB\r\n" +
+	"assertMode\x12%\n" +
+	"\x04name\x18\n" +
+	" \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[^\\n\\r]*$R\x04nameB\r\n" +
 	"\v_expirationB\t\n" +
 	"\a_origin\"\xa8\x01\n" +
 	"\x0fPolicyBlockMeta\x12 \n" +

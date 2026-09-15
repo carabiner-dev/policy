@@ -56,6 +56,7 @@ The `meta` field contains information about the policy itself:
 | Field | Type | Description | Default |
 |-------|------|-------------|---------|
 | `runtime` | string | Runtime for executing tenet code (e.g., `cel@v0`) | `cel@v0` |
+| `name` | string | Human-readable name of the policy. Must be a single line. | - |
 | `description` | string | Human-readable description of what the policy checks | - |
 | `assert_mode` | string | How tenets are evaluated: `AND` (all must pass) or `OR` (at least one must pass) | `AND` |
 | `enforce` | string | Enforcement mode: `ON` (failures fail parent) or `OFF` (failures are warnings) | `ON` |
@@ -506,6 +507,7 @@ A **PolicyGroup** models complex security controls by organizing policies into b
 
 | Field | Type | Description | Default |
 |-------|------|-------------|---------|
+| `name` | string | Human-readable name of the group. Must be a single line. | - |
 | `description` | string | Human-readable description | - |
 | `version` | int64 | Group version number | - |
 | `controls` | array | Security framework controls | - |
@@ -639,6 +641,7 @@ A **PolicySet** is the top-level container that brings policies and groups toget
 | Field | Type | Description | Default |
 |-------|------|-------------|---------|
 | `runtime` | string | Default runtime for all policies | `cel@v0` |
+| `name` | string | Human-readable name of the set. Must be a single line. | - |
 | `description` | string | PolicySet description | - |
 | `version` | int64 | PolicySet version | - |
 | `enforce` | string | Enforcement mode: `ON` or `OFF` | `ON` |

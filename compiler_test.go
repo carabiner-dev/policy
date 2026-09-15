@@ -305,3 +305,42 @@ func TestCompileWhenRemoteGroupBlock(t *testing.T) {
 	require.NotEmpty(t, block.GetPolicies(), "the remote block's policies are merged in")
 	require.Equal(t, "context.env == 'prod'", block.GetWhen().GetExpression(), "the local condition gates the merged block")
 }
+
+// TestCompileNames checks that names travel through compilation: a
+// referencing stanza's name overlays the referenced policy's, and a group
+// referencing another inherits its name unless it sets one.
+func TestCompileNames(t *testing.T) {
+	t.Parallel()
+
+	t.Run("policy-name-overlays-referenced", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySet([]byte(`{
+			"id": "named",
+			"policies": [{
+				"meta": {"name": "SBOM must exist"},
+				"source": { "location": { "uri": "git+https://github.com/carabiner-dev/policies@9a70ca49804c2b993bb6b62d51d5524f3443d6ec#sbom/sbom-exists.json" } }
+			}]
+		}`))
+		require.NoError(t, err)
+		set, err = NewCompiler().CompileSet(set)
+		require.NoError(t, err)
+		require.Equal(t, "SBOM must exist", set.GetPolicies()[0].GetMeta().GetName())
+	})
+
+	t.Run("group-inherits-or-keeps-name", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySetFile("testdata/group.remoteref.json")
+		require.NoError(t, err)
+		remote := set.GetGroups()[0].GetSource()
+		set.Groups = []*api.PolicyGroup{
+			{Source: remote},
+			{Source: remote, Meta: &api.PolicyGroupMeta{Name: "Local name"}},
+		}
+		set, err = NewCompiler().CompileSet(set)
+		require.NoError(t, err)
+		// The fixture's remote group defines no name, so nothing is inherited
+		// and the local name is kept.
+		require.Empty(t, set.GetGroups()[0].GetMeta().GetName())
+		require.Equal(t, "Local name", set.GetGroups()[1].GetMeta().GetName())
+	})
+}
