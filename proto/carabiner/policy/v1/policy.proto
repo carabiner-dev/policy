@@ -63,6 +63,9 @@ message PolicySetMeta {
 
     // PolicySet changelog, records the changes in the policy code
     repeated ChangeLog changelog = 8;
+
+    // Name of the policy set (single line string)
+    string name = 9 [(buf.validate.field).string.pattern = "^[^\\n\\r]*$"];
 }
 
 // FrameworkRef is a reference to a security framework. The reference binds
@@ -354,6 +357,9 @@ message PolicyGroupMeta {
 
     // Assert mode to consider the policy group passing (OR or AND)
     string assert_mode = 9;
+
+    // Name of the policy group (single line string)
+    string name = 10 [(buf.validate.field).string.pattern = "^[^\\n\\r]*$"];
 }
 
 // PolicyBlockMeta defines the metadata definition of a policy block
