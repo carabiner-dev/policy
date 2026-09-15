@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	api "github.com/carabiner-dev/policy/api/v1"
 )
 
 // TestCompilerPreservesRemoteAssertMode verifies that when compiling a policyset
@@ -217,4 +219,89 @@ func TestCompileLocalPolicies(t *testing.T) {
 		require.NotEmpty(t, set.GetPolicies()[0].GetId())
 		require.NotNil(t, set.GetPolicies()[0].GetTenets())
 	})
+}
+
+// TestCompileWhen checks that `when` conditions survive compilation, gate
+// referenced policies when set on the referencing stanza, and are rejected
+// when they read context values nobody declares.
+func TestCompileWhen(t *testing.T) {
+	t.Parallel()
+
+	t.Run("overlays-referenced-policy", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySet([]byte(`{
+			"id": "gated",
+			"common": { "context": { "drop_version": { "type": "string", "required": true } } },
+			"policies": [{
+				"id": "sbom-exists",
+				"source": { "location": { "uri": "git+https://github.com/carabiner-dev/policies@9a70ca49804c2b993bb6b62d51d5524f3443d6ec#sbom/sbom-exists.json" } },
+				"when": { "expression": "semver.satisfies(context.drop_version, '>=2.0.0')" }
+			}]
+		}`))
+		require.NoError(t, err)
+		set, err = NewCompiler().CompileSet(set)
+		require.NoError(t, err)
+		require.Len(t, set.GetPolicies(), 1)
+		require.NotEmpty(t, set.GetPolicies()[0].GetTenets(), "the referenced tenets are assembled")
+		require.Equal(t, "semver.satisfies(context.drop_version, '>=2.0.0')", set.GetPolicies()[0].GetWhen().GetExpression(),
+			"the condition on the referencing stanza gates the referenced policy")
+	})
+
+	t.Run("runtime-without-expression-is-rejected", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySet([]byte(`{
+			"id": "gated",
+			"policies": [{ "id": "local", "when": { "runtime": "cel@v0" }, "tenets": [{ "id": "t", "code": "true" }] }]
+		}`))
+		require.NoError(t, err)
+		_, err = NewCompiler().CompileSet(set)
+		require.ErrorContains(t, err, "runtime")
+	})
+
+	t.Run("block-condition-kept", func(t *testing.T) {
+		t.Parallel()
+		set, err := NewParser().ParsePolicySet([]byte(`{
+			"id": "gated",
+			"common": { "context": { "env": { "type": "string" } } },
+			"groups": [{
+				"id": "grp",
+				"blocks": [{
+					"id": "blk",
+					"when": { "expression": "context.env != ''" },
+					"policies": [{ "id": "p", "tenets": [{ "id": "t", "code": "true" }] }]
+				}]
+			}]
+		}`))
+		require.NoError(t, err)
+		set, err = NewCompiler().CompileSet(set)
+		require.NoError(t, err)
+		require.Equal(t, "context.env != ''", set.GetGroups()[0].GetBlocks()[0].GetWhen().GetExpression())
+	})
+}
+
+// TestCompileWhenRemoteGroupBlock checks that a condition set on a local
+// block survives the merge with the remote block of the same id.
+func TestCompileWhenRemoteGroupBlock(t *testing.T) {
+	t.Parallel()
+	set, err := NewParser().ParsePolicySetFile("testdata/group.remoteref.json")
+	require.NoError(t, err)
+	require.Len(t, set.GetGroups(), 1)
+	set.Common = &api.PolicySetCommon{Context: map[string]*api.ContextVal{"env": {Type: api.ContextTypeString}}}
+	set.Groups[0].Blocks = append(set.Groups[0].Blocks, &api.PolicyBlock{
+		Id:   "single-passing",
+		When: &api.When{Expression: "context.env == 'prod'"},
+	})
+
+	set, err = NewCompiler().CompileSet(set)
+	require.NoError(t, err)
+	var block *api.PolicyBlock
+	for _, b := range set.GetGroups()[0].GetBlocks() {
+		if b.GetId() == "single-passing" {
+			block = b
+			break
+		}
+	}
+	require.NotNil(t, block)
+	require.NotEmpty(t, block.GetPolicies(), "the remote block's policies are merged in")
+	require.Equal(t, "context.env == 'prod'", block.GetWhen().GetExpression(), "the local condition gates the merged block")
 }

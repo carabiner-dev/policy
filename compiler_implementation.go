@@ -454,6 +454,10 @@ func (dci *defaultCompilerImpl) assemblePolicy(opts *CompilerOptions, recurse in
 	if len(p.Transformers) > 0 {
 		assembledPolicy.Transformers = p.Transformers
 	}
+	// A condition on the referencing stanza gates the referenced policy
+	if p.When != nil {
+		assembledPolicy.When = p.When
+	}
 	assembledPolicy.Tenets = tenets
 	assembledPolicy.Source = nil
 	return assembledPolicy, nil
@@ -478,8 +482,9 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 			return nil, fmt.Errorf("unable to complete PolicyGroup, reference %v not resolved", grp.GetSource())
 		}
 
-		// Agument the assembled group with the remote blocks. This adds both
-		assembledGroup.Blocks = append(assembledGroup.Blocks, remotePolicyGroup.Blocks...)
+		// Remote blocks are merged below: a remote block replaces the local
+		// block sharing its id (keeping the local condition) and the rest are
+		// appended, so ids never end up duplicated.
 		if assembledGroup.GetMeta() == nil {
 			assembledGroup.Meta = &api.PolicyGroupMeta{}
 		}
@@ -534,7 +539,12 @@ func (dci *defaultCompilerImpl) assemblePolicyGroup(opts *CompilerOptions, grp *
 			i, ok := blockIndex[b.GetId()]
 			if ok {
 				// Case a1: Replace overlay when ID matches
+				// A condition set on the local block gates the merged result
+				localWhen := assembledGroup.Blocks[i].GetWhen()
 				assembledGroup.Blocks[i] = b
+				if localWhen != nil {
+					assembledGroup.Blocks[i].When = localWhen
+				}
 				continue
 			}
 

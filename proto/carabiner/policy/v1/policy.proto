@@ -175,7 +175,8 @@ message Control {
 //
 // Context values used by the expression MUST be declared in the context
 // definitions in scope (the policy's own or those it inherits from the
-// common block of its PolicySet or PolicyGroup).
+// common block of its PolicySet or PolicyGroup); the runtime evaluating the
+// expression fails on values that are not defined.
 message When {
     // Expression is an evaluator-language snippet that must yield a boolean.
     // Empty means the element always evaluates.
