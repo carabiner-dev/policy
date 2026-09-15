@@ -122,6 +122,10 @@ func (p *Policy) Validate() error {
 		}
 	}
 
+	if err := p.GetWhen().Validate(); err != nil {
+		errs = append(errs, fmt.Errorf("policy %q: %w", p.GetId(), err))
+	}
+
 	return errors.Join(errs...)
 }
 
