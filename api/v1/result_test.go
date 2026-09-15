@@ -79,3 +79,34 @@ func TestResultSetJSONRoundTrip(t *testing.T) {
 	require.Equal(t, "Evaluation failed by blocks [#0]", parsed.GetGroups()[0].GetError())
 	require.Equal(t, end.AsTime(), parsed.GetResults()[0].GetEvalResults()[0].GetDate().AsTime())
 }
+
+func TestResultSetAssertSkip(t *testing.T) {
+	t.Parallel()
+	res := func(status string) *Result { return &Result{Status: status} }
+	grp := func(status string) *ResultGroup { return &ResultGroup{Status: status} }
+	for _, tc := range []struct {
+		name    string
+		results []*Result
+		groups  []*ResultGroup
+		expect  string
+	}{
+		{"empty-set-passes", nil, nil, StatusPASS},
+		{"all-pass", []*Result{res(StatusPASS), res(StatusPASS)}, nil, StatusPASS},
+		{"skips-do-not-count", []*Result{res(StatusPASS), res(StatusSKIP)}, nil, StatusPASS},
+		{"fail-wins-over-skip", []*Result{res(StatusSKIP), res(StatusFAIL)}, nil, StatusFAIL},
+		{"softfail-passes", []*Result{res(StatusSOFTFAIL), res(StatusSKIP)}, nil, StatusPASS},
+		{"all-policies-skipped", []*Result{res(StatusSKIP), res(StatusSKIP)}, nil, StatusSKIP},
+		{"all-groups-skipped", nil, []*ResultGroup{grp(StatusSKIP)}, StatusSKIP},
+		{"skipped-policies-passing-group", []*Result{res(StatusSKIP)}, []*ResultGroup{grp(StatusPASS)}, StatusPASS},
+		{"skipped-policies-failing-group", []*Result{res(StatusSKIP)}, []*ResultGroup{grp(StatusFAIL)}, StatusFAIL},
+		{"everything-skipped", []*Result{res(StatusSKIP)}, []*ResultGroup{grp(StatusSKIP)}, StatusSKIP},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			rs := &ResultSet{Results: tc.results, Groups: tc.groups}
+			require.NoError(t, rs.Assert())
+			require.Equal(t, tc.expect, rs.GetStatus())
+			require.NotNil(t, rs.GetDateEnd())
+		})
+	}
+}
