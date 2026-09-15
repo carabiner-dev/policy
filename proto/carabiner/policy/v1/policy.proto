@@ -92,6 +92,10 @@ message Policy {
     PredicateSpec predicates = 7;
     repeated Transformer transformers = 8;
     repeated Tenet tenets = 9;
+
+    // When gates the evaluation of the policy (see When). It may be set on a
+    // policy referencing another to gate the referenced policy.
+    When when = 10;
 }
 
 message PolicyRef {
@@ -158,6 +162,28 @@ message Control {
 
     // Subitem identifier of control checks
     string item = 5;
+}
+
+// When gates the evaluation of a Policy or a PolicyBlock on a condition. The
+// expression is evaluated before any evidence is fetched, against the subject
+// under evaluation, the context values in scope and the runtime plugins;
+// predicates are not available to it. When it yields false the element is
+// skipped: it is reported as SKIPPED and does not count towards the status of
+// the PolicySet or PolicyGroup containing it. An empty `when` (or an empty
+// expression) always evaluates. PolicySets and PolicyGroups are containers
+// and carry no condition of their own.
+//
+// Context values used by the expression MUST be declared in the context
+// definitions in scope (the policy's own or those it inherits from the
+// common block of its PolicySet or PolicyGroup).
+message When {
+    // Expression is an evaluator-language snippet that must yield a boolean.
+    // Empty means the element always evaluates.
+    string expression = 1;
+
+    // Runtime selects the evaluator used to resolve `expression`. When empty,
+    // the runtime defined for the policy (or its parent) is used.
+    string runtime = 2;
 }
 
 // ContextVal defines a contextual value needed by a policy. Context values
@@ -294,6 +320,9 @@ message PolicyBlock {
 
     // Policies is the list of policies grouped in the block
     repeated Policy policies = 3;
+
+    // When gates the evaluation of the block (see When).
+    When when = 4;
 }
 
 // GroupMeta is the metadata definition of a policy group
