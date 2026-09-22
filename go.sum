@@ -95,8 +95,8 @@ github.com/brianvoe/gofakeit/v6 v6.28.0 h1:Xib46XXuQfmlLS2EXRuJpqcw8St6qSZz75OUo
 github.com/brianvoe/gofakeit/v6 v6.28.0/go.mod h1:Xj58BMSnFqcn/fAQeSK+/PLtC5kSb7FJIq4JyGa8vEs=
 github.com/carabiner-dev/attestation v0.2.1 h1:VhjV5YlO9TsW50Sr/Zd54bdbZhhDAqgxC3kB9z1I+3Q=
 github.com/carabiner-dev/attestation v0.2.1/go.mod h1:O84vF84RZG3pJO/6BYrPs718bZviHF5DKajP1HsrDpw=
-github.com/carabiner-dev/collector v0.3.16 h1:Tatp4tK/xWDluFwDqGfPPcYd9crCWm/0Ma+XlDAZ2Xs=
-github.com/carabiner-dev/collector v0.3.16/go.mod h1:G6neTqtRFOEjjOayE02bDWpLkcFB/gmbkfFteSliPcE=
+github.com/carabiner-dev/collector v0.3.17 h1:NTW3ErQXgAPOMGk3yZ4RI6KRy8EMaoDjEkK3qVi7vX0=
+github.com/carabiner-dev/collector v0.3.17/go.mod h1:UCaZP/2NOftDlzfwfOAlfSuwzciQRrnp6UHBH8rRWgY=
 github.com/carabiner-dev/command v0.3.2 h1:lkmgr+Sj9OaPxKk2AHlitR76Mg+hqys6BK7071taywY=
 github.com/carabiner-dev/command v0.3.2/go.mod h1:ABHTlUZbUUq7LF1Xmlx01ZY8xMCv4eqleuVEO/LIifU=
 github.com/carabiner-dev/hasher v0.2.4 h1:VaI04+FBHaNV/UEy0NmVoRg0pKLFeN76KPOHbTDvvhE=
@@ -107,8 +107,8 @@ github.com/carabiner-dev/openeox v1.0.0 h1:iVfs9jgu2s2Jrb95bJK5FWMx55qF3aHBk9RhU
 github.com/carabiner-dev/openeox v1.0.0/go.mod h1:+6i8M7PhtWk2jRtUC1anZnhmOr5cXKMLGYjwFcqPDa0=
 github.com/carabiner-dev/osv v0.1.2 h1:W5nZOGuygnqzB7YbGon6ab3iFHxFZZgzS3m7GEvYnfc=
 github.com/carabiner-dev/osv v0.1.2/go.mod h1:06cHx1aOdlb53feQxjBIRt3NSFfQKg1b1hrHHj/57QQ=
-github.com/carabiner-dev/predicates v0.5.1 h1:eKWvGLMYmB+taCf2ozNc4QikOZIj1vNYfXKb2e8XCuM=
-github.com/carabiner-dev/predicates v0.5.1/go.mod h1:kvGSWOl6OaUJ7b2FH0XDpTQ8ERcFXN6HzJx8ph90bWk=
+github.com/carabiner-dev/predicates v0.5.4 h1:koiNmcr0IbjHpjywI/k9OGeEilTIKdMQyh5LZZJt4ok=
+github.com/carabiner-dev/predicates v0.5.4/go.mod h1:zHcoDfyIfH7WMOS0zpEKD+lBPikEw+/BNg6988g8c2I=
 github.com/carabiner-dev/signer v0.6.2 h1:Tww40YP4RKjLSKdgT5nXVRiqd3Czjvkwd2WRDE7ecJ0=
 github.com/carabiner-dev/signer v0.6.2/go.mod h1:xIeR0GMK3Hp9gYsd7dGO9W8EwjftWBk3/+flEle6o0Y=
 github.com/carabiner-dev/spdx3 v0.1.0 h1:Q6nMLXV0BhtqDQuwRDOaJDZR670TK4jdOvZqvTW/ctY=
