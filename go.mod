@@ -9,7 +9,7 @@ require (
 	github.com/carabiner-dev/collector v0.3.17
 	github.com/carabiner-dev/hasher v0.2.4
 	github.com/carabiner-dev/signer v0.6.2
-	github.com/carabiner-dev/vcslocator v0.5.0
+	github.com/carabiner-dev/vcslocator v0.5.1
 	github.com/go-git/go-git/v5 v5.19.2
 	github.com/hjson/hjson-go/v4 v4.7.1
 	github.com/in-toto/attestation v1.2.0
